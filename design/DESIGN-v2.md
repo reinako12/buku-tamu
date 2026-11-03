@@ -109,3 +109,11 @@ dari 2" disembunyikan supaya tetap satu baris. Halaman tidak muncul kalau
 daftarnya muat satu halaman. Kalau tamu baru masuk lewat realtime, daftar
 otomatis membuka halaman tempat baris baru itu berada; kalau baris di halaman
 sekarang habis (mis. semua diselesaikan), halaman mundur sendiri.
+
+**Kolom aksi sejajar (3E).** Tombol aksi punya lebar tetap per slot (aksen
+pendamping 72px di tablet, 80px di desktop; tombol utama minimal 104/112px) dan
+disusun kanan-ke-kiri: `[aksi pendamping] [WhatsApp] [tombol utama]`. "Batalkan"
+selalu menempati slot paling kanan di antara aksi pendamping. Hasilnya, baris
+dengan tombol berbeda tetap membentuk kolom yang lurus — diukur: tombol utama
+selalu di x 636–740 (768px) dan 1140–1252 (1440px) walau isinya Panggil, Layani,
+atau Selesaikan.

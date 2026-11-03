@@ -364,7 +364,14 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
             {activeRows.map((visit) => {
               const actions = ALLOWED_TRANSITIONS[visit.status];
               const primary = actions.find((a) => a !== "batal" && a !== "menunggu");
-              const secondary = actions.filter((a) => a !== primary);
+              // "Batalkan" selalu di slot paling kanan supaya sejajar antar baris.
+              const secondary = actions
+                .filter((a) => a !== primary)
+                .sort((a, b) => (a === "batal" ? 1 : 0) - (b === "batal" ? 1 : 0));
+              const slots: (VisitStatus | null)[] = [
+                ...secondary,
+                ...Array.from({ length: Math.max(0, 2 - secondary.length) }, () => null),
+              ];
               const called = visit.status === "dipanggil";
 
               return (
@@ -410,30 +417,38 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                       ) : null}
                     </div>
 
-                    <div className="flex w-full flex-wrap items-center gap-x-sm gap-y-2xs sm:w-auto sm:justify-end">
+                    <div className="flex w-full flex-wrap items-center gap-x-sm gap-y-2xs sm:w-auto sm:flex-nowrap sm:justify-end sm:gap-x-xs lg:gap-x-sm">
                       {primary ? (
                         <button
                           type="button"
-                          className="btn-primary order-first px-sm sm:order-none"
+                          className="btn-primary order-first px-sm sm:order-last sm:min-w-[104px] lg:min-w-[112px]"
                           onClick={() => change(visit.id, primary)}
                         >
                           {t(ACTION_KEY[primary] ?? (`status.${primary}` as DictKey))}
                         </button>
                       ) : null}
 
-                      {secondary.map((nextStatus) => (
-                        <button
-                          key={nextStatus}
-                          type="button"
-                          className="row-link"
-                          onClick={() => change(visit.id, nextStatus)}
-                        >
-                          {t(ACTION_KEY[nextStatus] ?? (`status.${nextStatus}` as DictKey))}
-                        </button>
-                      ))}
+                      {slots.map((nextStatus, index) =>
+                        nextStatus ? (
+                          <button
+                            key={nextStatus}
+                            type="button"
+                            className="row-link sm:order-1 sm:w-[72px] sm:justify-center lg:w-[80px]"
+                            onClick={() => change(visit.id, nextStatus)}
+                          >
+                            {t(ACTION_KEY[nextStatus] ?? (`status.${nextStatus}` as DictKey))}
+                          </button>
+                        ) : (
+                          <span
+                            key={`slot-${index}`}
+                            aria-hidden="true"
+                            className="hidden sm:order-1 sm:block sm:w-[72px] lg:w-[80px]"
+                          />
+                        ),
+                      )}
 
                       <a
-                        className="row-link"
+                        className="row-link sm:order-2 sm:w-[74px] sm:justify-center lg:w-[80px]"
                         href={`https://wa.me/${visit.phone.replace("+", "")}`}
                         target="_blank"
                         rel="noreferrer"
