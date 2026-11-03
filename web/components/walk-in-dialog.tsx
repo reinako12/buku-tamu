@@ -60,7 +60,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-name" className="field-label">
-              Nama lengkap
+              {t("walkin.name")}
             </label>
             <input id="wi-name" name="name" className="field" required />
             {state.fieldErrors.name ? (
@@ -70,7 +70,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-phone" className="field-label">
-              Nomor HP
+              {t("walkin.phone")}
             </label>
             <input
               id="wi-phone"
@@ -87,7 +87,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-cat" className="field-label">
-              Kategori instansi
+              {t("walkin.institutionCat")}
             </label>
             <select id="wi-cat" name="institutionCat" className="field" required>
               <option value="">{t("field.choose")}</option>
@@ -106,7 +106,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-inst" className="field-label">
-              Nama instansi
+              {t("walkin.institution")}
             </label>
             <input id="wi-inst" name="institution" className="field" required />
             {state.fieldErrors.institution ? (
@@ -118,7 +118,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-purpose" className="field-label">
-              Tujuan
+              {t("walkin.purpose")}
             </label>
             <select id="wi-purpose" name="purpose" className="field" required>
               <option value="">{t("field.choose")}</option>
@@ -143,7 +143,7 @@ export function WalkInDialog() {
 
           <div>
             <label htmlFor="wi-detail" className="field-label">
-              Keterangan (opsional)
+              {t("walkin.detail")}
             </label>
             <textarea
               id="wi-detail"
