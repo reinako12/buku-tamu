@@ -1,7 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { useFormStatus } from "react-dom";
+import {
+  useActionState,
+  useEffect,
+  useState,
+  useTransition,
+  type FormEvent,
+} from "react";
 import { addWalkIn, type WalkInState } from "@/lib/actions/staff";
 import { GenderChoice } from "@/components/gender-choice";
 import { INSTITUTION_CATEGORIES, PURPOSES } from "@/lib/schemas/visit";
@@ -10,8 +15,7 @@ import type { DictKey } from "@/lib/i18n/dict";
 
 const initialState: WalkInState = { ok: false, error: null, fieldErrors: {} };
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({ pending }: { pending: boolean }) {
   const t = useT();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
@@ -28,6 +32,20 @@ export function WalkInDialog() {
   const t = useT();
   const [open, setOpen] = useState(false);
   const [state, formAction] = useActionState(addWalkIn, initialState);
+  const [pending, startSubmit] = useTransition();
+
+  /**
+   * Sama seperti form tamu: jangan pakai atribut `action` supaya React tidak
+   * mengosongkan isian saat ada field yang ditolak validasi. Petugas tidak
+   * perlu mengetik ulang seluruh data hanya karena satu kolom salah.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    startSubmit(() => {
+      formAction(data);
+    });
+  }
 
   useEffect(() => {
     if (state.ok) setOpen(false);
@@ -51,7 +69,7 @@ export function WalkInDialog() {
           </button>
         </div>
 
-        <form action={formAction} className="space-y-sm">
+        <form onSubmit={handleSubmit} className="space-y-sm">
           {state.error ? (
             <p role="alert" className="text-body-sm text-danger">
               {t(state.error as DictKey)}
@@ -153,7 +171,7 @@ export function WalkInDialog() {
             />
           </div>
 
-          <SubmitButton />
+          <SubmitButton pending={pending} />
         </form>
       </div>
     </div>

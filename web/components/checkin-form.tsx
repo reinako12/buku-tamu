@@ -1,8 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition, type ReactNode } from "react";
+import {
+  useActionState,
+  useEffect,
+  useState,
+  useTransition,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
-import { useFormStatus } from "react-dom";
 import { createVisit, lookupRepeatVisitor } from "@/lib/actions/visit";
 import { GenderChoice } from "@/components/gender-choice";
 import type { FormState } from "@/lib/actions/visit";
@@ -58,8 +64,7 @@ function Row({
   );
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({ pending }: { pending: boolean }) {
   const t = useT();
   return (
     <button type="submit" className="btn-primary w-full md:w-auto" disabled={pending}>
@@ -72,6 +77,7 @@ export function CheckinForm() {
   const router = useRouter();
   const [state, formAction] = useActionState(createVisit, initialState);
   const [pendingLookup, startLookup] = useTransition();
+  const [pending, startSubmit] = useTransition();
   const t = useT();
   /** Pesan validasi datang sebagai kode dari server, diterjemahkan di sini. */
   const tr = (code?: string) => (code ? t(code as DictKey) : undefined);
@@ -87,25 +93,63 @@ export function CheckinForm() {
   );
   const [phone, setPhone] = useState(state.values.phone ?? "");
   const [gender, setGender] = useState(state.values.gender ?? "");
+  const [purpose, setPurpose] = useState(state.values.purpose ?? "");
+  const [detail, setDetail] = useState(state.values.detail ?? "");
   const [filledFromPrevious, setFilledFromPrevious] = useState(false);
+
+  /**
+   * Submit lewat handler sendiri, bukan atribut `action`.
+   *
+   * React 19 mengosongkan form secara otomatis setelah sebuah form action
+   * selesai. Field teks pulih karena nilainya ditulis ulang, tetapi `select`
+   * dan `radio` tidak: state React masih menyimpan pilihan lama sementara DOM
+   * sudah dikosongkan, jadi tamu melihat kategori instansi dan jenis kelamin
+   * kosong lagi dan harus mengisi ulang. Dengan preventDefault, tidak ada reset
+   * otomatis — semua nilai tetap di state sampai submit berhasil.
+   */
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    startSubmit(() => {
+      formAction(data);
+    });
+  }
 
   function handlePhoneBlur() {
     if (phone.replace(/\D/g, "").length < 9) return;
     startLookup(async () => {
       const found = await lookupRepeatVisitor(phone);
       if (!found) return;
-      setName(found.name);
-      setInstitution(found.institution);
-      setInstitutionCat(found.institutionCat);
-      if (found.gender) setGender(found.gender);
-      setFilledFromPrevious(true);
+      /**
+       * Isi otomatis hanya untuk kolom yang masih kosong. Nomor kantor sering
+       * dipakai bergantian, jadi data kunjungan sebelumnya tidak boleh menimpa
+       * nama atau instansi yang sudah diketik tamu sendiri.
+       */
+      let filled = false;
+      if (!name.trim()) {
+        setName(found.name);
+        filled = true;
+      }
+      if (!institution.trim()) {
+        setInstitution(found.institution);
+        filled = true;
+      }
+      if (!institutionCat) {
+        setInstitutionCat(found.institutionCat);
+        filled = true;
+      }
+      if (!gender && found.gender) {
+        setGender(found.gender);
+        filled = true;
+      }
+      if (filled) setFilledFromPrevious(true);
     });
   }
 
   const errors = state.errors ?? {};
 
   return (
-    <form action={formAction} className="space-y-xl" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-xl" noValidate>
       {state.message ? (
         <div
           role="alert"
@@ -255,7 +299,8 @@ export function CheckinForm() {
             id="purpose"
             name="purpose"
             className="field"
-            defaultValue={state.values.purpose ?? ""}
+            value={purpose}
+            onChange={(e) => setPurpose(e.target.value)}
             aria-invalid={Boolean(errors.purpose)}
             aria-describedby={errors.purpose ? "err-purpose" : undefined}
           >
@@ -281,7 +326,8 @@ export function CheckinForm() {
             className="field min-h-[104px] resize-y"
             rows={3}
             maxLength={500}
-            defaultValue={state.values.detail ?? ""}
+            value={detail}
+            onChange={(e) => setDetail(e.target.value)}
             placeholder={t("field.detailPlaceholder")}
             aria-invalid={Boolean(errors.detail)}
             aria-describedby={errors.detail ? "err-detail" : undefined}
@@ -299,7 +345,7 @@ export function CheckinForm() {
         <p className="max-w-[46ch] text-caption text-ink-muted">
           {t("home.privacy")}
         </p>
-        <SubmitButton />
+        <SubmitButton pending={pending} />
       </div>
     </form>
   );

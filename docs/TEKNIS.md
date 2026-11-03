@@ -147,6 +147,19 @@ Rate limiter bersifat **in-memory per proses**. Satu instance = aman. Kalau
 aplikasi dijalankan lebih dari satu instance, ganti ke tabel Postgres (jangan
 tambah Redis — cukup satu layanan).
 
+**Isian tidak boleh hilang saat validasi gagal.** Form tamu dan dialog tamu
+manual mengirim data lewat handler sendiri dengan `preventDefault`, bukan lewat
+atribut `action` pada form. Alasannya: React 19 mengosongkan form secara otomatis
+setelah sebuah form action selesai. Field teks pulih karena nilainya ditulis
+ulang, tetapi `select` dan `radio` tidak — state React masih menyimpan pilihan
+lama sementara DOM sudah kosong, sehingga tamu melihat kategori instansi dan
+jenis kelamin kembali kosong dan harus mengisi ulang. Semua nilai disimpan di
+state dan hanya berubah kalau tamu mengubahnya. Jangan mengembalikan pola
+`action={formAction}` di kedua form itu tanpa menghitung ulang akibat ini.
+
+Isi-otomatis tamu berulang (berdasarkan nomor WhatsApp) hanya mengisi kolom yang
+masih kosong, jadi tidak menimpa nama atau instansi yang sudah diketik.
+
 ### 6.2 Dashboard realtime
 
 `components/visit-board.tsx` berlangganan
