@@ -26,14 +26,6 @@ export type BoardVisit = {
   source: string;
 };
 
-const STATUS_ORDER: Record<VisitStatus, number> = {
-  menunggu: 0,
-  dipanggil: 1,
-  dilayani: 2,
-  selesai: 3,
-  batal: 4,
-};
-
 const STATUS_STYLE: Record<VisitStatus, string> = {
   menunggu: "border-warning text-warning-dark",
   dipanggil: "border-primary text-primary",
@@ -166,12 +158,10 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
     return () => clearTimeout(timer);
   }, [newId]);
 
+  // Urut sesuai nomor antrian (urutan kedatangan), bukan dikelompokkan per status:
+  // petugas membaca layar dari atas ke bawah seperti buku tamu kertas.
   const sorted = useMemo(
-    () =>
-      [...visits].sort(
-        (a, b) =>
-          STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || a.queueSeq - b.queueSeq,
-      ),
+    () => [...visits].sort((a, b) => a.queueSeq - b.queueSeq),
     [visits],
   );
 
