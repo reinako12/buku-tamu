@@ -2,6 +2,12 @@
 
 **Estimasi:** 1–2 hari · **Gate:** user coba tutup/buka dan toggle EN
 
+## Status
+
+- **3A selesai** (3 Nov 2026): 3.1–3.6 (switch, halaman pengaturan, halaman tutup,
+  banner dashboard, auto-reopen dua lapis). Tag: `fase-3a`.
+- **3B belum**: 3.7–3.11 (i18n ID/EN, toggle bahasa, format tanggal).
+
 ## Tujuan
 
 Resepsionis bisa menutup buku tamu saat hari libur, dan tamu bisa memakai UI

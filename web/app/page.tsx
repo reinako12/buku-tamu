@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { ensureAutoReopen } from "@/lib/settings";
 import { serviceHoursLabel, serviceState } from "@/lib/service-hours";
 import { CheckinForm } from "@/components/checkin-form";
 import { ServiceBanner } from "@/components/service-banner";
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const setting = await prisma.setting.findUnique({ where: { id: 1 } });
+  const setting = await ensureAutoReopen();
   const state = serviceState(new Date());
 
   if (setting && !setting.isOpen) {

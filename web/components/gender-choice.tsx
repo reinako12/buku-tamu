@@ -5,22 +5,21 @@ import type { LucideIcon } from "lucide-react";
 import { GENDERS, GENDER_LABEL } from "@/lib/schemas/visit";
 
 /**
- * Warna per jenis kelamin: laki-laki biru, perempuan pink. Ikon dari Lucide
- * (Mars / Venus) supaya tamu tidak perlu membaca label dua kali.
+ * Warna hanya muncul setelah dipilih: laki-laki biru, perempuan pink.
+ * Saat diam atau di-hover, pil tetap abu-abu netral — warna berarti status,
+ * bukan hiasan.
  */
 const STYLE: Record<
   (typeof GENDERS)[number],
-  { icon: LucideIcon; hover: string; checked: string }
+  { icon: LucideIcon; checked: string }
 > = {
   lk: {
     icon: Mars,
-    hover: "hover:border-[#1d4ed8] hover:bg-[#eff6ff] hover:text-[#1d4ed8]",
     checked:
       "peer-checked:border-[#1d4ed8] peer-checked:bg-[#eff6ff] peer-checked:text-[#1d4ed8]",
   },
   pr: {
     icon: Venus,
-    hover: "hover:border-[#db2777] hover:bg-[#fdf2f8] hover:text-[#db2777]",
     checked:
       "peer-checked:border-[#db2777] peer-checked:bg-[#fdf2f8] peer-checked:text-[#db2777]",
   },
@@ -45,7 +44,7 @@ export function GenderChoice({
   return (
     <div className="flex flex-wrap gap-sm">
       {GENDERS.map((gender) => {
-        const { icon: Icon, hover, checked } = STYLE[gender];
+        const { icon: Icon, checked } = STYLE[gender];
         return (
           <label key={gender} className="cursor-pointer">
             <input
@@ -64,7 +63,7 @@ export function GenderChoice({
                           border-border-strong px-lg text-body-sm text-ink-muted
                           transition-colors duration-150
                           peer-focus-visible:ring-2 peer-focus-visible:ring-primary/20
-                          peer-focus-visible:ring-offset-2 ${hover} ${checked}`}
+                          peer-focus-visible:ring-offset-2 ${checked}`}
             >
               <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
               {GENDER_LABEL[gender]}

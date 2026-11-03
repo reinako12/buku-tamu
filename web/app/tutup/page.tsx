@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { ensureAutoReopen } from "@/lib/settings";
 import { serviceHoursLabel } from "@/lib/service-hours";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ClosedPage() {
-  const setting = await prisma.setting.findUnique({ where: { id: 1 } });
+  const setting = await ensureAutoReopen();
+
+  // Sudah dibuka (mungkin oleh auto-reopen) — tidak ada gunanya menahan tamu di sini.
+  if (setting?.isOpen !== false) redirect("/");
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-form flex-col justify-center px-md py-xl">

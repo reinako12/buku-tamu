@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -6,6 +7,8 @@ import { todayInJakarta } from "@/lib/visit-status";
 import { signOut } from "@/lib/actions/auth";
 import { VisitBoard, type BoardVisit } from "@/components/visit-board";
 import { WalkInDialog } from "@/components/walk-in-dialog";
+import { ClosedBanner } from "@/components/closed-banner";
+import { ensureAutoReopen } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +28,7 @@ export default async function DashboardPage() {
   const profile = await prisma.profile.findUnique({ where: { id: user.id } });
   if (!profile) redirect("/masuk");
 
+  const setting = await ensureAutoReopen();
   const today = todayInJakarta();
   const rows = await prisma.visit.findMany({
     where: { queueDate: today },
@@ -64,6 +68,9 @@ export default async function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-xs">
+          <Link href="/pengaturan" className="btn-quiet">
+            Pengaturan
+          </Link>
           <WalkInDialog />
           <form action={signOut}>
             <button type="submit" className="btn-quiet">
@@ -80,6 +87,24 @@ export default async function DashboardPage() {
       <p className="mb-md text-caption text-ink-muted">
         Petugas: {profile.fullName}
       </p>
+
+      {setting && !setting.isOpen ? (
+        <ClosedBanner
+          reason={setting.closedReason}
+          reopenLabel={
+            setting.reopenAt
+              ? new Intl.DateTimeFormat("id-ID", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Asia/Jakarta",
+                }).format(setting.reopenAt)
+              : null
+          }
+        />
+      ) : null}
 
       <VisitBoard initialVisits={visits} />
     </main>
