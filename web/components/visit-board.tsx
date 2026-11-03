@@ -24,6 +24,7 @@ export type BoardVisit = {
 };
 
 const FINAL: VisitStatus[] = ["selesai", "batal"];
+const PAGE_SIZE = 5;
 
 const STATUS_STYLE: Record<VisitStatus, string> = {
   menunggu: "border-accent-orange text-warning-dark",
@@ -74,6 +75,9 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
   const [live, setLive] = useState(false);
   const [newId, setNewId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [page, setPage] = useState(1);
+  const [donePage, setDonePage] = useState(1);
+  const [jumpToLast, setJumpToLast] = useState(false);
   const [, startTransition] = useTransition();
   const seenIds = useRef(new Set(initialVisits.map((v) => v.id)));
 
@@ -111,6 +115,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
               return [...prev, incoming];
             });
             setNewId(incoming.id);
+            setJumpToLast(true);
           }
 
           if (event.eventType === "UPDATE") {
@@ -155,6 +160,27 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
 
   const queued = current ? active.filter((v) => v.id !== current.id) : active;
   const next = queued.find((v) => v.status === "menunggu") ?? null;
+
+  // Daftar dipecah 5 baris per halaman supaya layar tidak jadi gulungan panjang.
+  const activePages = Math.max(1, Math.ceil(queued.length / PAGE_SIZE));
+  const activeRows = queued.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const donePages = Math.max(1, Math.ceil(finished.length / PAGE_SIZE));
+  const doneRows = finished.slice((donePage - 1) * PAGE_SIZE, donePage * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > activePages) setPage(activePages);
+  }, [page, activePages]);
+
+  useEffect(() => {
+    if (donePage > donePages) setDonePage(donePages);
+  }, [donePage, donePages]);
+
+  // Tamu baru masuk: buka halaman tempat barisnya berada.
+  useEffect(() => {
+    if (!jumpToLast) return;
+    setPage(activePages);
+    setJumpToLast(false);
+  }, [jumpToLast, activePages]);
 
   const counts = useMemo(() => {
     const base: Record<string, number> = {
@@ -335,7 +361,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
           </div>
 
           <ul className="ledger">
-            {queued.map((visit) => {
+            {activeRows.map((visit) => {
               const actions = ALLOWED_TRANSITIONS[visit.status];
               const primary = actions.find((a) => a !== "batal" && a !== "menunggu");
               const secondary = actions.filter((a) => a !== primary);
@@ -420,6 +446,13 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
               );
             })}
           </ul>
+
+          <Pager
+            page={page}
+            pages={activePages}
+            total={queued.length}
+            onPage={setPage}
+          />
         </>
       ) : null}
 
@@ -431,7 +464,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
           </summary>
 
           <ul className="ledger">
-            {finished.map((visit) => (
+            {doneRows.map((visit) => (
               <li key={visit.id} className="ledger-row px-2xs py-xs sm:px-sm">
                 <div className="flex flex-wrap items-baseline gap-x-sm gap-y-2xs text-ink-muted">
                   <p className="w-10 shrink-0 font-mono text-body-sm tabular-nums">
@@ -448,8 +481,73 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
               </li>
             ))}
           </ul>
+
+          <Pager
+            page={donePage}
+            pages={donePages}
+            total={finished.length}
+            onPage={setDonePage}
+          />
         </details>
       ) : null}
     </section>
+  );
+}
+
+/**
+ * Penomoran halaman untuk daftar tamu: 5 baris per halaman.
+ * Tidak muncul kalau daftarnya memang muat satu halaman.
+ */
+function Pager({
+  page,
+  pages,
+  total,
+  onPage,
+}: {
+  page: number;
+  pages: number;
+  total: number;
+  onPage: (page: number) => void;
+}) {
+  const t = useT();
+
+  if (total <= PAGE_SIZE) return null;
+
+  const from = (page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(page * PAGE_SIZE, total);
+
+  return (
+    <nav
+      aria-label={t("dash.pagerLabel")}
+      className="flex flex-wrap items-center justify-between gap-x-sm gap-y-2xs border-t border-border pt-xs"
+    >
+      <p className="text-caption text-ink-muted">
+        {t("dash.range", { from: String(from), to: String(to), total: String(total) })}
+      </p>
+
+      <div className="flex items-center gap-xs">
+        <button
+          type="button"
+          className="btn-quiet disabled:no-underline disabled:opacity-40"
+          disabled={page <= 1}
+          onClick={() => onPage(page - 1)}
+        >
+          {t("dash.prevPage")}
+        </button>
+
+        <span className="hidden font-mono text-caption tabular-nums text-ink-muted sm:inline">
+          {t("dash.pageOf", { page: String(page), total: String(pages) })}
+        </span>
+
+        <button
+          type="button"
+          className="btn-quiet disabled:no-underline disabled:opacity-40"
+          disabled={page >= pages}
+          onClick={() => onPage(page + 1)}
+        >
+          {t("dash.nextPage")}
+        </button>
+      </div>
+    </nav>
   );
 }

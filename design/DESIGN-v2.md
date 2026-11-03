@@ -101,3 +101,11 @@ Aturan yang dipegang:
 - **Tanpa gulir mendatar** di 390 / 768 / 1440 (`scrollWidth == clientWidth`).
 - Kontras teks diperiksa otomatis: 0 pelanggaran ambang WCAG AA, tidak ada
   sasaran sentuh di bawah 40px.
+
+**Penomoran halaman (3D).** Daftar tamu dipecah **5 baris per halaman**, di
+kedua bagian (antrian aktif dan selesai/batal). Penanda: "1–5 dari 12" di kiri,
+tombol Sebelumnya/Berikutnya di kanan — di layar sempit keterangan "Halaman 1
+dari 2" disembunyikan supaya tetap satu baris. Halaman tidak muncul kalau
+daftarnya muat satu halaman. Kalau tamu baru masuk lewat realtime, daftar
+otomatis membuka halaman tempat baris baru itu berada; kalau baris di halaman
+sekarang habis (mis. semua diselesaikan), halaman mundur sendiri.

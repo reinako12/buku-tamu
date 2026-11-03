@@ -120,6 +120,11 @@ const id = {
   "dash.finishedQueue": "Selesai dan batal",
   "dash.waited": "menunggu {mins} mnt",
   "dash.justIn": "baru masuk",
+  "dash.range": "{from}–{to} dari {total}",
+  "dash.pageOf": "Halaman {page} dari {total}",
+  "dash.prevPage": "Sebelumnya",
+  "dash.nextPage": "Berikutnya",
+  "dash.pagerLabel": "Halaman daftar tamu",
 
   "walkin.title": "Catat tamu manual",
   "walkin.note": "Untuk tamu yang tidak mengisi form sendiri.",
@@ -334,6 +339,11 @@ const en: Dict = {
   "dash.finishedQueue": "Completed and cancelled",
   "dash.waited": "waiting {mins} min",
   "dash.justIn": "just arrived",
+  "dash.range": "{from}–{to} of {total}",
+  "dash.pageOf": "Page {page} of {total}",
+  "dash.prevPage": "Previous",
+  "dash.nextPage": "Next",
+  "dash.pagerLabel": "Visitor list pages",
 
   "walkin.title": "Record a walk-in visitor",
   "walkin.note": "For visitors who do not fill in the form themselves.",
