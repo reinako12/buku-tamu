@@ -18,6 +18,13 @@ export const INSTITUTION_LABEL: Record<(typeof INSTITUTION_CATEGORIES)[number], 
   lainnya: "Lainnya",
 };
 
+export const GENDERS = ["lk", "pr"] as const;
+
+export const GENDER_LABEL: Record<(typeof GENDERS)[number], string> = {
+  lk: "Laki-laki",
+  pr: "Perempuan",
+};
+
 export const PURPOSES = [
   "konsultasi",
   "data",
@@ -71,11 +78,7 @@ export const visitFormSchema = z.object({
     .transform(normalizePhone)
     .refine((value) => phoneRegex.test(value), "Nomor HP tidak valid. Contoh: 0812 3456 7890."),
   purpose: z.enum(PURPOSES, { message: "Pilih tujuan kunjungan." }),
-  personCount: z.coerce
-    .number()
-    .int("Jumlah orang harus angka bulat.")
-    .min(1, "Minimal 1 orang.")
-    .max(50, "Maksimal 50 orang."),
+  gender: z.enum(GENDERS, { message: "Pilih jenis kelamin." }),
   detail: z
     .string()
     .trim()

@@ -45,3 +45,11 @@ yang tegas, nomor antrian seperti angka pada tiket, bukan gradien dan bayangan.
 - Uji unit 28 lulus
 - Uji browser 390px: tanpa scroll horizontal, tidak ada target sentuh di bawah 40px
 - Alur submit → tiket → dashboard realtime diuji ulang setelah perubahan visual
+
+## Perubahan lanjutan (3 November 2026)
+
+- Kolom jadi lebih membulat: 8px (input, lembar, tombol, tiket), mengikuti referensi formulir DKP Jatim yang dipakai pemilik proyek sebagai acuan keterbacaan.
+- Label "Kontak WhatsApp" (sebelumnya "Nomor HP / WhatsApp"), tanda wajib tidak boleh jatuh ke baris sendiri (spasi tak-terputus).
+- Susunan label-di-kiri hanya aktif di 1024px ke atas; di bawahnya label di atas karena kolom label tidak cukup.
+- Tambah **jenis kelamin** (laki-laki / perempuan) sebagai pilihan tunggal bergaya pil, wajib diisi.
+- **Jumlah orang dihapus**: satu tamu satu orang. Kolom `person_count` tetap ada di database (default 1) demi kompatibilitas data lama, tapi tidak lagi ditanyakan.

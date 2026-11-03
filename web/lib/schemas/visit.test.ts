@@ -8,7 +8,7 @@ const valid = {
   institution: "Dinas Pendidikan",
   phone: "0812 3456 7890",
   purpose: "data",
-  personCount: "2",
+  gender: "pr",
   detail: "",
   website: "",
 };
@@ -25,7 +25,7 @@ test("payload valid lolos dan nomor HP dinormalkan", () => {
   const result = visitFormSchema.safeParse(valid);
   assert.equal(result.success, true);
   assert.equal(result.data?.phone, "+6281234567890");
-  assert.equal(result.data?.personCount, 2);
+  assert.equal(result.data?.gender, "pr");
   assert.equal(result.data?.detail, null);
 });
 
@@ -54,11 +54,10 @@ test("kategori instansi dan tujuan harus dari daftar", () => {
 });
 
 test("jumlah orang: batas 1 sampai 50, harus angka", () => {
-  assert.equal(visitFormSchema.safeParse({ ...valid, personCount: "0" }).success, false);
-  assert.equal(visitFormSchema.safeParse({ ...valid, personCount: "51" }).success, false);
-  assert.equal(visitFormSchema.safeParse({ ...valid, personCount: "abc" }).success, false);
-  assert.equal(visitFormSchema.safeParse({ ...valid, personCount: "1" }).success, true);
-  assert.equal(visitFormSchema.safeParse({ ...valid, personCount: "50" }).success, true);
+  assert.equal(visitFormSchema.safeParse({ ...valid, gender: "" }).success, false);
+  assert.equal(visitFormSchema.safeParse({ ...valid, gender: "x" }).success, false);
+  assert.equal(visitFormSchema.safeParse({ ...valid, gender: "lk" }).success, true);
+  assert.equal(visitFormSchema.safeParse({ ...valid, gender: "pr" }).success, true);
 });
 
 test("honeypot terisi = ditolak", () => {

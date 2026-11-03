@@ -108,8 +108,9 @@ export async function addWalkIn(
         ${data.phone}::text,
         ${data.purpose}::text,
         ${data.detail}::text,
-        ${data.personCount}::int,
-        ${"manual"}::visit_source
+        ${1}::int,
+        ${"manual"}::visit_source,
+        ${data.gender}::visit_gender
       )`;
   } catch (error) {
     console.error("addWalkIn gagal", error);

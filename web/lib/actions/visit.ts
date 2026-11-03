@@ -36,7 +36,7 @@ export async function createVisit(
     institutionCat: raw.institutionCat ?? "",
     phone: raw.phone ?? "",
     purpose: raw.purpose ?? "",
-    personCount: raw.personCount ?? "1",
+    gender: raw.gender ?? "",
     detail: raw.detail ?? "",
   };
 
@@ -86,8 +86,9 @@ export async function createVisit(
         ${data.phone}::text,
         ${data.purpose}::text,
         ${data.detail}::text,
-        ${data.personCount}::int,
-        ${"mandiri"}::visit_source
+        ${1}::int,
+        ${"mandiri"}::visit_source,
+        ${data.gender}::visit_gender
       )`;
     token = rows[0].token;
   } catch (error) {
@@ -115,6 +116,7 @@ export type RepeatVisitor = {
   name: string;
   institution: string;
   institutionCat: string;
+  gender: string | null;
 };
 
 /**
@@ -128,7 +130,7 @@ export async function lookupRepeatVisitor(phone: string): Promise<RepeatVisitor 
   const last = await prisma.visit.findFirst({
     where: { phone: normalized },
     orderBy: { checkInAt: "desc" },
-    select: { name: true, institution: true, institutionCat: true },
+    select: { name: true, institution: true, institutionCat: true, gender: true },
   });
 
   return last ?? null;

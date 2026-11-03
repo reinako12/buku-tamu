@@ -5,6 +5,8 @@ import { useFormStatus } from "react-dom";
 import { createVisit, lookupRepeatVisitor } from "@/lib/actions/visit";
 import type { FormState } from "@/lib/actions/visit";
 import {
+  GENDERS,
+  GENDER_LABEL,
   INSTITUTION_CATEGORIES,
   INSTITUTION_LABEL,
   PURPOSES,
@@ -78,9 +80,7 @@ export function CheckinForm() {
     state.values.institutionCat ?? "",
   );
   const [phone, setPhone] = useState(state.values.phone ?? "");
-  const [personCount, setPersonCount] = useState(
-    Number(state.values.personCount ?? 1),
-  );
+  const [gender, setGender] = useState(state.values.gender ?? "");
   const [filledFromPrevious, setFilledFromPrevious] = useState(false);
 
   function handlePhoneBlur() {
@@ -91,6 +91,7 @@ export function CheckinForm() {
       setName(found.name);
       setInstitution(found.institution);
       setInstitutionCat(found.institutionCat);
+      if (found.gender) setGender(found.gender);
       setFilledFromPrevious(true);
     });
   }
@@ -136,7 +137,7 @@ export function CheckinForm() {
 
         <Row
           htmlFor="phone"
-          label="Nomor HP / WhatsApp"
+          label="Kontak WhatsApp"
           required
           error={errors.phone}
           errorId="err-phone"
@@ -207,6 +208,47 @@ export function CheckinForm() {
             placeholder="Dinas Pendidikan, atau Pribadi"
           />
         </Row>
+
+        <div className="form-row">
+          <span className="form-label">
+            Jenis kelamin
+            <span className="text-danger" aria-hidden="true">
+              {"\u00A0*"}
+            </span>
+          </span>
+          <div className="form-control">
+            <div className="flex flex-wrap gap-sm">
+              {GENDERS.map((value) => (
+                <label key={value} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={value}
+                    checked={gender === value}
+                    onChange={() => setGender(value)}
+                    className="peer sr-only"
+                    aria-invalid={Boolean(errors.gender)}
+                    aria-describedby={errors.gender ? "err-gender" : undefined}
+                  />
+                  <span
+                    className="flex min-h-[48px] items-center rounded-lg border border-border-strong
+                               px-lg text-body-sm text-ink-muted transition
+                               peer-checked:border-primary peer-checked:bg-primary/[0.06]
+                               peer-checked:text-primary peer-focus-visible:ring-2
+                               peer-focus-visible:ring-primary/20 peer-focus-visible:ring-offset-2"
+                  >
+                    {GENDER_LABEL[value]}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {errors.gender ? (
+              <p id="err-gender" className="field-error">
+                {errors.gender}
+              </p>
+            ) : null}
+          </div>
+        </div>
       </section>
 
       <section className="space-y-lg">
@@ -238,54 +280,6 @@ export function CheckinForm() {
             ))}
           </select>
         </Row>
-
-        <div className="form-row">
-          <span className="form-label">
-            Jumlah orang
-            <span className="text-danger" aria-hidden="true">
-              {"\u00A0*"}
-            </span>
-          </span>
-          <div className="form-control">
-            <div className="flex items-center gap-xs">
-              <button
-                type="button"
-                className="btn-ghost w-12 px-0 font-mono text-heading-card"
-                onClick={() => setPersonCount((n) => Math.max(1, n - 1))}
-                aria-label="Kurangi jumlah orang"
-              >
-                −
-              </button>
-              <input
-                id="personCount"
-                name="personCount"
-                className="field w-20 text-center font-mono"
-                inputMode="numeric"
-                value={personCount}
-                onChange={(e) => {
-                  const next = Number(e.target.value.replace(/\D/g, ""));
-                  setPersonCount(Number.isNaN(next) ? 1 : next);
-                }}
-                aria-invalid={Boolean(errors.personCount)}
-                aria-describedby={errors.personCount ? "err-count" : undefined}
-              />
-              <button
-                type="button"
-                className="btn-ghost w-12 px-0 font-mono text-heading-card"
-                onClick={() => setPersonCount((n) => Math.min(50, n + 1))}
-                aria-label="Tambah jumlah orang"
-              >
-                +
-              </button>
-              <span className="text-body-sm text-ink-muted">termasuk Anda</span>
-            </div>
-            {errors.personCount ? (
-              <p id="err-count" className="field-error">
-                {errors.personCount}
-              </p>
-            ) : null}
-          </div>
-        </div>
 
         <Row
           htmlFor="detail"

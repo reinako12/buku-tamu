@@ -42,6 +42,14 @@ enum VisitSource {
   @@map("visit_source")
 }
 
+/// Jenis kelamin tamu. 'lk' = laki-laki, 'pr' = perempuan.
+enum Gender {
+  lk
+  pr
+
+  @@map("visit_gender")
+}
+
 model Profile {
   id        String    @id @db.Uuid
   fullName  String    @map("full_name")
@@ -68,6 +76,7 @@ model Visit {
   personCount    Int         @default(1) @map("person_count") @db.SmallInt
   status         VisitStatus @default(menunggu)
   source         VisitSource @default(mandiri)
+  gender         Gender?
   handledBy      String?     @map("handled_by") @db.Uuid
   internalNote   String?     @map("internal_note")
   checkInAt      DateTime    @default(now()) @map("check_in_at") @db.Timestamptz(6)

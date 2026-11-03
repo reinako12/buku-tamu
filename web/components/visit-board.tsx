@@ -19,7 +19,7 @@ export type BoardVisit = {
   institutionCat: string;
   purpose: string;
   detail: string | null;
-  personCount: number;
+  gender: string | null;
   status: VisitStatus;
   phone: string;
   checkInAt: string;
@@ -61,7 +61,7 @@ function fromRow(row: Record<string, unknown>): BoardVisit {
     institutionCat: String(row.institution_cat),
     purpose: String(row.purpose),
     detail: (row.detail as string | null) ?? null,
-    personCount: Number(row.person_count),
+    gender: (row.gender as string | null) ?? null,
     status: row.status as VisitStatus,
     phone: String(row.phone),
     checkInAt: String(row.check_in_at),
@@ -289,8 +289,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                       {visit.institution}
                       {", "}
                       {PURPOSE_LABEL[visit.purpose] ?? visit.purpose}
-                      {", "}
-                      {visit.personCount} orang
+                      {visit.gender ? `, ${visit.gender === "lk" ? "laki-laki" : "perempuan"}` : ""}
                       {visit.source === "manual" ? ", dicatat petugas" : ""}
                     </p>
 

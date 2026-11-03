@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     institutionCat: row.institutionCat,
     purpose: row.purpose,
     detail: row.detail,
-    personCount: row.personCount,
+    gender: row.gender,
     status: row.status,
     phone: row.phone,
     checkInAt: row.checkInAt.toISOString(),

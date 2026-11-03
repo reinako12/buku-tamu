@@ -97,12 +97,14 @@ export default async function TicketPage({
             <dt className="text-caption text-ink-muted">Instansi</dt>
             <dd className="text-right text-body-sm text-ink">{visit.institution}</dd>
           </div>
-          <div className="flex items-baseline justify-between gap-sm">
-            <dt className="text-caption text-ink-muted">Jumlah orang</dt>
-            <dd className="text-right font-mono text-body-sm text-ink">
-              {visit.personCount}
-            </dd>
-          </div>
+          {visit.gender ? (
+            <div className="flex items-baseline justify-between gap-sm">
+              <dt className="text-caption text-ink-muted">Jenis kelamin</dt>
+              <dd className="text-right text-body-sm text-ink">
+                {visit.gender === "lk" ? "Laki-laki" : "Perempuan"}
+              </dd>
+            </div>
+          ) : null}
           <div className="flex items-baseline justify-between gap-sm">
             <dt className="text-caption text-ink-muted">Waktu daftar</dt>
             <dd className="text-right text-body-sm text-ink">
