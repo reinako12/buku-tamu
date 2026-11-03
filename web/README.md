@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Buku Tamu BPS Tanah Datar — aplikasi
 
-## Getting Started
+Next.js 15 (App Router) + Prisma + Supabase. Panduan pemakaian, arsitektur, dan
+deploy ada di satu tingkat di atas: `../docs/`, `../design/`.
 
-First, run the development server:
+## Menjalankan
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install                     # postinstall menjalankan prisma generate
+cp .env.example .env            # isi DATABASE_URL, DIRECT_URL, kunci Supabase
+npx prisma migrate deploy       # terapkan migrasi (port 5432 / DIRECT_URL)
+npm run dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run dev` memakai turbopack. Untuk meniru server produksi: `npm run build &&
+npm start` (service `bukutamu` di server memakai cara ini di port 3100).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Perintah
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Perintah | Guna |
+|---|---|
+| `npm run dev` | server pengembangan |
+| `npm run build` / `npm start` | build produksi / jalankan hasil build |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | 39 unit test (`node:test` + tsx), tanpa database |
+| `npm run db:migrate` | `prisma migrate deploy` |
+| `npm run db:generate` | `prisma generate` |
+| `npm run db:studio` | Prisma Studio |
 
-## Learn More
+Urutan sebelum rilis: `typecheck` → `test` → `build` → restart service. Build
+wajib sebelum restart karena `next start` menyajikan `.next/`, bukan source.
 
-To learn more about Next.js, take a look at the following resources:
+## Peta kode
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+  page.tsx              form tamu (atau banner tutup)
+  t/[token]/page.tsx    tiket kunjungan
+  masuk/page.tsx        login petugas
+  dashboard/page.tsx    dashboard (memakai components/visit-board.tsx)
+  pengaturan/page.tsx   sakelar buka/tutup + jadwal
+  api/keluar/route.ts   logout
+  actions/              server action per domain (visit, staff, settings, auth, locale)
+components/             form, papan antrian, dialog tamu manual, pilihan gender, banner
+lib/                    prisma, auth, status, zod, rate limit, i18n, supabase
+prisma/                 schema + migrations
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Aturan singkat yang perlu dipegang saat mengubah kode:
 
-## Deploy on Vercel
+- Data bisnis lewat Prisma; Supabase JS hanya untuk Auth dan Realtime.
+- **Prisma tidak terkena RLS** — otorisasi wajib di server action
+  (`requireStaff()` atau validasi token).
+- Nomor antrian hanya dibuat oleh fungsi database `create_visit()`, jangan
+  dihitung di aplikasi.
+- Semua teks yang dilihat pengguna masuk `lib/i18n/dict.ts` (ID dan EN).
+- Tema Tailwind 3.5; jangan menaikkan ke v4 tanpa mengerjakan ulang token.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+DATABASE_URL                # port 6543 (pgbouncer), runtime
+DIRECT_URL                  # port 5432, migrasi
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+RATE_LIMIT_SALT
+```
+
+Jangan commit `.env`. Service role key setara password database.

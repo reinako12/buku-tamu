@@ -57,19 +57,63 @@ Di dalam database nomor disimpan lengkap sebagai `BT-20261103-001`, tetapi yang 
 
 ## 4. Mengenal dashboard
 
-Bagian atas dashboard:
+Dashboard disusun dari atas ke bawah, mengikuti urutan kerja meja resepsionis.
 
-- **Angka ringkasan** — jumlah tamu hari ini per status: Menunggu · Dipanggil · Dilayani · Selesai · Batal.
-- **Tersambung** (titik hijau) — sambungan langsung ke server aktif. Kalau berubah jadi **Menyambung ulang**, daftar tidak akan bertambah otomatis sampai tersambung lagi.
+**Papan meja (paling atas)**
+
+Kotak besar di atas adalah meja yang sedang dilayani — bukan grafik statistik.
+Yang tampil di situ:
+
+- **Nomor antrian besar** tamu yang sedang dilayani atau baru dipanggil, lengkap
+  dengan nama, asal, tujuan, dan satu tombol besar sesuai langkah berikutnya
+  (Layani / Selesaikan).
+- Kalau belum ada yang dilayani tetapi ada yang menunggu: tulisan **Berikutnya**
+  + nomor + sudah berapa lama menunggu + tombol **Panggil berikutnya**.
+- Kalau tidak ada tamu sama sekali: **Meja kosong**. Tidak ada yang perlu ditekan.
+
+Di bawah papan ada **garis hitung**: Menunggu · Dipanggil · Dilayani · Selesai ·
+Batal, dan di ujung kanan penanda sambungan.
+
+**Baris atas layar**
+
+- **Tersambung** (titik hijau) — sambungan langsung ke server aktif. Kalau berubah
+  jadi **Menyambung ulang**, daftar tidak akan bertambah otomatis sampai tersambung
+  lagi; aksi tetap bisa ditekan.
 - **Tamu manual** — mencatat tamu yang datang langsung.
 - **Pengaturan** — membuka atau menutup buku tamu.
 - **Keluar** — mengakhiri sesi petugas.
 
-Bagian daftar tamu:
+**Daftar tamu**
 
-- Urutannya **nomor antrian dari kecil ke besar**, sama seperti buku tamu kertas dibaca dari atas.
-- Tiap baris berisi: nomor · nama · label status · instansi, tujuan, jenis kelamin · jam masuk · keterangan (kalau diisi) · tombol aksi · tautan **WhatsApp**.
-- Tulisan **"dicatat petugas"** berarti entri itu dibuat lewat tombol Tamu manual, bukan diisi tamu sendiri.
+Ada dua bagian:
+
+1. **Antrian aktif** — tamu yang belum selesai (Menunggu, Dipanggil, Dilayani).
+   Urutannya nomor antrian dari kecil ke besar.
+2. **Selesai dan batal** — terlipat di bawah. Klik untuk membuka. Tamu yang sudah
+   beres tidak menenggelamkan antrian yang masih jalan.
+
+Tiap baris berisi: nomor · nama · label status · instansi, tujuan, jenis kelamin ·
+jam masuk · keterangan (kalau diisi) · tombol aksi · tautan **WhatsApp**.
+Tulisan **"dicatat petugas"** berarti entri itu dibuat lewat tombol Tamu manual.
+
+**Penomoran halaman**
+
+Daftar menampilkan **5 baris per halaman** supaya layar tidak penuh dan barisnya
+tetap besar. Kalau tamunya lebih dari lima:
+
+- Keterangan **"1–5 dari 12"** di kiri, tombol **Sebelumnya / Berikutnya** di kanan.
+- Kalau ada tamu baru masuk, dashboard otomatis membuka halaman tempat tamu itu
+  berada — petugas tidak perlu mencari.
+- Kalau halaman yang sedang dibuka jadi kosong (misalnya semua tamunya baru saja
+  diselesaikan), dashboard mundur sendiri ke halaman sebelumnya.
+
+**Tombol aksi selalu segaris**
+
+Tombol di tiap baris punya lebar yang sama walaupun tulisannya berbeda (Panggil,
+Layani, Kembalikan, Selesaikan). Tombol biru utama selalu berada di posisi paling
+kanan pada kolom yang sama, jadi mata tidak perlu mencari-cari setiap kali
+membaca baris baru.
+
 
 ![Dashboard petugas](../assets/panduan/03-dashboard.png)
 
@@ -118,7 +162,7 @@ Tombol abu-abu di sebelahnya adalah pilihan lain (Kembalikan, Batalkan, atau lom
 1. Masuk ke dashboard.
 2. Pastikan tertulis **Tersambung** (titik hijau), bukan Menyambung ulang.
 3. Buka **Pengaturan** → pastikan status **dibuka**. Kalau kantor belum buka, lihat bagian 9.
-4. Pastikan angka ringkasan masih 0 semua. Kalau ada sisa angka dari kemarin, hubungi pengelola.
+4. Pastikan papan meja bertuliskan **Meja kosong** dan semua angka di garis hitung masih 0. Kalau ada sisa angka dari kemarin, hubungi pengelola.
 
 **Setiap tamu datang**
 
