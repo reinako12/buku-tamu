@@ -3,9 +3,8 @@
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { addWalkIn, type WalkInState } from "@/lib/actions/staff";
+import { GenderChoice } from "@/components/gender-choice";
 import {
-  GENDERS,
-  GENDER_LABEL,
   INSTITUTION_CATEGORIES,
   INSTITUTION_LABEL,
   PURPOSES,
@@ -136,17 +135,8 @@ export function WalkInDialog() {
           </div>
 
           <div>
-            <label htmlFor="wi-gender" className="field-label">
-              Jenis kelamin
-            </label>
-            <select id="wi-gender" name="gender" className="field" required>
-              <option value="">Pilih</option>
-              {GENDERS.map((value) => (
-                <option key={value} value={value}>
-                  {GENDER_LABEL[value]}
-                </option>
-              ))}
-            </select>
+            <span className="field-label">Jenis kelamin</span>
+            <GenderChoice name="gender" invalid={Boolean(state.fieldErrors.gender)} />
             {state.fieldErrors.gender ? (
               <p className="field-error">{state.fieldErrors.gender}</p>
             ) : null}

@@ -3,10 +3,9 @@
 import { useActionState, useState, useTransition, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { createVisit, lookupRepeatVisitor } from "@/lib/actions/visit";
+import { GenderChoice } from "@/components/gender-choice";
 import type { FormState } from "@/lib/actions/visit";
 import {
-  GENDERS,
-  GENDER_LABEL,
   INSTITUTION_CATEGORIES,
   INSTITUTION_LABEL,
   PURPOSES,
@@ -217,31 +216,12 @@ export function CheckinForm() {
             </span>
           </span>
           <div className="form-control">
-            <div className="flex flex-wrap gap-sm">
-              {GENDERS.map((value) => (
-                <label key={value} className="cursor-pointer">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={value}
-                    checked={gender === value}
-                    onChange={() => setGender(value)}
-                    className="peer sr-only"
-                    aria-invalid={Boolean(errors.gender)}
-                    aria-describedby={errors.gender ? "err-gender" : undefined}
-                  />
-                  <span
-                    className="flex min-h-[48px] items-center rounded-lg border border-border-strong
-                               px-lg text-body-sm text-ink-muted transition
-                               peer-checked:border-primary peer-checked:bg-primary/[0.06]
-                               peer-checked:text-primary peer-focus-visible:ring-2
-                               peer-focus-visible:ring-primary/20 peer-focus-visible:ring-offset-2"
-                  >
-                    {GENDER_LABEL[value]}
-                  </span>
-                </label>
-              ))}
-            </div>
+            <GenderChoice
+              value={gender}
+              onChange={setGender}
+              invalid={Boolean(errors.gender)}
+              describedBy={errors.gender ? "err-gender" : undefined}
+            />
             {errors.gender ? (
               <p id="err-gender" className="field-error">
                 {errors.gender}
