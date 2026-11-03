@@ -1,9 +1,12 @@
 "use client";
 
-export function PrintButton({ label = "Cetak tiket" }: { label?: string }) {
+import { useT } from "@/lib/i18n/client";
+
+export function PrintButton() {
+  const t = useT();
   return (
     <button type="button" className="btn-ghost w-full" onClick={() => window.print()}>
-      {label}
+      {t("ticket.print")}
     </button>
   );
 }

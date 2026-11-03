@@ -1,22 +1,54 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { signIn, type LoginState } from "@/lib/actions/auth";
+import { useT } from "@/lib/i18n/client";
+import type { DictKey } from "@/lib/i18n/dict";
 
 const initialState: LoginState = { error: null };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useT();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Memeriksa" : "Masuk"}
+      {pending ? t("login.submitting") : t("login.submit")}
     </button>
   );
 }
 
 export function LoginForm({ next }: { next: string }) {
-  const [state, formAction] = useActionState(signIn, initialState);
+  const t = useT();
+  const router = useRouter();
+  const [state, formAction, pending] = useActionState(signIn, initialState);
+  const wasPending = useRef(false);
+
+  /**
+   * Action yang menulis cookie sesi tidak selalu mengembalikan nilai ke klien,
+   * jadi keberhasilan dideteksi dari selesainya proses: middleware akan
+   * melempar pengunjung yang sudah punya sesi dari /masuk ke dashboard.
+   */
+  useEffect(() => {
+    if (!(wasPending.current && !pending && !state.error)) {
+      wasPending.current = pending;
+      return;
+    }
+
+    // Coba lewat router dulu (cepat). Kalau ternyata middleware belum melihat
+    // cookie sesi dan melempar balik ke /masuk, ulangi dengan navigasi penuh:
+    // cookie sudah pasti tersimpan saat itu.
+    router.refresh();
+    const timer = window.setTimeout(() => {
+      if (window.location.pathname === "/masuk" && document.cookie.includes("-auth-token")) {
+        window.location.replace(next);
+      }
+    }, 700);
+
+    wasPending.current = pending;
+    return () => window.clearTimeout(timer);
+  }, [pending, state.error, next, router]);
 
   return (
     <form action={formAction} className="space-y-md">
@@ -27,13 +59,13 @@ export function LoginForm({ next }: { next: string }) {
           role="alert"
           className="border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
-          {state.error}
+          {state.error ? t(state.error as DictKey) : null}
         </div>
       ) : null}
 
       <div>
         <label htmlFor="email" className="field-label">
-          Email petugas
+          {t("login.email")}
         </label>
         <input
           id="email"
@@ -48,7 +80,7 @@ export function LoginForm({ next }: { next: string }) {
 
       <div>
         <label htmlFor="password" className="field-label">
-          Password
+          {t("login.password")}
         </label>
         <input
           id="password"

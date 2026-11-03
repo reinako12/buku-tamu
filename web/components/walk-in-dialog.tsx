@@ -4,20 +4,18 @@ import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { addWalkIn, type WalkInState } from "@/lib/actions/staff";
 import { GenderChoice } from "@/components/gender-choice";
-import {
-  INSTITUTION_CATEGORIES,
-  INSTITUTION_LABEL,
-  PURPOSES,
-  PURPOSE_LABEL,
-} from "@/lib/schemas/visit";
+import { INSTITUTION_CATEGORIES, PURPOSES } from "@/lib/schemas/visit";
+import { useT } from "@/lib/i18n/client";
+import type { DictKey } from "@/lib/i18n/dict";
 
 const initialState: WalkInState = { ok: false, error: null, fieldErrors: {} };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useT();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Menyimpan" : "Simpan tamu"}
+      {pending ? t("walkin.submitting") : t("walkin.submit")}
     </button>
   );
 }
@@ -27,6 +25,7 @@ function SubmitButton() {
  * Nomor antrian tetap dari fungsi yang sama, ditandai `source = manual`.
  */
 export function WalkInDialog() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [state, formAction] = useActionState(addWalkIn, initialState);
 
@@ -37,7 +36,7 @@ export function WalkInDialog() {
   if (!open) {
     return (
       <button type="button" className="btn-ghost" onClick={() => setOpen(true)}>
-        Tambah tamu manual
+        {t("dash.newWalkIn")}
       </button>
     );
   }
@@ -46,16 +45,16 @@ export function WalkInDialog() {
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 px-md py-lg">
       <div className="w-full max-w-form rounded-lg border border-border bg-surface p-md">
         <div className="mb-sm flex items-center justify-between">
-          <h2 className="text-heading-card text-ink">Tambah tamu manual</h2>
+          <h2 className="text-heading-card text-ink">{t("walkin.title")}</h2>
           <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
-            Tutup
+            {t("walkin.close")}
           </button>
         </div>
 
         <form action={formAction} className="space-y-sm">
           {state.error ? (
             <p role="alert" className="text-body-sm text-danger">
-              {state.error}
+              {t(state.error as DictKey)}
             </p>
           ) : null}
 
@@ -65,7 +64,7 @@ export function WalkInDialog() {
             </label>
             <input id="wi-name" name="name" className="field" required />
             {state.fieldErrors.name ? (
-              <p className="field-error">{state.fieldErrors.name}</p>
+              <p className="field-error">{t(state.fieldErrors.name as DictKey)}</p>
             ) : null}
           </div>
 
@@ -82,7 +81,7 @@ export function WalkInDialog() {
               required
             />
             {state.fieldErrors.phone ? (
-              <p className="field-error">{state.fieldErrors.phone}</p>
+              <p className="field-error">{t(state.fieldErrors.phone as DictKey)}</p>
             ) : null}
           </div>
 
@@ -91,16 +90,16 @@ export function WalkInDialog() {
               Kategori instansi
             </label>
             <select id="wi-cat" name="institutionCat" className="field" required>
-              <option value="">Pilih kategori…</option>
+              <option value="">{t("field.choose")}</option>
               {INSTITUTION_CATEGORIES.map((value) => (
                 <option key={value} value={value}>
-                  {INSTITUTION_LABEL[value]}
+                  {t(`cat.${value}` as DictKey)}
                 </option>
               ))}
             </select>
             {state.fieldErrors.institutionCat ? (
               <p className="field-error">
-                {state.fieldErrors.institutionCat}
+                {t(state.fieldErrors.institutionCat as DictKey)}
               </p>
             ) : null}
           </div>
@@ -112,7 +111,7 @@ export function WalkInDialog() {
             <input id="wi-inst" name="institution" className="field" required />
             {state.fieldErrors.institution ? (
               <p className="field-error">
-                {state.fieldErrors.institution}
+                {t(state.fieldErrors.institution as DictKey)}
               </p>
             ) : null}
           </div>
@@ -122,23 +121,23 @@ export function WalkInDialog() {
               Tujuan
             </label>
             <select id="wi-purpose" name="purpose" className="field" required>
-              <option value="">Pilih tujuan…</option>
+              <option value="">{t("field.choose")}</option>
               {PURPOSES.map((value) => (
                 <option key={value} value={value}>
-                  {PURPOSE_LABEL[value]}
+                  {t(`purpose.${value}` as DictKey)}
                 </option>
               ))}
             </select>
             {state.fieldErrors.purpose ? (
-              <p className="field-error">{state.fieldErrors.purpose}</p>
+              <p className="field-error">{t(state.fieldErrors.purpose as DictKey)}</p>
             ) : null}
           </div>
 
           <div>
-            <span className="field-label">Jenis kelamin</span>
+            <span className="field-label">{t("walkin.gender")}</span>
             <GenderChoice name="gender" invalid={Boolean(state.fieldErrors.gender)} />
             {state.fieldErrors.gender ? (
-              <p className="field-error">{state.fieldErrors.gender}</p>
+              <p className="field-error">{t(state.fieldErrors.gender as DictKey)}</p>
             ) : null}
           </div>
 

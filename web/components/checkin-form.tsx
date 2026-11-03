@@ -1,16 +1,14 @@
 "use client";
 
-import { useActionState, useState, useTransition, type ReactNode } from "react";
+import { useActionState, useEffect, useState, useTransition, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { createVisit, lookupRepeatVisitor } from "@/lib/actions/visit";
 import { GenderChoice } from "@/components/gender-choice";
 import type { FormState } from "@/lib/actions/visit";
-import {
-  INSTITUTION_CATEGORIES,
-  INSTITUTION_LABEL,
-  PURPOSES,
-  PURPOSE_LABEL,
-} from "@/lib/schemas/visit";
+import { INSTITUTION_CATEGORIES, PURPOSES } from "@/lib/schemas/visit";
+import { useT } from "@/lib/i18n/client";
+import type { DictKey } from "@/lib/i18n/dict";
 
 /**
  * State awal form. Sengaja didefinisikan di sini, bukan diimpor dari modul
@@ -62,16 +60,25 @@ function Row({
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useT();
   return (
     <button type="submit" className="btn-primary w-full md:w-auto" disabled={pending}>
-      {pending ? "Mengirim data" : "Kirim dan ambil nomor antrian"}
+      {pending ? t("home.submitting") : t("home.submit")}
     </button>
   );
 }
 
 export function CheckinForm() {
+  const router = useRouter();
   const [state, formAction] = useActionState(createVisit, initialState);
   const [pendingLookup, startLookup] = useTransition();
+  const t = useT();
+  /** Pesan validasi datang sebagai kode dari server, diterjemahkan di sini. */
+  const tr = (code?: string) => (code ? t(code as DictKey) : undefined);
+
+  useEffect(() => {
+    if (state.ok && state.token) router.push(`/t/${state.token}`);
+  }, [state.ok, state.token, router]);
 
   const [name, setName] = useState(state.values.name ?? "");
   const [institution, setInstitution] = useState(state.values.institution ?? "");
@@ -104,21 +111,21 @@ export function CheckinForm() {
           role="alert"
           className="border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
-          {state.message}
+          {tr(state.message)}
         </div>
       ) : null}
 
       <section className="space-y-lg">
         <div className="section-head">
           <span className="section-num">1</span>
-          <h2 className="text-heading-card text-ink">Identitas tamu</h2>
+          <h2 className="text-heading-card text-ink">{t("home.sectionIdentity")}</h2>
         </div>
 
         <Row
           htmlFor="name"
-          label="Nama lengkap"
+          label={t("field.name")}
           required
-          error={errors.name}
+          error={tr(errors.name)}
           errorId="err-name"
         >
           <input
@@ -130,22 +137,22 @@ export function CheckinForm() {
             onChange={(e) => setName(e.target.value)}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "err-name" : undefined}
-            placeholder="Nama sesuai identitas"
+            placeholder={t("field.namePlaceholder")}
           />
         </Row>
 
         <Row
           htmlFor="phone"
-          label="Kontak WhatsApp"
+          label={t("field.phone")}
           required
-          error={errors.phone}
+          error={tr(errors.phone)}
           errorId="err-phone"
           hint={
             filledFromPrevious
               ? pendingLookup
-                ? "Mencari kunjungan sebelumnya."
-                : "Nama dan instansi diisi dari kunjungan sebelumnya. Ubah kalau sudah berbeda."
-              : "Dipakai untuk menghubungi Anda dan mengisi data kunjungan berikutnya."
+                ? t("common.loading")
+                : t("home.autofill")
+              : t("field.phoneHint")
           }
         >
           <input
@@ -165,9 +172,9 @@ export function CheckinForm() {
 
         <Row
           htmlFor="institutionCat"
-          label="Kategori instansi"
+          label={t("field.institutionCat")}
           required
-          error={errors.institutionCat}
+          error={tr(errors.institutionCat)}
           errorId="err-cat"
         >
           <select
@@ -179,10 +186,10 @@ export function CheckinForm() {
             aria-invalid={Boolean(errors.institutionCat)}
             aria-describedby={errors.institutionCat ? "err-cat" : undefined}
           >
-            <option value="">Pilih kategori</option>
+            <option value="">{t("field.choose")}</option>
             {INSTITUTION_CATEGORIES.map((value) => (
               <option key={value} value={value}>
-                {INSTITUTION_LABEL[value]}
+                {t(`cat.${value}` as DictKey)}
               </option>
             ))}
           </select>
@@ -190,11 +197,11 @@ export function CheckinForm() {
 
         <Row
           htmlFor="institution"
-          label="Nama instansi atau asal"
+          label={t("field.institution")}
           required
-          error={errors.institution}
+          error={tr(errors.institution)}
           errorId="err-inst"
-          hint={'Kalau datang sendiri, tulis "Pribadi".'}
+          hint={t("field.institutionHint")}
         >
           <input
             id="institution"
@@ -204,13 +211,13 @@ export function CheckinForm() {
             onChange={(e) => setInstitution(e.target.value)}
             aria-invalid={Boolean(errors.institution)}
             aria-describedby={errors.institution ? "err-inst" : undefined}
-            placeholder="Dinas Pendidikan, atau Pribadi"
+            placeholder={t("field.institutionPlaceholder")}
           />
         </Row>
 
         <div className="form-row">
           <span className="form-label">
-            Jenis kelamin
+            {t("field.gender")}
             <span className="text-danger" aria-hidden="true">
               {"\u00A0*"}
             </span>
@@ -224,7 +231,7 @@ export function CheckinForm() {
             />
             {errors.gender ? (
               <p id="err-gender" className="field-error">
-                {errors.gender}
+                {tr(errors.gender)}
               </p>
             ) : null}
           </div>
@@ -234,14 +241,14 @@ export function CheckinForm() {
       <section className="space-y-lg">
         <div className="section-head">
           <span className="section-num">2</span>
-          <h2 className="text-heading-card text-ink">Keperluan kunjungan</h2>
+          <h2 className="text-heading-card text-ink">{t("home.sectionVisit")}</h2>
         </div>
 
         <Row
           htmlFor="purpose"
-          label="Tujuan kunjungan"
+          label={t("field.purpose")}
           required
-          error={errors.purpose}
+          error={tr(errors.purpose)}
           errorId="err-purpose"
         >
           <select
@@ -252,10 +259,10 @@ export function CheckinForm() {
             aria-invalid={Boolean(errors.purpose)}
             aria-describedby={errors.purpose ? "err-purpose" : undefined}
           >
-            <option value="">Pilih tujuan</option>
+            <option value="">{t("field.choose")}</option>
             {PURPOSES.map((value) => (
               <option key={value} value={value}>
-                {PURPOSE_LABEL[value]}
+                {t(`purpose.${value}` as DictKey)}
               </option>
             ))}
           </select>
@@ -263,10 +270,10 @@ export function CheckinForm() {
 
         <Row
           htmlFor="detail"
-          label="Keterangan"
-          error={errors.detail}
+          label={t("field.detail")}
+          error={tr(errors.detail)}
           errorId="err-detail"
-          hint="Opsional. Tulis keperluan singkat, misal: konsultasi data stunting 2025."
+          hint={t("field.detailHint")}
         >
           <textarea
             id="detail"
@@ -275,7 +282,7 @@ export function CheckinForm() {
             rows={3}
             maxLength={500}
             defaultValue={state.values.detail ?? ""}
-            placeholder="Keperluan singkat"
+            placeholder={t("field.detailPlaceholder")}
             aria-invalid={Boolean(errors.detail)}
             aria-describedby={errors.detail ? "err-detail" : undefined}
           />
@@ -290,7 +297,7 @@ export function CheckinForm() {
 
       <div className="flex flex-col gap-sm border-t border-border pt-md md:flex-row md:items-center md:justify-between">
         <p className="max-w-[46ch] text-caption text-ink-muted">
-          Data hanya dipakai untuk keperluan kunjungan di BPS Kabupaten Tanah Datar.
+          {t("home.privacy")}
         </p>
         <SubmitButton />
       </div>

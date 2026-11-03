@@ -1,7 +1,6 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { fieldErrors, normalizePhone, visitFormSchema } from "@/lib/schemas/visit";
@@ -12,10 +11,9 @@ export type FormState = {
   message: string | null;
   values: Record<string, string>;
   ok?: boolean;
+  token?: string;
 };
 
-
-const COOKIE_NAME = "visit_token";
 
 async function clientIp(): Promise<string> {
   const h = await headers();
@@ -42,14 +40,14 @@ export async function createVisit(
 
   // Honeypot: field tersembunyi yang hanya diisi bot.
   if (raw.website) {
-    return { errors: {}, message: "Form tidak valid.", values: keepValues };
+    return { errors: {}, message: "err.formInvalid", values: keepValues };
   }
 
   const parsed = visitFormSchema.safeParse(raw);
   if (!parsed.success) {
     return {
       errors: fieldErrors(parsed.error),
-      message: "Periksa kembali isian yang ditandai.",
+      message: "err.formInvalid",
       values: keepValues,
     };
   }
@@ -69,7 +67,7 @@ export async function createVisit(
       errors: {},
       message:
         setting.closedReason ??
-        "Buku tamu sedang ditutup. Silakan datang pada jam layanan.",
+        "err.closed",
       values: keepValues,
     };
   }
@@ -95,21 +93,14 @@ export async function createVisit(
     console.error("create_visit gagal", error);
     return {
       errors: {},
-      message: "Gagal menyimpan data. Coba lagi sebentar lagi.",
+      message: "err.saveFailed",
       values: keepValues,
     };
   }
 
-  const jar = await cookies();
-  jar.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 24,
-  });
-
-  redirect(`/t/${token}`);
+  // Navigasi dilakukan di klien: redirect() setelah cookies().set() tidak
+  // selalu terbaca browser pada Next 15, tamu jadi tertahan di form.
+  return { errors: {}, message: null, values: {}, ok: true, token };
 }
 
 export type RepeatVisitor = {

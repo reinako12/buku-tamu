@@ -1,9 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export type LoginState = { error: string | null };
+export type LoginState = { error: string | null; ok?: boolean; next?: string };
 
 export async function signIn(
   _prev: LoginState,
@@ -14,7 +13,7 @@ export async function signIn(
   const next = String(formData.get("next") ?? "/dashboard");
 
   if (!email || !password) {
-    return { error: "Email dan password wajib diisi." };
+    return { error: "err.loginRequired" };
   }
 
   const supabase = await createSupabaseServerClient();
@@ -22,14 +21,12 @@ export async function signIn(
 
   if (error) {
     // Pesan sengaja umum: jangan bocorkan apakah email terdaftar.
-    return { error: "Email atau password salah." };
+    return { error: "err.loginFailed" };
   }
 
-  redirect(next.startsWith("/") ? next : "/dashboard");
+  // Sama seperti form tamu: redirect() setelah cookie sesi ditulis tidak
+  // selalu diteruskan ke browser, jadi navigasi dikerjakan di klien.
+  return { error: null, ok: true, next: next.startsWith("/") ? next : "/dashboard" };
 }
 
-export async function signOut() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  redirect("/masuk");
-}
+// Keluar ditangani route handler app/api/keluar (lihat catatan di sana).

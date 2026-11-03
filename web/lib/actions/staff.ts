@@ -30,15 +30,15 @@ export async function setVisitStatus(
   try {
     profile = await requireStaff();
   } catch {
-    return { ok: false, error: "Sesi berakhir. Silakan masuk lagi." };
+    return { ok: false, error: "err.sessionExpired" };
   }
 
   if (!isVisitStatus(nextStatus)) {
-    return { ok: false, error: "Status tidak dikenal." };
+    return { ok: false, error: "err.statusUnknown" };
   }
 
   const visit = await prisma.visit.findUnique({ where: { id: visitId } });
-  if (!visit) return { ok: false, error: "Data tamu tidak ditemukan." };
+  if (!visit) return { ok: false, error: "err.notFound" };
 
   if (!canTransition(visit.status as VisitStatus, nextStatus)) {
     return {
@@ -83,7 +83,7 @@ export async function addWalkIn(
   try {
     await requireStaff();
   } catch {
-    return { ok: false, error: "Sesi berakhir. Silakan masuk lagi.", fieldErrors: {} };
+    return { ok: false, error: "err.sessionExpired", fieldErrors: {} };
   }
 
   const parsed = visitFormSchema.safeParse(
@@ -92,7 +92,7 @@ export async function addWalkIn(
   if (!parsed.success) {
     return {
       ok: false,
-      error: "Periksa kembali isian yang ditandai.",
+      error: "err.formInvalid",
       fieldErrors: fieldErrors(parsed.error),
     };
   }
@@ -114,7 +114,7 @@ export async function addWalkIn(
       )`;
   } catch (error) {
     console.error("addWalkIn gagal", error);
-    return { ok: false, error: "Gagal menyimpan data tamu.", fieldErrors: {} };
+    return { ok: false, error: "err.saveFailed", fieldErrors: {} };
   }
 
   revalidatePath("/dashboard");

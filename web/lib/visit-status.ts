@@ -8,14 +8,6 @@ export const VISIT_STATUSES = [
 
 export type VisitStatus = (typeof VISIT_STATUSES)[number];
 
-export const STATUS_LABEL: Record<VisitStatus, string> = {
-  menunggu: "Menunggu",
-  dipanggil: "Dipanggil",
-  dilayani: "Dilayani",
-  selesai: "Selesai",
-  batal: "Batal",
-};
-
 /** Aksi yang boleh dilakukan petugas dari sebuah status. */
 export const ALLOWED_TRANSITIONS: Record<VisitStatus, VisitStatus[]> = {
   menunggu: ["dipanggil", "dilayani", "batal"],

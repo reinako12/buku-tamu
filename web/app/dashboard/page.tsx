@@ -4,16 +4,18 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { todayInJakarta } from "@/lib/visit-status";
-import { signOut } from "@/lib/actions/auth";
 import { VisitBoard, type BoardVisit } from "@/components/visit-board";
 import { WalkInDialog } from "@/components/walk-in-dialog";
 import { ClosedBanner } from "@/components/closed-banner";
 import { ensureAutoReopen } from "@/lib/settings";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { formatDate } from "@/lib/format";
+import { LocaleToggle } from "@/components/locale-toggle";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Dashboard petugas — Buku Tamu BPS",
+  title: "Dashboard petugas",
   robots: { index: false, follow: false },
 };
 
@@ -28,6 +30,8 @@ export default async function DashboardPage() {
   const profile = await prisma.profile.findUnique({ where: { id: user.id } });
   if (!profile) redirect("/masuk");
 
+  const t = await getT();
+  const locale = await getLocale();
   const setting = await ensureAutoReopen();
   const today = todayInJakarta();
   const rows = await prisma.visit.findMany({
@@ -51,59 +55,40 @@ export default async function DashboardPage() {
     source: row.source,
   }));
 
-  const todayLabel = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date());
+  const todayLabel = formatDate(new Date(), locale);
 
   return (
     <main className="mx-auto w-full max-w-container px-md py-lg">
       <header className="masthead mb-lg flex flex-wrap items-end justify-between gap-sm">
         <div>
-          <p className="masthead-org">Badan Pusat Statistik</p>
-          <p className="masthead-unit">Kabupaten Tanah Datar</p>
+          <p className="masthead-org">{t("org.name")}</p>
+          <p className="masthead-unit">{t("org.unit")}</p>
         </div>
 
         <div className="flex items-center gap-xs">
+          <LocaleToggle />
           <Link href="/pengaturan" className="btn-quiet">
-            Pengaturan
+            {t("common.settings")}
           </Link>
           <WalkInDialog />
-          <form action={signOut}>
+          <form action="/api/keluar" method="post">
             <button type="submit" className="btn-quiet">
-              Keluar
+              {t("common.logout")}
             </button>
           </form>
         </div>
       </header>
 
       <div className="mb-xs flex flex-wrap items-baseline justify-between gap-x-md">
-        <h1 className="text-heading-page text-ink">Buku tamu hari ini</h1>
+        <h1 className="text-heading-page text-ink">{t("dash.title")}</h1>
         <p className="text-body-sm text-ink-muted">{todayLabel}</p>
       </div>
       <p className="mb-md text-caption text-ink-muted">
-        Petugas: {profile.fullName}
+        {t("dash.staff")}: {profile.fullName}
       </p>
 
       {setting && !setting.isOpen ? (
-        <ClosedBanner
-          reason={setting.closedReason}
-          reopenLabel={
-            setting.reopenAt
-              ? new Intl.DateTimeFormat("id-ID", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: "Asia/Jakarta",
-                }).format(setting.reopenAt)
-              : null
-          }
-        />
+        <ClosedBanner reopenAt={setting.reopenAt} />
       ) : null}
 
       <VisitBoard initialVisits={visits} />

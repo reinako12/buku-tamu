@@ -5,19 +5,23 @@
  * Jumat       : 08.00–16.30, istirahat 12.00–13.30
  * Sabtu–Minggu: tutup
  *
- * Semua perhitungan memakai zona Asia/Jakarta, bukan zona server —
- * server bisa UTC dan hasilnya akan salah kalau memakai jam lokal.
+ * Semua perhitungan memakai zona Asia/Jakarta, bukan zona server — server
+ * bisa UTC dan hasilnya akan salah kalau memakai jam lokal.
+ *
+ * Fungsi ini sengaja tidak mengembalikan kalimat jadi: teks disusun di UI
+ * lewat kamus, supaya bisa ID maupun EN.
  */
 
 const TIMEZONE = "Asia/Jakarta";
+const JAKARTA_OFFSET_MINUTES = 7 * 60;
 
 export type ServiceStatus = "open" | "break" | "outside" | "weekend";
 
-export type ServiceState = {
-  status: ServiceStatus;
-  /** Pesan untuk tamu; null saat layanan normal. */
-  message: string | null;
-};
+export type ServiceState =
+  | { status: "open" }
+  | { status: "break"; until: Date }
+  | { status: "outside"; nextAt: Date }
+  | { status: "weekend"; nextAt: Date };
 
 type DaySchedule = {
   start: number;
@@ -38,14 +42,15 @@ const SCHEDULE: Record<number, DaySchedule> = {
   6: null, // Sabtu
 };
 
-const DAY_LABEL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+type JakartaParts = { day: number; minutes: number; year: number; month: number; date: number };
 
-type JakartaNow = { day: number; minutes: number };
-
-function jakartaNow(now: Date): JakartaNow {
+function jakartaParts(now: Date): JakartaParts {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TIMEZONE,
     weekday: "short",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -67,65 +72,63 @@ function jakartaNow(now: Date): JakartaNow {
   const hour = Number(get("hour")) % 24;
   const minute = Number(get("minute"));
 
-  return { day, minutes: hour * 60 + minute };
+  return {
+    day,
+    minutes: hour * 60 + minute,
+    year: Number(get("year")),
+    month: Number(get("month")),
+    date: Number(get("day")),
+  };
 }
 
-function timeLabel(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return `${String(h).padStart(2, "0")}.${String(m).padStart(2, "0")}`;
+/** Date (UTC) untuk jam dinding WIB tertentu. */
+function jakartaDate(
+  year: number,
+  month: number,
+  date: number,
+  minutes: number,
+): Date {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  const utc = Date.UTC(year, month - 1, date, hour, minute);
+  return new Date(utc - JAKARTA_OFFSET_MINUTES * 60 * 1000);
 }
 
-/** Nama hari kerja berikutnya (termasuk hari ini kalau belum lewat jam buka). */
-function nextOpenDayLabel(now: Date, includeToday: boolean): string {
-  const base = jakartaNow(now);
+/** Waktu buka berikutnya (08.00 WIB pada hari kerja terdekat). */
+function nextOpenAt(now: Date, includeToday: boolean): Date {
+  const base = jakartaParts(now);
   for (let offset = includeToday ? 0 : 1; offset <= 7; offset += 1) {
     const candidate = new Date(now.getTime() + offset * 86_400_000);
-    const { day } = jakartaNow(candidate);
-    if (SCHEDULE[day]) {
-      const label = DAY_LABEL[day];
-      return offset === 0 ? "hari ini" : offset === 1 ? `besok (${label})` : label;
+    const parts = jakartaParts(candidate);
+    if (SCHEDULE[parts.day]) {
+      return jakartaDate(parts.year, parts.month, parts.date, SCHEDULE[parts.day]!.start);
     }
   }
-  return "hari kerja berikutnya";
+  return jakartaDate(base.year, base.month, base.date, MINUTES(8));
 }
 
 export function serviceState(now: Date = new Date()): ServiceState {
-  const { day, minutes } = jakartaNow(now);
-  const schedule = SCHEDULE[day];
+  const parts = jakartaParts(now);
+  const schedule = SCHEDULE[parts.day];
 
   if (!schedule) {
-    return {
-      status: "weekend",
-      message: `Hari ini kantor tutup. Buku tamu dibuka lagi ${nextOpenDayLabel(now, false)} pukul 08.00.`,
-    };
+    return { status: "weekend", nextAt: nextOpenAt(now, false) };
   }
 
-  if (minutes < schedule.start) {
-    return {
-      status: "outside",
-      message: `Layanan belum dibuka. Buku tamu dibuka pukul ${timeLabel(schedule.start)} hari ini.`,
-    };
+  if (parts.minutes < schedule.start) {
+    return { status: "outside", nextAt: nextOpenAt(now, true) };
   }
 
-  if (minutes >= schedule.breakStart && minutes < schedule.breakEnd) {
+  if (parts.minutes >= schedule.breakStart && parts.minutes < schedule.breakEnd) {
     return {
       status: "break",
-      message: `Kantor sedang istirahat. Buku tamu dibuka lagi pukul ${timeLabel(schedule.breakEnd)}.`,
+      until: jakartaDate(parts.year, parts.month, parts.date, schedule.breakEnd),
     };
   }
 
-  if (minutes >= schedule.end) {
-    return {
-      status: "outside",
-      message: `Di luar jam layanan. Buku tamu dibuka lagi ${nextOpenDayLabel(now, false)} pukul 08.00.`,
-    };
+  if (parts.minutes >= schedule.end) {
+    return { status: "outside", nextAt: nextOpenAt(now, false) };
   }
 
-  return { status: "open", message: null };
-}
-
-/** Label jam layanan untuk ditampilkan di footer form. */
-export function serviceHoursLabel(): string {
-  return "Senin sampai Kamis 08.00–16.00, Jumat 08.00–16.30";
+  return { status: "open" };
 }

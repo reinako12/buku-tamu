@@ -53,3 +53,13 @@ yang tegas, nomor antrian seperti angka pada tiket, bukan gradien dan bayangan.
 - Susunan label-di-kiri hanya aktif di 1024px ke atas; di bawahnya label di atas karena kolom label tidak cukup.
 - Tambah **jenis kelamin** (laki-laki / perempuan) sebagai pilihan tunggal bergaya pil, wajib diisi.
 - **Jumlah orang dihapus**: satu tamu satu orang. Kolom `person_count` tetap ada di database (default 1) demi kompatibilitas data lama, tapi tidak lagi ditanyakan.
+
+## Bahasa (3B)
+
+- Toggle ID/EN di kepala setiap halaman; pilihan disimpan di cookie `locale`.
+- Semua teks lewat `lib/i18n/dict.ts` (dua kamus, kunci sama). Tidak ada string
+  bahasa Indonesia yang tersisa di komponen.
+- Tanggal memakai `Intl` sesuai bahasa: `id-ID` (Senin, 3 November 2026) dan
+  `en-GB` (Monday, 3 November 2026). Zona waktu tetap Asia/Jakarta.
+- Pesan validasi dikirim server sebagai kode (`err.nameShort`), diterjemahkan di
+  klien — jadi bahasa berganti tanpa perlu mengubah skema.

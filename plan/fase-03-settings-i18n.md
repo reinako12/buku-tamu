@@ -63,3 +63,17 @@ dalam bahasa Inggris.
 ## Yang TIDAK dikerjakan
 
 Chat, export CSV, halaman kelola petugas.
+
+
+## Status
+
+- 3A (switch tutup/buka, auto-reopen, halaman pengaturan): selesai, tag `fase-3a`.
+- 3B (i18n ID/EN, format tanggal, toggle bahasa): selesai, tag `fase-3b`.
+
+### Catatan bug yang ditemukan saat 3B
+
+`redirect()` yang dipanggil setelah cookie ditulis di dalam server action tidak
+selalu diteruskan ke browser pada Next 15.5 — tamu tertahan di form dan petugas
+gagal masuk walau sesi sudah dibuat. Solusi: form tamu mengembalikan token lalu
+navigasi lewat klien; login memakai `router.refresh()` dengan fallback navigasi
+penuh; keluar dipindah ke route handler `POST /api/keluar`.

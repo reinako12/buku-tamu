@@ -3,15 +3,18 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { saveSettings, type SettingsState } from "@/lib/actions/settings";
+import { useT } from "@/lib/i18n/client";
+import type { DictKey } from "@/lib/i18n/dict";
 import { toJakartaInputValue } from "@/lib/settings-rules";
 
 const initialState: SettingsState = { ok: false, error: null, savedAt: null };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useT();
   return (
     <button type="submit" className="btn-primary w-full sm:w-auto" disabled={pending}>
-      {pending ? "Menyimpan" : "Simpan pengaturan"}
+      {pending ? t("settings.saving") : t("settings.save")}
     </button>
   );
 }
@@ -27,6 +30,7 @@ export function SettingsForm({
   reopenAt: string | null;
   autoReopen: boolean;
 }) {
+  const t = useT();
   const [state, formAction] = useActionState(saveSettings, initialState);
   const [open, setOpen] = useState(isOpen);
 
@@ -43,10 +47,10 @@ export function SettingsForm({
       <div className="flex items-start justify-between gap-sm border border-border rounded-lg px-md py-sm">
         <div>
           <label htmlFor="isOpen" className="text-body-md font-medium text-ink">
-            Buku tamu dibuka
+            {t("settings.switchLabel")}
           </label>
           <p className="mt-2xs text-caption text-ink-muted">
-            Saat dimatikan, tamu melihat halaman penutupan dan tidak bisa mengisi form.
+            {t("settings.switchHint")}
           </p>
         </div>
 
@@ -75,7 +79,7 @@ export function SettingsForm({
       <div className={open ? "space-y-lg opacity-50" : "space-y-lg"}>
         <div>
           <label htmlFor="closedReason" className="field-label">
-            Alasan ditutup
+            {t("settings.reason")}
           </label>
           <textarea
             id="closedReason"
@@ -85,14 +89,14 @@ export function SettingsForm({
             maxLength={200}
             defaultValue={closedReason ?? ""}
             disabled={open}
-            placeholder="Contoh: libur nasional, cuti bersama."
+            placeholder={t("settings.reasonPlaceholder")}
           />
-          <p className="field-hint">Ditampilkan ke tamu. Boleh dikosongkan.</p>
+          <p className="field-hint">{t("settings.reasonHint")}</p>
         </div>
 
         <div>
           <label htmlFor="reopenAt" className="field-label">
-            Buka kembali pada
+            {t("settings.reopenAt")}
           </label>
           <input
             id="reopenAt"
@@ -102,7 +106,7 @@ export function SettingsForm({
             defaultValue={reopenAt ? toJakartaInputValue(new Date(reopenAt)) : ""}
             disabled={open}
           />
-          <p className="field-hint">Waktu Jakarta (WIB). Kosongkan kalau tidak dijadwalkan.</p>
+          <p className="field-hint">{t("settings.reopenHint")}</p>
         </div>
 
         <div className="flex items-start gap-sm">
@@ -115,9 +119,9 @@ export function SettingsForm({
             disabled={open}
           />
           <label htmlFor="autoReopen" className="text-body-sm text-ink">
-            Buka otomatis saat waktunya tiba
+            {t("settings.autoLabel")}
             <span className="mt-2xs block text-caption text-ink-muted">
-              Kalau dimatikan, buku tamu tetap tertutup sampai dibuka manual.
+              {t("settings.autoHint")}
             </span>
           </label>
         </div>
@@ -125,13 +129,13 @@ export function SettingsForm({
 
       {state.error ? (
         <p role="alert" className="border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger">
-          {state.error}
+          {t(state.error as DictKey)}
         </p>
       ) : null}
 
       {savedLabel ? (
         <p role="status" className="text-body-sm text-success">
-          Pengaturan tersimpan pukul {savedLabel} WIB.
+          {t("settings.savedAt", { time: savedLabel })}
         </p>
       ) : null}
 

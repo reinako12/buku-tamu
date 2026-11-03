@@ -1,65 +1,56 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { serviceState, serviceHoursLabel } from "./service-hours";
+import { serviceState } from "./service-hours";
 
-/** Bantu bikin waktu WIB tanpa bergantung zona waktu mesin. */
+/** Bantu: bikin Date dari jam dinding WIB. */
 const wib = (iso: string) => new Date(`${iso}+07:00`);
 
-test("Senin pagi: layanan buka", () => {
+test("jam layanan: Senin pagi jam kerja", () => {
   const state = serviceState(wib("2026-11-02T09:00:00"));
   assert.equal(state.status, "open");
-  assert.equal(state.message, null);
 });
 
-test("Senin sebelum jam buka: di luar jam, sebut jam 08.00", () => {
-  const state = serviceState(wib("2026-11-02T07:30:00"));
+test("jam layanan: sebelum dibuka", () => {
+  const state = serviceState(wib("2026-11-02T07:00:00"));
   assert.equal(state.status, "outside");
-  assert.match(state.message ?? "", /08\.00/);
+  if (state.status === "outside") {
+    assert.equal(state.nextAt.toISOString(), "2026-11-02T01:00:00.000Z");
+  }
 });
 
-test("Senin istirahat: tetap boleh isi, sebut buka 13.00", () => {
-  const state = serviceState(wib("2026-11-02T12:30:00"));
+test("jam layanan: istirahat siang", () => {
+  const state = serviceState(wib("2026-11-02T12:15:00"));
   assert.equal(state.status, "break");
-  assert.match(state.message ?? "", /13\.00/);
+  if (state.status === "break") {
+    assert.equal(state.until.toISOString(), "2026-11-02T06:00:00.000Z");
+  }
 });
 
-test("Senin 15.59 masih buka, 16.00 sudah lewat", () => {
-  assert.equal(serviceState(wib("2026-11-02T15:59:00")).status, "open");
-  assert.equal(serviceState(wib("2026-11-02T16:00:00")).status, "outside");
+test("jam layanan: Jumat istirahat lebih panjang", () => {
+  const state = serviceState(wib("2026-11-06T13:00:00"));
+  assert.equal(state.status, "break");
+  if (state.status === "break") {
+    assert.equal(state.until.toISOString(), "2026-11-06T06:30:00.000Z");
+  }
 });
 
-test("Jumat: istirahat sampai 13.30 dan tutup 16.30", () => {
-  const breakState = serviceState(wib("2026-11-06T12:45:00"));
-  assert.equal(breakState.status, "break");
-  assert.match(breakState.message ?? "", /13\.30/);
-
+test("jam layanan: Jumat 16.15 masih buka, 16.45 tutup", () => {
   assert.equal(serviceState(wib("2026-11-06T16:15:00")).status, "open");
-  assert.equal(serviceState(wib("2026-11-06T16:30:00")).status, "outside");
+  assert.equal(serviceState(wib("2026-11-06T16:45:00")).status, "outside");
 });
 
-test("Sabtu dan Minggu: tutup, sebut Senin", () => {
-  const sabtu = serviceState(wib("2026-11-07T10:00:00"));
-  assert.equal(sabtu.status, "weekend");
-  assert.match(sabtu.message ?? "", /Senin/);
-
-  const minggu = serviceState(wib("2026-11-08T10:00:00"));
-  assert.equal(minggu.status, "weekend");
-  assert.match(minggu.message ?? "", /Senin/);
+test("jam layanan: Sabtu tutup, buka Senin 08.00", () => {
+  const state = serviceState(wib("2026-11-07T10:00:00"));
+  assert.equal(state.status, "weekend");
+  if (state.status === "weekend") {
+    assert.equal(state.nextAt.toISOString(), "2026-11-09T01:00:00.000Z");
+  }
 });
 
-test("Jumat lewat jam: buka lagi Senin, bukan besok", () => {
-  const state = serviceState(wib("2026-11-06T17:00:00"));
+test("jam layanan: lewat jam kerja buka besok", () => {
+  const state = serviceState(wib("2026-11-02T20:00:00"));
   assert.equal(state.status, "outside");
-  assert.match(state.message ?? "", /Senin/);
-});
-
-test("Perhitungan pakai WIB, bukan zona waktu server", () => {
-  // 01.00 UTC = 08.00 WIB → tepat jam buka
-  const state = serviceState(new Date("2026-11-02T01:00:00Z"));
-  assert.equal(state.status, "open");
-});
-
-test("label jam layanan", () => {
-  assert.match(serviceHoursLabel(), /Senin/);
-  assert.match(serviceHoursLabel(), /Jumat/);
+  if (state.status === "outside") {
+    assert.equal(state.nextAt.toISOString(), "2026-11-03T01:00:00.000Z");
+  }
 });

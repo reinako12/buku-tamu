@@ -3,12 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { setVisitStatus } from "@/lib/actions/staff";
-import {
-  ALLOWED_TRANSITIONS,
-  STATUS_LABEL,
-  formatQueueNumber,
-  type VisitStatus,
-} from "@/lib/visit-status";
+import { ALLOWED_TRANSITIONS, formatQueueNumber, type VisitStatus } from "@/lib/visit-status";
+import { useT } from "@/lib/i18n/client";
+import type { DictKey } from "@/lib/i18n/dict";
 
 export type BoardVisit = {
   id: string;
@@ -34,21 +31,12 @@ const STATUS_STYLE: Record<VisitStatus, string> = {
   batal: "border-danger text-danger",
 };
 
-const ACTION_LABEL: Partial<Record<VisitStatus, string>> = {
-  dipanggil: "Panggil",
-  dilayani: "Layani",
-  selesai: "Selesai",
-  batal: "Batalkan",
-  menunggu: "Kembalikan",
-};
-
-const PURPOSE_LABEL: Record<string, string> = {
-  konsultasi: "Konsultasi",
-  data: "Permintaan data",
-  kerjasama: "Kerja sama",
-  audiensi: "Audiensi",
-  magang: "Magang atau penelitian",
-  lainnya: "Lainnya",
+const ACTION_KEY: Partial<Record<VisitStatus, DictKey>> = {
+  dipanggil: "dash.call",
+  dilayani: "dash.serve",
+  selesai: "dash.done",
+  batal: "dash.cancel",
+  menunggu: "dash.undo",
 };
 
 function fromRow(row: Record<string, unknown>): BoardVisit {
@@ -78,6 +66,7 @@ function timeLabel(iso: string) {
 }
 
 export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
+  const t = useT();
   const [visits, setVisits] = useState<BoardVisit[]>(initialVisits);
   const [error, setError] = useState<string | null>(null);
   const [live, setLive] = useState(false);
@@ -188,22 +177,22 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
       const result = await setVisitStatus(id, next);
       if (!result.ok) {
         setVisits(previous);
-        setError(result.error ?? "Gagal mengubah status.");
+        setError(result.error ?? "err.statusFailed");
       }
     });
   }
 
   return (
-    <section aria-label="Daftar tamu hari ini">
+    <section aria-label={t("dash.listLabel")}>
       <div className="mb-md flex flex-wrap items-center gap-x-md gap-y-sm">
         <div className="flex items-center gap-x-lg">
-          {(["menunggu", "dipanggil", "dilayani", "selesai"] as VisitStatus[]).map(
+          {(["menunggu", "dipanggil", "dilayani", "selesai", "batal"] as VisitStatus[]).map(
             (status) => (
               <div key={status} className="min-w-[64px]">
                 <p className="font-mono text-heading-card tabular-nums text-ink">
                   {counts[status]}
                 </p>
-                <p className="text-caption text-ink-muted">{STATUS_LABEL[status]}</p>
+                <p className="text-caption text-ink-muted">{t(`status.${status}` as DictKey)}</p>
               </div>
             ),
           )}
@@ -221,7 +210,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                 live ? "bg-success" : "bg-ink-muted/40"
               }`}
             />
-            {live ? "Tersambung" : "Menghubungkan"}
+            {live ? t("dash.live") : t("dash.offline")}
           </span>
 
           <button
@@ -230,7 +219,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
             aria-pressed={soundOn}
             onClick={() => setSoundOn((value) => !value)}
           >
-            {soundOn ? "Suara nyala" : "Nyalakan suara"}
+            {soundOn ? t("dash.soundOn") : t("dash.soundOff")}
           </button>
         </div>
       </div>
@@ -240,15 +229,15 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
           role="alert"
           className="mb-sm border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
-          {error}
+          {error ? t(error as DictKey) : null}
         </div>
       ) : null}
 
       {sorted.length === 0 ? (
         <div className="border-y border-border py-2xl text-center">
-          <p className="text-body-md text-ink">Belum ada tamu hari ini.</p>
+          <p className="text-body-md text-ink">{t("dash.empty")}</p>
           <p className="mt-2xs text-body-sm text-ink-muted">
-            Tamu yang mengisi form akan muncul di sini tanpa perlu dimuat ulang.
+            {t("dash.emptyHint")}
           </p>
         </div>
       ) : (
@@ -281,20 +270,20 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                       <span
                         className={`stamp ${STATUS_STYLE[visit.status]}`}
                       >
-                        {STATUS_LABEL[visit.status]}
+                        {t(`status.${visit.status}` as DictKey)}
                       </span>
                     </div>
 
                     <p className="mt-2xs text-body-sm text-ink-muted">
                       {visit.institution}
                       {", "}
-                      {PURPOSE_LABEL[visit.purpose] ?? visit.purpose}
-                      {visit.gender ? `, ${visit.gender === "lk" ? "laki-laki" : "perempuan"}` : ""}
-                      {visit.source === "manual" ? ", dicatat petugas" : ""}
+                      {t(`purpose.${visit.purpose}` as DictKey)}
+                      {visit.gender ? `, ${t(`gender.${visit.gender}` as DictKey)}` : ""}
+                      {visit.source === "manual" ? `, ${t("dash.recordedByStaff")}` : ""}
                     </p>
 
                     <p className="mt-2xs font-mono text-caption text-ink-muted">
-                      masuk {timeLabel(visit.checkInAt)} WIB
+                      {t("dash.checkInLine", { time: timeLabel(visit.checkInAt) })}
                     </p>
 
                     {visit.detail ? (
@@ -311,7 +300,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                         className="btn-primary order-first px-sm sm:order-none"
                         onClick={() => change(visit.id, primary)}
                       >
-                        {ACTION_LABEL[primary] ?? STATUS_LABEL[primary]}
+                        {t(ACTION_KEY[primary] ?? `status.${primary}` as DictKey)}
                       </button>
                     ) : null}
 
@@ -322,7 +311,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                         className="btn-quiet"
                         onClick={() => change(visit.id, next)}
                       >
-                        {ACTION_LABEL[next] ?? STATUS_LABEL[next]}
+                        {t(ACTION_KEY[next] ?? `status.${next}` as DictKey)}
                       </button>
                     ))}
 
@@ -332,7 +321,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      WhatsApp
+                      {t("dash.wa")}
                     </a>
                   </div>
                 </div>

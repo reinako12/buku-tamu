@@ -3,21 +3,17 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatQueue } from "@/lib/schemas/visit";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { formatDate, formatTime } from "@/lib/format";
+import type { DictKey } from "@/lib/i18n/dict";
 import { PrintButton } from "@/components/print-button";
+import { LocaleToggle } from "@/components/locale-toggle";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tiket kunjungan — BPS Kabupaten Tanah Datar",
+  title: "Tiket kunjungan",
   robots: { index: false, follow: false },
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  menunggu: "Menunggu dipanggil",
-  dipanggil: "Sudah dipanggil",
-  dilayani: "Sedang dilayani",
-  selesai: "Selesai",
-  batal: "Dibatalkan",
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -46,41 +42,35 @@ export default async function TicketPage({
   const proto = h.get("x-forwarded-proto") ?? "http";
   const ticketUrl = `${proto}://${host}/t/${visit.token}`;
 
-  const dateLabel = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  }).format(visit.checkInAt);
-
-  const timeLabel = new Intl.DateTimeFormat("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Jakarta",
-  }).format(visit.checkInAt);
+  const t = await getT();
+  const locale = await getLocale();
+  const dateLabel = formatDate(visit.checkInAt, locale);
+  const timeLabel = formatTime(visit.checkInAt, locale);
 
   const waText = encodeURIComponent(
-    `Tiket buku tamu BPS Kabupaten Tanah Datar\nNomor antrian: ${formatQueue(visit.queueSeq)}\nTanggal: ${dateLabel}\nLink tiket: ${ticketUrl}`,
+    `${t("ticket.share")}\n${t("ticket.queue")}: ${formatQueue(visit.queueSeq)}\n${t("ticket.checkIn")}: ${dateLabel} ${timeLabel}\n${ticketUrl}`,
   );
 
   return (
     <main className="mx-auto w-full max-w-ticket px-md py-lg">
-      <p className="mb-sm text-body-sm text-ink-muted">Tiket kunjungan Anda</p>
+      <div className="mb-sm flex items-center justify-between gap-sm">
+        <p className="text-body-sm text-ink-muted">{t("ticket.title")}</p>
+        <LocaleToggle />
+      </div>
 
       <div className="ticket">
         <div className="px-md pb-md pt-lg text-center">
           <p className="text-caption font-semibold text-primary">
-            BPS Kabupaten Tanah Datar
+            {t("org.name")} {t("org.unit")}
           </p>
-          <p className="mt-md text-caption text-ink-muted">Nomor antrian</p>
+          <p className="mt-md text-caption text-ink-muted">{t("ticket.queue")}</p>
           <p className="queue-number mt-2xs">{formatQueue(visit.queueSeq)}</p>
           <span
             className={`stamp mt-sm ${
               STATUS_STYLE[visit.status] ?? STATUS_STYLE.menunggu
             }`}
           >
-            {STATUS_LABEL[visit.status] ?? visit.status}
+            {t(`status.${visit.status}` as DictKey)}
           </span>
         </div>
 
@@ -88,27 +78,27 @@ export default async function TicketPage({
 
         <dl className="space-y-sm px-md py-md">
           <div className="flex items-baseline justify-between gap-sm">
-            <dt className="text-caption text-ink-muted">Nama</dt>
+            <dt className="text-caption text-ink-muted">{t("ticket.name")}</dt>
             <dd className="text-right text-body-sm font-medium text-ink">
               {visit.name}
             </dd>
           </div>
           <div className="flex items-baseline justify-between gap-sm">
-            <dt className="text-caption text-ink-muted">Instansi</dt>
+            <dt className="text-caption text-ink-muted">{t("ticket.institution")}</dt>
             <dd className="text-right text-body-sm text-ink">{visit.institution}</dd>
           </div>
           {visit.gender ? (
             <div className="flex items-baseline justify-between gap-sm">
-              <dt className="text-caption text-ink-muted">Jenis kelamin</dt>
+              <dt className="text-caption text-ink-muted">{t("ticket.gender")}</dt>
               <dd className="text-right text-body-sm text-ink">
-                {visit.gender === "lk" ? "Laki-laki" : "Perempuan"}
+                {t(`gender.${visit.gender}` as DictKey)}
               </dd>
             </div>
           ) : null}
           <div className="flex items-baseline justify-between gap-sm">
-            <dt className="text-caption text-ink-muted">Waktu daftar</dt>
+            <dt className="text-caption text-ink-muted">{t("ticket.checkIn")}</dt>
             <dd className="text-right text-body-sm text-ink">
-              {dateLabel}, {timeLabel} WIB
+              {dateLabel}, {timeLabel}
             </dd>
           </div>
         </dl>
@@ -121,14 +111,13 @@ export default async function TicketPage({
           target="_blank"
           rel="noreferrer"
         >
-          Simpan tiket ke WhatsApp
+          {t("ticket.saveWa")}
         </a>
-        <PrintButton label="Cetak tiket" />
+        <PrintButton />
       </div>
 
       <p className="mt-md text-caption text-ink-muted">
-        Tunjukkan nomor ini ke petugas resepsionis. Halaman ini bisa dibuka lagi lewat
-        tautan yang Anda simpan.
+        {t("ticket.note")}
       </p>
     </main>
   );

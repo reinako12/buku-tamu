@@ -9,21 +9,7 @@ export const INSTITUTION_CATEGORIES = [
   "lainnya",
 ] as const;
 
-export const INSTITUTION_LABEL: Record<(typeof INSTITUTION_CATEGORIES)[number], string> = {
-  bps: "BPS / instansi statistik",
-  pemda: "Pemerintah daerah / OPD",
-  akademisi: "Akademisi / mahasiswa",
-  swasta: "Swasta / perusahaan",
-  masyarakat: "Masyarakat umum",
-  lainnya: "Lainnya",
-};
-
 export const GENDERS = ["lk", "pr"] as const;
-
-export const GENDER_LABEL: Record<(typeof GENDERS)[number], string> = {
-  lk: "Laki-laki",
-  pr: "Perempuan",
-};
 
 export const PURPOSES = [
   "konsultasi",
@@ -34,14 +20,10 @@ export const PURPOSES = [
   "lainnya",
 ] as const;
 
-export const PURPOSE_LABEL: Record<(typeof PURPOSES)[number], string> = {
-  konsultasi: "Konsultasi statistik",
-  data: "Permintaan data",
-  kerjasama: "Kerja sama",
-  audiensi: "Audiensi",
-  magang: "Magang / penelitian",
-  lainnya: "Lainnya",
-};
+/**
+ * Pesan validasi memakai kode, bukan kalimat: teks ditentukan kamus i18n
+ * di sisi tampilan, sehingga error ikut berganti bahasa.
+ */
 
 /**
  * Normalisasi nomor HP ke format +62.
@@ -61,32 +43,32 @@ export const visitFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(2, "Nama minimal 2 karakter.")
-    .max(80, "Nama maksimal 80 karakter."),
+    .min(2, "err.nameShort")
+    .max(80, "err.nameLong"),
   institutionCat: z.enum(INSTITUTION_CATEGORIES, {
-    message: "Pilih kategori instansi.",
+    message: "err.catRequired",
   }),
   institution: z
     .string()
     .trim()
-    .min(2, "Nama instansi minimal 2 karakter.")
-    .max(120, "Nama instansi maksimal 120 karakter."),
+    .min(2, "err.institutionShort")
+    .max(80, "err.institutionLong"),
   phone: z
     .string()
     .trim()
-    .min(9, "Nomor HP terlalu pendek.")
+    .min(9, "err.phoneInvalid")
     .transform(normalizePhone)
-    .refine((value) => phoneRegex.test(value), "Nomor HP tidak valid. Contoh: 0812 3456 7890."),
-  purpose: z.enum(PURPOSES, { message: "Pilih tujuan kunjungan." }),
-  gender: z.enum(GENDERS, { message: "Pilih jenis kelamin." }),
+    .refine((value) => phoneRegex.test(value), "err.phoneInvalid"),
+  purpose: z.enum(PURPOSES, { message: "err.purposeRequired" }),
+  gender: z.enum(GENDERS, { message: "err.genderRequired" }),
   detail: z
     .string()
     .trim()
-    .max(500, "Keterangan maksimal 500 karakter.")
+    .max(200, "err.detailLong")
     .optional()
     .transform((value) => (value ? value : null)),
   /** Honeypot — manusia tidak akan mengisi ini. */
-  website: z.string().max(0, "Form tidak valid.").optional(),
+  website: z.string().max(0, "err.formInvalid").optional(),
 });
 
 export type VisitFormInput = z.input<typeof visitFormSchema>;

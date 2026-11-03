@@ -2,12 +2,12 @@
 
 import { Mars, Venus } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { GENDERS, GENDER_LABEL } from "@/lib/schemas/visit";
+import { GENDERS } from "@/lib/schemas/visit";
+import { useT } from "@/lib/i18n/client";
 
 /**
  * Warna hanya muncul setelah dipilih: laki-laki biru, perempuan pink.
- * Saat diam atau di-hover, pil tetap abu-abu netral — warna berarti status,
- * bukan hiasan.
+ * Saat diam atau di-hover, pil tetap abu-abu netral — warna berarti status.
  */
 const STYLE: Record<
   (typeof GENDERS)[number],
@@ -39,6 +39,7 @@ export function GenderChoice({
   invalid?: boolean;
   describedBy?: string;
 }) {
+  const t = useT();
   const controlled = value !== undefined;
 
   return (
@@ -66,7 +67,7 @@ export function GenderChoice({
                           peer-focus-visible:ring-offset-2 ${checked}`}
             >
               <Icon size={18} strokeWidth={1.75} aria-hidden="true" />
-              {GENDER_LABEL[gender]}
+              {t(gender === "lk" ? "gender.lk" : "gender.pr")}
             </span>
           </label>
         );

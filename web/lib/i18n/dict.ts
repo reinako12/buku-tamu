@@ -1,0 +1,426 @@
+/**
+ * Kamus dua bahasa. sengaja manual, bukan library: hanya dua bahasa dan
+ * seluruh teks ada di satu tempat, jadi mudah ditinjau ulang.
+ *
+ * Aturan: kunci bahasa Indonesia adalah sumber tipe. Kalau kunci EN kurang,
+ * TypeScript akan menolak.
+ */
+
+export const LOCALES = ["id", "en"] as const;
+export type Locale = (typeof LOCALES)[number];
+export const DEFAULT_LOCALE: Locale = "id";
+
+const id = {
+  "app.name": "Buku tamu BPS Tanah Datar",
+  "org.name": "Badan Pusat Statistik",
+  "org.unit": "Kabupaten Tanah Datar",
+
+  "common.required": "wajib diisi",
+  "common.optional": "opsional",
+  "common.save": "Simpan",
+  "common.saving": "Menyimpan",
+  "common.back": "Kembali",
+  "common.logout": "Keluar",
+  "common.settings": "Pengaturan",
+  "common.language": "Bahasa",
+  "common.languageId": "Indonesia",
+  "common.languageEn": "English",
+  "common.loading": "Memuat",
+
+  "home.title": "Buku tamu",
+  "home.lead":
+    "Isi data kunjungan Anda. Setelah terkirim, Anda menerima nomor antrian.",
+  "home.hoursLabel": "Jam layanan",
+  "home.sectionIdentity": "Identitas tamu",
+  "home.sectionVisit": "Keperluan kunjungan",
+  "home.privacy":
+    "Data Anda hanya dipakai untuk pencatatan kunjungan di BPS Kabupaten Tanah Datar.",
+  "home.autofill":
+    "Diisi dari kunjungan sebelumnya. Periksa lagi sebelum mengirim.",
+  "home.submit": "Kirim dan ambil nomor antrian",
+  "home.submitting": "Mengirim",
+
+  "field.name": "Nama lengkap",
+  "field.phone": "Kontak WhatsApp",
+  "field.institutionCat": "Kategori instansi",
+  "field.institution": "Nama instansi atau asal",
+  "field.institutionHint": "Kalau datang sendiri, tulis “Pribadi”.",
+  "field.gender": "Jenis kelamin",
+  "field.purpose": "Tujuan kunjungan",
+  "field.detail": "Keterangan",
+  "field.detailOptional": "Keterangan (opsional)",
+  "field.detailHint": "Misalnya keperluan data yang dicari.",
+  "field.choose": "Pilih",
+  "field.phoneHint":
+    "Dipakai untuk menghubungi Anda dan mengisi data kunjungan berikutnya.",
+  "field.namePlaceholder": "Nama sesuai identitas",
+  "field.institutionPlaceholder": "Dinas Pendidikan, atau Pribadi",
+  "field.detailPlaceholder": "Keperluan singkat",
+
+  "gender.lk": "Laki-laki",
+  "gender.pr": "Perempuan",
+
+  "cat.bps": "BPS",
+  "cat.pemda": "Pemerintah daerah",
+  "cat.akademisi": "Akademisi / mahasiswa",
+  "cat.swasta": "Swasta",
+  "cat.masyarakat": "Masyarakat umum",
+  "cat.lainnya": "Lainnya",
+
+  "purpose.konsultasi": "Konsultasi",
+  "purpose.data": "Permintaan data",
+  "purpose.kerjasama": "Kerja sama",
+  "purpose.audiensi": "Audiensi",
+  "purpose.magang": "Magang atau penelitian",
+  "purpose.lainnya": "Lainnya",
+
+  "status.menunggu": "Menunggu",
+  "status.dipanggil": "Dipanggil",
+  "status.dilayani": "Dilayani",
+  "status.selesai": "Selesai",
+  "status.batal": "Batal",
+
+  "ticket.title": "Tiket kunjungan",
+  "ticket.queue": "Nomor antrian",
+  "ticket.name": "Nama",
+  "ticket.institution": "Instansi",
+  "ticket.gender": "Jenis kelamin",
+  "ticket.checkIn": "Waktu daftar",
+  "ticket.note":
+    "Tunjukkan nomor ini ke petugas resepsionis. Halaman ini bisa dibuka lagi lewat tautan yang Anda simpan.",
+  "ticket.saveWa": "Simpan tiket ke WhatsApp",
+  "ticket.print": "Cetak tiket",
+  "ticket.share": "Tiket buku tamu BPS Kabupaten Tanah Datar",
+
+  "dash.title": "Buku tamu hari ini",
+  "dash.staff": "Petugas",
+  "dash.newWalkIn": "Tamu manual",
+  "dash.empty": "Belum ada tamu hari ini.",
+  "dash.emptyHint":
+    "Tamu yang mengisi form akan muncul di sini secara otomatis.",
+  "dash.live": "Tersambung",
+  "dash.offline": "Menyambung ulang",
+  "dash.soundOn": "Suara aktif",
+  "dash.soundOff": "Suara mati",
+  "dash.call": "Panggil",
+  "dash.serve": "Layani",
+  "dash.done": "Selesaikan",
+  "dash.cancel": "Batalkan",
+  "dash.undo": "Kembalikan",
+  "dash.checkInLine": "masuk {time} WIB",
+  "dash.wa": "WhatsApp",
+  "dash.actionFailed": "Gagal mengubah status.",
+  "dash.filterAll": "Semua",
+  "dash.listLabel": "Daftar tamu hari ini",
+  "dash.recordedByStaff": "dicatat petugas",
+
+  "walkin.title": "Catat tamu manual",
+  "walkin.note": "Untuk tamu yang tidak mengisi form sendiri.",
+  "walkin.name": "Nama",
+  "walkin.phone": "Kontak WhatsApp",
+  "walkin.institutionCat": "Kategori",
+  "walkin.institution": "Instansi",
+  "walkin.gender": "Jenis kelamin",
+  "walkin.purpose": "Tujuan",
+  "walkin.detail": "Keterangan (opsional)",
+  "walkin.submit": "Simpan tamu",
+  "walkin.submitting": "Menyimpan",
+  "walkin.close": "Tutup",
+
+  "settings.title": "Pengaturan buku tamu",
+  "settings.currentOpen": "dibuka",
+  "settings.currentClosed": "ditutup",
+  "settings.currentPrefix": "Status saat ini:",
+  "settings.currentSuffix": "Perubahan langsung berlaku untuk semua tamu.",
+  "settings.switchLabel": "Buku tamu dibuka",
+  "settings.switchHint":
+    "Saat dimatikan, tamu melihat halaman penutupan dan tidak bisa mengisi form.",
+  "settings.reason": "Alasan ditutup",
+  "settings.reasonHint": "Ditampilkan ke tamu. Boleh dikosongkan.",
+  "settings.reasonPlaceholder": "Contoh: libur nasional, cuti bersama.",
+  "settings.reopenAt": "Buka kembali pada",
+  "settings.reopenHint":
+    "Waktu Jakarta (WIB). Kosongkan kalau tidak dijadwalkan.",
+  "settings.autoLabel": "Buka otomatis saat waktunya tiba",
+  "settings.autoHint":
+    "Kalau dimatikan, buku tamu tetap tertutup sampai dibuka manual.",
+  "settings.save": "Simpan pengaturan",
+  "settings.saving": "Menyimpan",
+  "settings.savedAt": "Pengaturan tersimpan pukul {time} WIB.",
+  "settings.errReason": "Alasan maksimal 200 karakter.",
+  "settings.errReopen": "Format waktu buka kembali tidak dikenali.",
+  "settings.errSave": "Gagal menyimpan pengaturan.",
+  "settings.backDashboard": "Kembali ke dashboard",
+
+  "closed.title": "Buku tamu ditutup",
+  "closed.defaultReason":
+    "Pencatatan tamu sedang tidak dibuka. Silakan datang pada hari kerja.",
+  "closed.reopenAt": "Dibuka kembali {time} WIB",
+  "closed.tryAgain": "Coba buka lagi",
+
+  "closedBanner.title": "Buku tamu sedang ditutup",
+  "closedBanner.noSchedule": "Tidak ada jadwal buka kembali.",
+  "closedBanner.reopenAt": "Dibuka kembali {time} WIB.",
+  "closedBanner.openAgain": "Buka lagi",
+
+  "service.break": "Istirahat siang",
+  "service.breakMessage":
+    "Buku tamu tetap bisa diisi, petugas kembali pukul {time} WIB.",
+  "service.outside": "Di luar jam layanan",
+  "service.outsideMessage":
+    "Buku tamu tetap bisa diisi, petugas melayani mulai {time} WIB.",
+  "service.weekend": "Akhir pekan",
+  "service.weekendMessage":
+    "Buku tamu tetap bisa diisi, petugas melayani mulai {time} WIB.",
+  "service.open": "Jam layanan",
+
+  "login.title": "Masuk petugas",
+  "login.lead": "Halaman ini hanya untuk petugas BPS Kabupaten Tanah Datar.",
+  "login.email": "Email",
+  "login.password": "Kata sandi",
+  "login.submit": "Masuk",
+  "login.submitting": "Memeriksa",
+  "login.error": "Email atau kata sandi salah.",
+  "login.backHome": "Kembali ke buku tamu",
+
+  "hours.label": "Senin sampai Kamis 08.00–16.00, Jumat 08.00–16.30",
+
+  "err.nameRequired": "Nama wajib diisi.",
+  "err.nameShort": "Nama minimal 3 karakter.",
+  "err.nameLong": "Nama maksimal 80 karakter.",
+  "err.phoneRequired": "Kontak WhatsApp wajib diisi.",
+  "err.phoneInvalid": "Nomor tidak dikenali. Contoh: 0812 3456 7890.",
+  "err.catRequired": "Pilih kategori instansi.",
+  "err.institutionRequired": "Nama instansi wajib diisi.",
+  "err.institutionShort": "Nama instansi minimal 2 karakter.",
+  "err.institutionLong": "Nama instansi maksimal 80 karakter.",
+  "err.genderRequired": "Pilih jenis kelamin.",
+  "err.purposeRequired": "Pilih tujuan kunjungan.",
+  "err.detailLong": "Keterangan maksimal 200 karakter.",
+  "err.formInvalid": "Periksa lagi isian yang ditandai.",
+  "err.tooMany": "Terlalu banyak percobaan. Coba lagi beberapa menit.",
+  "err.closed": "Buku tamu sedang ditutup.",
+  "err.generic": "Terjadi kesalahan. Coba lagi.",
+  "err.notFound": "Tiket tidak ditemukan.",
+  "err.statusFailed": "Gagal mengubah status.",
+  "err.saveFailed": "Gagal menyimpan data.",
+  "err.loginRequired": "Email dan kata sandi wajib diisi.",
+  "err.loginFailed": "Email atau kata sandi salah.",
+  "err.sessionExpired": "Sesi berakhir. Silakan masuk lagi.",
+  "err.statusUnknown": "Status tidak dikenal.",
+} as const;
+
+export type DictKey = keyof typeof id;
+export type Dict = Record<DictKey, string>;
+
+const en: Dict = {
+  "app.name": "BPS Tanah Datar guest book",
+  "org.name": "BPS–Statistics Indonesia",
+  "org.unit": "Tanah Datar Regency",
+
+  "common.required": "required",
+  "common.optional": "optional",
+  "common.save": "Save",
+  "common.saving": "Saving",
+  "common.back": "Back",
+  "common.logout": "Sign out",
+  "common.settings": "Settings",
+  "common.language": "Language",
+  "common.languageId": "Indonesia",
+  "common.languageEn": "English",
+  "common.loading": "Loading",
+
+  "home.title": "Guest book",
+  "home.lead":
+    "Fill in your visit details. Once submitted, you will receive a queue number.",
+  "home.hoursLabel": "Service hours",
+  "home.sectionIdentity": "Visitor identity",
+  "home.sectionVisit": "Visit details",
+  "home.privacy":
+    "Your data is used only to record visits at BPS Tanah Datar Regency.",
+  "home.autofill": "Filled from your previous visit. Please check before submitting.",
+  "home.submit": "Submit and get a queue number",
+  "home.submitting": "Submitting",
+
+  "field.name": "Full name",
+  "field.phone": "WhatsApp contact",
+  "field.institutionCat": "Institution category",
+  "field.institution": "Institution or origin",
+  "field.institutionHint": "If you come alone, write “Personal”.",
+  "field.gender": "Sex",
+  "field.purpose": "Purpose of visit",
+  "field.detail": "Notes",
+  "field.detailOptional": "Notes (optional)",
+  "field.detailHint": "For example, which data you need.",
+  "field.choose": "Select",
+  "field.phoneHint":
+    "Used to contact you and to fill in your next visit.",
+  "field.namePlaceholder": "Name as on your ID",
+  "field.institutionPlaceholder": "Education Office, or Personal",
+  "field.detailPlaceholder": "Short note",
+
+  "gender.lk": "Male",
+  "gender.pr": "Female",
+
+  "cat.bps": "BPS",
+  "cat.pemda": "Local government",
+  "cat.akademisi": "Academic / student",
+  "cat.swasta": "Private sector",
+  "cat.masyarakat": "General public",
+  "cat.lainnya": "Other",
+
+  "purpose.konsultasi": "Consultation",
+  "purpose.data": "Data request",
+  "purpose.kerjasama": "Partnership",
+  "purpose.audiensi": "Audience",
+  "purpose.magang": "Internship or research",
+  "purpose.lainnya": "Other",
+
+  "status.menunggu": "Waiting",
+  "status.dipanggil": "Called",
+  "status.dilayani": "Being served",
+  "status.selesai": "Completed",
+  "status.batal": "Cancelled",
+
+  "ticket.title": "Visit ticket",
+  "ticket.queue": "Queue number",
+  "ticket.name": "Name",
+  "ticket.institution": "Institution",
+  "ticket.gender": "Sex",
+  "ticket.checkIn": "Registered at",
+  "ticket.note":
+    "Show this number to the receptionist. You can reopen this page from the link you saved.",
+  "ticket.saveWa": "Save ticket to WhatsApp",
+  "ticket.print": "Print ticket",
+  "ticket.share": "BPS Tanah Datar Regency guest book ticket",
+
+  "dash.title": "Today's visitors",
+  "dash.staff": "Officer",
+  "dash.newWalkIn": "Walk-in",
+  "dash.empty": "No visitors yet today.",
+  "dash.emptyHint": "Visitors who fill in the form appear here automatically.",
+  "dash.live": "Live",
+  "dash.offline": "Reconnecting",
+  "dash.soundOn": "Sound on",
+  "dash.soundOff": "Sound off",
+  "dash.call": "Call",
+  "dash.serve": "Serve",
+  "dash.done": "Complete",
+  "dash.cancel": "Cancel",
+  "dash.undo": "Reopen",
+  "dash.checkInLine": "in at {time} (GMT+7)",
+  "dash.wa": "WhatsApp",
+  "dash.actionFailed": "Could not change the status.",
+  "dash.filterAll": "All",
+  "dash.listLabel": "Today's visitor list",
+  "dash.recordedByStaff": "recorded by staff",
+
+  "walkin.title": "Record a walk-in visitor",
+  "walkin.note": "For visitors who do not fill in the form themselves.",
+  "walkin.name": "Name",
+  "walkin.phone": "WhatsApp contact",
+  "walkin.institutionCat": "Category",
+  "walkin.institution": "Institution",
+  "walkin.gender": "Sex",
+  "walkin.purpose": "Purpose",
+  "walkin.detail": "Notes (optional)",
+  "walkin.submit": "Save visitor",
+  "walkin.submitting": "Saving",
+  "walkin.close": "Close",
+
+  "settings.title": "Guest book settings",
+  "settings.currentOpen": "open",
+  "settings.currentClosed": "closed",
+  "settings.currentPrefix": "Current status:",
+  "settings.currentSuffix": "Changes apply to every visitor immediately.",
+  "settings.switchLabel": "Guest book is open",
+  "settings.switchHint":
+    "When turned off, visitors see a closure page and cannot fill in the form.",
+  "settings.reason": "Reason for closure",
+  "settings.reasonHint": "Shown to visitors. May be left empty.",
+  "settings.reasonPlaceholder": "For example: public holiday.",
+  "settings.reopenAt": "Reopen at",
+  "settings.reopenHint": "Jakarta time (GMT+7). Leave empty if not scheduled.",
+  "settings.autoLabel": "Reopen automatically when the time comes",
+  "settings.autoHint":
+    "If turned off, the guest book stays closed until reopened manually.",
+  "settings.save": "Save settings",
+  "settings.saving": "Saving",
+  "settings.savedAt": "Settings saved at {time} (GMT+7).",
+  "settings.errReason": "Reason must be 200 characters or fewer.",
+  "settings.errReopen": "The reopen time could not be read.",
+  "settings.errSave": "Could not save the settings.",
+  "settings.backDashboard": "Back to dashboard",
+
+  "closed.title": "Guest book is closed",
+  "closed.defaultReason":
+    "Visitor registration is currently closed. Please come back on a working day.",
+  "closed.reopenAt": "Reopens {time} (GMT+7)",
+  "closed.tryAgain": "Try again",
+
+  "closedBanner.title": "The guest book is closed",
+  "closedBanner.noSchedule": "No reopening scheduled.",
+  "closedBanner.reopenAt": "Reopens {time} (GMT+7).",
+  "closedBanner.openAgain": "Open again",
+
+  "service.break": "Lunch break",
+  "service.breakMessage":
+    "You can still register; officers return at {time} (GMT+7).",
+  "service.outside": "Outside service hours",
+  "service.outsideMessage":
+    "You can still register; officers serve from {time} (GMT+7).",
+  "service.weekend": "Weekend",
+  "service.weekendMessage":
+    "You can still register; officers serve from {time} (GMT+7).",
+  "service.open": "Service hours",
+
+  "login.title": "Officer sign in",
+  "login.lead": "This page is for BPS Tanah Datar Regency officers only.",
+  "login.email": "Email",
+  "login.password": "Password",
+  "login.submit": "Sign in",
+  "login.submitting": "Checking",
+  "login.error": "Wrong email or password.",
+  "login.backHome": "Back to guest book",
+
+  "hours.label": "Monday to Thursday 08.00–16.00, Friday 08.00–16.30",
+
+  "err.nameRequired": "Name is required.",
+  "err.nameShort": "Name must be at least 3 characters.",
+  "err.nameLong": "Name must be 80 characters or fewer.",
+  "err.phoneRequired": "WhatsApp contact is required.",
+  "err.phoneInvalid": "Number not recognised. Example: 0812 3456 7890.",
+  "err.catRequired": "Choose an institution category.",
+  "err.institutionRequired": "Institution name is required.",
+  "err.institutionShort": "Institution name must be at least 2 characters.",
+  "err.institutionLong": "Institution name must be 80 characters or fewer.",
+  "err.genderRequired": "Choose a sex.",
+  "err.purposeRequired": "Choose a purpose of visit.",
+  "err.detailLong": "Notes must be 200 characters or fewer.",
+  "err.formInvalid": "Please check the highlighted fields.",
+  "err.tooMany": "Too many attempts. Try again in a few minutes.",
+  "err.closed": "The guest book is closed.",
+  "err.generic": "Something went wrong. Please try again.",
+  "err.notFound": "Ticket not found.",
+  "err.statusFailed": "Could not change the status.",
+  "err.saveFailed": "Could not save the data.",
+  "err.loginRequired": "Email and password are required.",
+  "err.loginFailed": "Wrong email or password.",
+  "err.sessionExpired": "Session expired. Please sign in again.",
+  "err.statusUnknown": "Unknown status.",
+};
+
+export const dictionaries: Record<Locale, Dict> = { id, en };
+
+/** Terjemahan dengan pengganti {nama} sederhana. */
+export function translate(
+  locale: Locale,
+  key: DictKey,
+  vars?: Record<string, string>,
+): string {
+  const value = dictionaries[locale][key] ?? dictionaries[DEFAULT_LOCALE][key] ?? key;
+  if (!vars) return value;
+  return value.replace(/\{(\w+)\}/g, (match, name: string) =>
+    Object.prototype.hasOwnProperty.call(vars, name) ? vars[name] : match,
+  );
+}

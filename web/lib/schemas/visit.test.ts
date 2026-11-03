@@ -32,7 +32,7 @@ test("payload valid lolos dan nomor HP dinormalkan", () => {
 test("nama terlalu pendek ditolak", () => {
   const result = visitFormSchema.safeParse({ ...valid, name: "B" });
   assert.equal(result.success, false);
-  assert.match(fieldErrors(result.error!).name, /minimal 2/);
+  assert.equal(fieldErrors(result.error!).name, "err.nameShort");
 });
 
 test("nomor HP tidak valid ditolak", () => {

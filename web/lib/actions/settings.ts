@@ -38,7 +38,7 @@ export async function saveSettings(
 
   const reopenAt = reopenRaw ? parseJakartaLocal(reopenRaw) : null;
   if (reopenRaw && !reopenAt) {
-    return { ok: false, error: "Format waktu buka kembali tidak dikenali.", savedAt: null };
+    return { ok: false, error: "settings.errReopen", savedAt: null };
   }
 
   const data = {
@@ -56,7 +56,7 @@ export async function saveSettings(
     });
   } catch (error) {
     console.error("simpan pengaturan gagal", error);
-    return { ok: false, error: "Gagal menyimpan pengaturan.", savedAt: null };
+    return { ok: false, error: "settings.errSave", savedAt: null };
   }
 
   revalidatePath("/");

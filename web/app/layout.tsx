@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { I18nProvider } from "@/lib/i18n/client";
+import { getLocale } from "@/lib/i18n/server";
 
 const ui = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,12 +31,16 @@ export const viewport: Viewport = {
   themeColor: "#003c80",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="id" className={`${ui.variable} ${mono.variable}`}>
-      <body>{children}</body>
+    <html lang={locale} className={`${ui.variable} ${mono.variable}`}>
+      <body>
+        <I18nProvider locale={locale}>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

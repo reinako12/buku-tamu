@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ensureAutoReopen } from "@/lib/settings";
-import { serviceHoursLabel } from "@/lib/service-hours";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { formatDateTime } from "@/lib/format";
+import { LocaleToggle } from "@/components/locale-toggle";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Buku tamu ditutup — BPS Kabupaten Tanah Datar",
+  title: "Buku tamu ditutup",
   robots: { index: false, follow: false },
 };
 
 export default async function ClosedPage() {
+  const t = await getT();
+  const locale = await getLocale();
   const setting = await ensureAutoReopen();
 
   // Sudah dibuka (mungkin oleh auto-reopen) — tidak ada gunanya menahan tamu di sini.
@@ -19,36 +23,32 @@ export default async function ClosedPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-form flex-col justify-center px-md py-xl">
-      <header className="masthead mb-lg">
-        <p className="masthead-org">Badan Pusat Statistik</p>
-        <p className="masthead-unit">Kabupaten Tanah Datar</p>
+      <header className="masthead mb-lg flex items-start justify-between gap-sm">
+        <div>
+          <p className="masthead-org">{t("org.name")}</p>
+          <p className="masthead-unit">{t("org.unit")}</p>
+        </div>
+        <LocaleToggle />
       </header>
 
-      <h1 className="text-heading-page text-ink">Buku tamu ditutup</h1>
+      <h1 className="text-heading-page text-ink">{t("closed.title")}</h1>
       <p className="mt-xs text-body-md text-ink-muted">
-        {setting?.closedReason ??
-          "Pencatatan tamu sedang tidak dibuka. Silakan datang pada hari kerja."}
+        {setting?.closedReason ?? t("closed.defaultReason")}
       </p>
 
       {setting?.reopenAt ? (
         <p className="mt-sm text-body-sm text-ink">
-          Dibuka kembali{" "}
-          {new Intl.DateTimeFormat("id-ID", {
-            dateStyle: "full",
-            timeStyle: "short",
-            timeZone: "Asia/Jakarta",
-          }).format(setting.reopenAt)}{" "}
-          WIB
+          {t("closed.reopenAt", { time: formatDateTime(setting.reopenAt, locale) })}
         </p>
       ) : null}
 
       <div className="meta-strip mt-lg">
-        <span>Jam layanan</span>
-        <span className="font-medium text-ink">{serviceHoursLabel()}</span>
+        <span>{t("home.hoursLabel")}</span>
+        <span className="font-medium text-ink">{t("hours.label")}</span>
       </div>
 
       <Link href="/" className="btn-ghost mt-md w-full">
-        Coba buka lagi
+        {t("closed.tryAgain")}
       </Link>
     </main>
   );
