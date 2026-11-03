@@ -63,3 +63,41 @@ yang tegas, nomor antrian seperti angka pada tiket, bukan gradien dan bayangan.
   `en-GB` (Monday, 3 November 2026). Zona waktu tetap Asia/Jakarta.
 - Pesan validasi dikirim server sebagai kode (`err.nameShort`), diterjemahkan di
   klien — jadi bahasa berganti tanpa perlu mengubah skema.
+
+## Dashboard petugas (3C) — papan meja, bukan dasbor statistik
+
+Tujuan layar ini satu: petugas tahu **siapa yang harus dilayani sekarang** tanpa
+membaca satu baris pun dari atas. Semua keputusan di bawah mengikuti itu.
+
+Struktur dari atas ke bawah:
+
+1. **Kop** — nama lembaga, satu baris; tautan bahasa, pengaturan, keluar.
+   Nama unit disembunyikan di layar sempit supaya kop tidak jadi dua baris.
+2. **Judul + tombol "Tamu manual"** sebaris. Tombol ini satu-satunya aksi
+   utama halaman dan tetap terlihat tanpa menggulir.
+3. **Papan meja** (`.callboard`) — satu lembar dengan garis atas 3px biru.
+   Isinya: label keadaan ("Sedang dilayani" / "Sudah dipanggil" / "Meja
+   kosong"), nomor antrian 60px monospace, nama, asal+tujuan, lalu satu tombol
+   besar sesuai langkah berikutnya (Layani / Selesaikan / Panggil berikutnya).
+   Kalau meja kosong tetapi masih ada yang menunggu, papan menampilkan
+   "Berikutnya" + lama menunggu, jadi tombol panggil tidak pernah jauh.
+4. **Garis hitung** — Menunggu / Dipanggil / Dilayani / Selesai / Batal, angka
+   monospace, ditambah penanda sambungan realtime di ujung kanan.
+5. **Antrian aktif** — hanya tamu yang belum selesai. Nomor 20px, waktu masuk
+   kecil di bawah nomor, status sebagai cap garis, lama menunggu untuk yang
+   masih menunggu.
+6. **Selesai dan batal** — `<details>` tertutup. Tamu yang sudah beres tidak
+   boleh bersaing dengan yang masih menunggu.
+
+Aturan yang dipegang:
+
+- **Satu aksi utama per baris** (isi penuh). Aksi pendamping memakai `.row-link`
+  (teks bergaris, tinggi 40px) — bukan tiga tombol sejajar dengan bobot sama.
+- **Tidak ada kartu bertumpuk.** Daftar tetap buku besar bergaris rambut
+  (`.ledger`), konsisten dengan halaman tamu.
+- **Tanpa label huruf besar.** Label keadaan ditulis sebagai kalimat.
+- **Ukuran baris dijaga**: di 1440px satu baris tamu ±102px (sebelumnya 213px),
+  di 390px ±175px. Diukur lewat `getBoundingClientRect`, bukan perkiraan.
+- **Tanpa gulir mendatar** di 390 / 768 / 1440 (`scrollWidth == clientWidth`).
+- Kontras teks diperiksa otomatis: 0 pelanggaran ambang WCAG AA, tidak ada
+  sasaran sentuh di bawah 40px.

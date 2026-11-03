@@ -35,7 +35,7 @@ export function WalkInDialog() {
 
   if (!open) {
     return (
-      <button type="button" className="btn-ghost" onClick={() => setOpen(true)}>
+      <button type="button" className="btn-primary" onClick={() => setOpen(true)}>
         {t("dash.newWalkIn")}
       </button>
     );

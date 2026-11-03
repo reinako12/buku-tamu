@@ -87,6 +87,13 @@
     @apply text-body-sm text-ink-muted;
   }
 
+  /* Papan meja petugas: satu lembar dengan garis atas tebal —
+     dibaca seperti papan pengumuman, bukan kartu statistik. */
+  .callboard {
+    @apply rounded-lg border border-border bg-surface px-sm py-sm sm:px-md sm:py-md;
+    border-top: 3px solid theme("colors.primary");
+  }
+
   .field-label {
     @apply mb-2xs block text-label-sm text-ink;
   }
@@ -150,6 +157,13 @@
 
   .btn-quiet {
     @apply inline-flex min-h-tap items-center px-xs text-label-sm text-primary
+           underline decoration-border underline-offset-4 hover:decoration-primary;
+  }
+
+  /* Aksi pendamping di dalam baris tamu: lebih ringkas dari tombol,
+     tetap setinggi 40px supaya jari tidak salah tekan. */
+  .row-link {
+    @apply inline-flex min-h-[40px] items-center px-2xs text-caption text-primary
            underline decoration-border underline-offset-4 hover:decoration-primary;
   }
 

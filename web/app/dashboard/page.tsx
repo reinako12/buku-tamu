@@ -59,10 +59,10 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto w-full max-w-container px-md py-lg">
-      <header className="masthead mb-lg flex flex-wrap items-end justify-between gap-sm">
+      <header className="masthead mb-md flex flex-wrap items-end justify-between gap-sm sm:mb-lg">
         <div>
           <p className="masthead-org">{t("org.name")}</p>
-          <p className="masthead-unit">{t("org.unit")}</p>
+          <p className="masthead-unit hidden sm:block">{t("org.unit")}</p>
         </div>
 
         <div className="flex items-center gap-xs">
@@ -70,7 +70,6 @@ export default async function DashboardPage() {
           <Link href="/pengaturan" className="btn-quiet">
             {t("common.settings")}
           </Link>
-          <WalkInDialog />
           <form action="/api/keluar" method="post">
             <button type="submit" className="btn-quiet">
               {t("common.logout")}
@@ -79,13 +78,15 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <div className="mb-xs flex flex-wrap items-baseline justify-between gap-x-md">
-        <h1 className="text-heading-page text-ink">{t("dash.title")}</h1>
-        <p className="text-body-sm text-ink-muted">{todayLabel}</p>
+      <div className="mb-md">
+        <div className="flex items-center justify-between gap-sm">
+          <h1 className="text-heading-card text-ink sm:text-heading-page">{t("dash.title")}</h1>
+          <WalkInDialog />
+        </div>
+        <p className="mt-2xs text-caption text-ink-muted sm:text-body-sm">
+          {todayLabel}. {t("dash.staff")}: {profile.fullName}.
+        </p>
       </div>
-      <p className="mb-md text-caption text-ink-muted">
-        {t("dash.staff")}: {profile.fullName}
-      </p>
 
       {setting && !setting.isOpen ? (
         <ClosedBanner reopenAt={setting.reopenAt} />
