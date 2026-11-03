@@ -34,17 +34,26 @@ di console, bisa dipakai di HP lama, dan lolos uji jaringan lambat.
 
 ## Kriteria verifikasi
 
-- [ ] 390px: form & tiket muat, tanpa scroll horizontal
-- [ ] 1366px: tabel dashboard muat penuh
-- [ ] Tab keyboard: semua elemen bisa dijangkau, fokus terlihat
+- [x] 390px: form & tiket muat, tanpa scroll horizontal
+- [x] 1366px: tabel dashboard muat penuh
+- [x] Tab keyboard: semua elemen bisa dijangkau, fokus terlihat
 - [ ] Screen reader (TalkBack/VoiceOver) membaca field dengan benar
 - [ ] Throttle 3G: form tetap bisa disubmit < 5 detik
 - [ ] Keyboard muncul → composer/tombol tidak tertutup (relevant saat chat)
-- [ ] Cetak tiket A6: nomor kebaca, tidak terpotong
-- [ ] DevTools console bersih di semua halaman
+- [x] Cetak tiket A6: nomor kebaca, tidak terpotong
+- [x] DevTools console bersih di semua halaman
 
 ## Catatan risiko
 
 Browser paling tua yang diuji harus dicatat tanggal + versi. Kalau ada HP yang
 tidak bisa dipakai, tulis di `notes/` dan putuskan: perbaiki atau nyatakan
 tidak didukung.
+
+
+## Hasil
+
+Detail angka, metode ukur, dan yang belum diuji ada di `notes/fase-4-qa.md`.
+Tag: `fase-4`.
+
+Satu kriteria belum terpenuhi: submit di 3G 5,9 s (target < 5 s).
+Keputusan tertunda ke pemilik proyek.

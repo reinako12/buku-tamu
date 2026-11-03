@@ -185,7 +185,11 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
   return (
     <section aria-label={t("dash.listLabel")}>
       <div className="mb-md flex flex-wrap items-center gap-x-md gap-y-sm">
-        <div className="flex items-center gap-x-lg">
+        <div
+          className="flex flex-wrap items-center gap-x-lg gap-y-sm"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {(["menunggu", "dipanggil", "dilayani", "selesai", "batal"] as VisitStatus[]).map(
             (status) => (
               <div key={status} className="min-w-[64px]">

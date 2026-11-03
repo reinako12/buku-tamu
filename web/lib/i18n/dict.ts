@@ -152,6 +152,12 @@ const id = {
   "settings.errSave": "Gagal menyimpan pengaturan.",
   "settings.backDashboard": "Kembali ke dashboard",
 
+  "error.title": "Terjadi gangguan",
+  "error.body": "Halaman ini gagal dimuat. Coba muat ulang; kalau tetap gagal, hubungi petugas.",
+  "error.retry": "Coba lagi",
+  "notFound.title": "Halaman tidak ditemukan",
+  "notFound.body": "Tautan yang Anda buka tidak ada atau sudah kedaluwarsa.",
+  "notFound.home": "Kembali ke buku tamu",
   "closed.title": "Buku tamu ditutup",
   "closed.defaultReason":
     "Pencatatan tamu sedang tidak dibuka. Silakan datang pada hari kerja.",
@@ -352,6 +358,12 @@ const en: Dict = {
   "settings.errSave": "Could not save the settings.",
   "settings.backDashboard": "Back to dashboard",
 
+  "error.title": "Something went wrong",
+  "error.body": "This page failed to load. Try again; if it keeps failing, contact the officer on duty.",
+  "error.retry": "Try again",
+  "notFound.title": "Page not found",
+  "notFound.body": "The link you opened does not exist or has expired.",
+  "notFound.home": "Back to the guest book",
   "closed.title": "Guest book is closed",
   "closed.defaultReason":
     "Visitor registration is currently closed. Please come back on a working day.",

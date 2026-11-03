@@ -11,6 +11,12 @@ function isPublic(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+
+  // Rute publik tidak butuh sesi. Tanpa jalan pintas ini setiap kunjungan
+  // tamu menambah satu panggilan ke Supabase Auth — terasa sekali di 3G.
+  if (isPublic(pathname)) return NextResponse.next();
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -37,8 +43,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname, search } = request.nextUrl;
 
   if (!user && !isPublic(pathname) && pathname !== "/masuk") {
     const url = request.nextUrl.clone();

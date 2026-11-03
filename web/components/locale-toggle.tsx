@@ -30,7 +30,7 @@ export function LocaleToggle() {
             aria-label={
               locale === "id" ? t("common.languageId") : t("common.languageEn")
             }
-            className={`min-h-[36px] px-sm text-caption font-medium transition-colors ${
+            className={`min-h-[44px] px-md text-caption font-medium transition-colors ${
               active
                 ? "bg-primary text-white"
                 : "text-ink-muted hover:bg-surface-muted"

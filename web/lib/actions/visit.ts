@@ -52,22 +52,21 @@ export async function createVisit(
     };
   }
 
-  const limit = checkRateLimit(`visit:${hashIp(await clientIp())}`);
-  if (!limit.allowed) {
-    return {
-      errors: {},
-      message: `Terlalu banyak percobaan. Coba lagi dalam ${limit.retryAfterSeconds} detik.`,
-      values: keepValues,
-    };
-  }
+  // Dua hal ini tidak saling bergantung: ambil bersamaan agar hemat satu
+  // putaran jaringan (terasa di koneksi lambat).
+  const [ip, setting] = await Promise.all([
+    clientIp(),
+    prisma.setting.findUnique({ where: { id: 1 } }),
+  ]);
 
-  const setting = await prisma.setting.findUnique({ where: { id: 1 } });
+  const limit = checkRateLimit(`visit:${hashIp(ip)}`);
+  if (!limit.allowed) {
+    return { errors: {}, message: "err.tooMany", values: keepValues };
+  }
   if (setting && !setting.isOpen) {
     return {
       errors: {},
-      message:
-        setting.closedReason ??
-        "err.closed",
+      message: "err.closed",
       values: keepValues,
     };
   }
