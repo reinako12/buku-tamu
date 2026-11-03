@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-neutral-body text-ink font-sans text-body-md antialiased;
+  }
+
+  /* Fokus harus selalu kelihatan — aksesibilitas, bukan hiasan */
+  :focus-visible {
+    outline: 2px solid #003c80;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Tombol dasar BPS: radius 6px, tanpa shadow */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-sm px-md text-button
+           min-h-[40px] transition-opacity duration-150 disabled:opacity-50
+           disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-ink-inverse hover:opacity-90;
+  }
+
+  .btn-accent {
+    @apply btn bg-primary-light text-ink-inverse hover:bg-primary-light-hover;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-primary border border-border-strong
+           hover:bg-surface-muted;
+  }
+
+  /* Kartu: surface #FCFCFC, radius 12, tanpa shadow */
+  .card {
+    @apply rounded-lg bg-surface p-lg;
+  }
+
+  /* Input: 44px tinggi minimal, border tipis, fokus biru */
+  .field {
+    @apply w-full rounded-md border border-border-strong bg-surface px-sm
+           min-h-[44px] text-body-md text-ink placeholder:text-ink-muted
+           focus:border-primary focus:outline-none focus:ring-1
+           focus:ring-primary;
+  }
+
+  /* Skeleton loading — abu, bukan animasi mewah */
+  .skeleton-box {
+    @apply animate-pulse rounded-md bg-surface-sunken;
+  }
+}
