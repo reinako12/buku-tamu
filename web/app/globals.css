@@ -91,15 +91,17 @@
 
   /* Baris formulir: label di kiri saat layar lebar, label di atas saat HP. */
   .form-row {
-    @apply grid gap-x-lg gap-y-2xs md:grid-cols-12 md:items-start;
+    @apply grid gap-x-lg gap-y-2xs lg:grid-cols-12 lg:items-start;
   }
 
+  /* Baru di 1024px ke atas label muat sebaris dengan input. Di bawah itu
+     label di atas — supaya tanda bintang tidak pernah jatuh sendiri. */
   .form-label {
-    @apply text-body-sm font-medium text-ink md:col-span-3 md:pt-[15px];
+    @apply text-body-sm font-medium text-ink lg:col-span-3 lg:pt-[15px];
   }
 
   .form-control {
-    @apply md:col-span-9;
+    @apply lg:col-span-9;
   }
 
   .section-head {

@@ -41,8 +41,8 @@ function Row({
         {label}
         {required ? (
           <span className="text-danger" aria-hidden="true">
-            {" "}
-            *
+            {/* spasi tak-terputus: tanda bintang tidak boleh jatuh ke baris sendiri */}
+            {"\u00A0*"}
           </span>
         ) : null}
       </label>
@@ -136,7 +136,7 @@ export function CheckinForm() {
 
         <Row
           htmlFor="phone"
-          label="Nomor HP atau WhatsApp"
+          label="Nomor HP / WhatsApp"
           required
           error={errors.phone}
           errorId="err-phone"
@@ -243,8 +243,7 @@ export function CheckinForm() {
           <span className="form-label">
             Jumlah orang
             <span className="text-danger" aria-hidden="true">
-              {" "}
-              *
+              {"\u00A0*"}
             </span>
           </span>
           <div className="form-control">
