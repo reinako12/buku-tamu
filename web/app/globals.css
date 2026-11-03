@@ -194,6 +194,19 @@
            py-xs text-caption text-ink-muted;
   }
 
+
+  /* Pil jenis kelamin: hover hanya menggelap sedikit, warna biru/pink
+     khusus status terpilih. */
+  .gender-pill {
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  label:not(:has(input:checked)):hover .gender-pill {
+    border-color: #93a1b3;
+    background-color: #f2f4f7;
+    color: var(--ink, #121a26);
+  }
+
   /* Satu-satunya animasi masuk: baris tamu baru. */
   .row-in {
     animation: row-in 320ms ease-out;

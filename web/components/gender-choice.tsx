@@ -59,7 +59,7 @@ export function GenderChoice({
               aria-describedby={describedBy}
             />
             <span
-              className={`flex min-h-[48px] items-center gap-xs rounded-lg border
+              className={`gender-pill flex min-h-[48px] items-center gap-xs rounded-lg border
                           border-border-strong px-lg text-body-sm text-ink-muted
                           transition-colors duration-150
                           peer-focus-visible:ring-2 peer-focus-visible:ring-primary/20
