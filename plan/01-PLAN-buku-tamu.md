@@ -252,6 +252,21 @@ switch untuk libur, info jam untuk istirahat/luar jam.
 
 ## 8. Struktur data
 
+**Lapisan data: Prisma 6 (bukan supabase-js).**
+- `web/prisma/schema.prisma` = sumber kebenaran tabel & enum.
+- Akses data lewat `lib/prisma.ts` (server-only). Tamu lewat server action yang
+  memvalidasi token; petugas lewat sesi Supabase Auth.
+- Supabase dipakai **hanya** untuk Auth + Realtime. Pindah ke Postgres biasa =
+  ganti `DATABASE_URL`, tanpa ubah kode.
+- Fungsi `create_visit` (alokasi nomor antrian) + RLS hidup di migrasi manual
+  `0001_functions_rls`, bukan di schema Prisma.
+- **Konsekuensi keamanan:** Prisma connect sebagai pemilik tabel, jadi RLS tidak
+  berlaku untuk query Prisma. Otorisasi jalur ini ada di kode (server-only).
+  RLS tetap relevan untuk jalur Supabase (Auth/Realtime).
+- Verifikasi 3 Nov 2026: `prisma migrate diff` → **0 drift**, `create_visit` via
+  Prisma → `BT-20261103-001`, baca/tulis via pooler 6543 OK.
+
+
 File: `supabase/migrations/0001_init.sql`
 
 ```sql
@@ -321,6 +336,23 @@ insert into settings (id) values (1) on conflict do nothing;
 untuk baca data. Realtime untuk tamu pakai private channel yang diotorisasi server.
 
 ---
+
+### 8b. Lapisan data — Prisma (revisi 3 Nov 2026)
+
+- **ORM: Prisma.** Alasan: kemungkinan besar proyek dipindah ke Postgres biasa
+  (bukan Supabase), jadi akses data tidak boleh terikat ke `supabase-js`.
+- **Supabase Auth + Realtime tetap dipakai** sampai ada keputusan pindah. Yang
+  dipisah hanya lapisan data.
+- **RLS tidak lagi jadi pengaman utama** untuk query aplikasi, karena Prisma
+  connect sebagai `postgres` dan menembus RLS. Konsekuensi yang harus dijaga:
+  semua akses data HARUS lewat modul `server-only` (`lib/visits/*`, `lib/queries/*`),
+  tidak boleh ada query dari komponen client. Otorisasi tamu = validasi token di
+  server action.
+- **Nomor antrian** dialokasikan di `prisma.$transaction` + `pg_advisory_xact_lock`
+  per tanggal (`lib/visits/create.ts`), bukan lagi lewat fungsi SQL.
+- **Tipe**: `prisma generate` → `@prisma/client`. Tidak perlu `supabase gen types`.
+- **Migrasi**: `prisma migrate deploy` untuk deploy, `supabase/migrations/` jadi
+  arsip historis (0001 sudah diterapkan di cloud).
 
 ## 9. Batasan teknis (dari keputusan browser lama)
 

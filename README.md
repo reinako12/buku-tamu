@@ -5,14 +5,15 @@ Proyek magang #1. Aplikasi buku tamu digital BPS Kabupaten Tanah Datar.
 **Status:** Fase 0 selesai (setup). Fase 1 belum mulai — menunggu gate user.
 **Repo:** https://github.com/reinako12/buku-tamu (private)
 **Domain demo:** `bukutamu.grrifixn.my.id` (belum di-deploy).
-**Stack:** Next.js 15.5 · TypeScript · Tailwind **3.5** · Supabase.
+**Stack:** Next.js 15.5 · TypeScript · Tailwind **3.5** · **Prisma** · Supabase (Postgres + Auth + Realtime).
 
 ## Struktur
 
 | Path | Isi |
 |---|---|
 | `web/` | Kode aplikasi Next.js |
-| `supabase/migrations/` | Skema database (0001 = buku tamu, 0002 = chat nanti) |
+| `web/prisma/` | `schema.prisma` + migrasi (sumber kebenaran skema) |
+| `web/prisma/migrations/` | 0000 = tabel (generated), 0001 = fungsi + RLS |
 | `plan/` | Rencana: `01-PLAN-buku-tamu.md` (master) + `fase-00` … `fase-06` |
 | `notes/` | Log keputusan & catatan uji |
 | `docs/` | `CARA-PAKAI.md`, `TEKNIS.md` — untuk diserahkan |

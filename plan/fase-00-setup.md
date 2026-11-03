@@ -1,6 +1,6 @@
 # Fase 0 — Setup Proyek
 
-**Status:** ✅ selesai 2 Nov 2026
+**Status:** ✅ selesai 2 Nov 2026 · **revisi 3 Nov:** pindah ke Prisma
 **Estimasi:** ½ hari · **Aktual:** ~1 jam
 **Gate:** user cek hasil sebelum Fase 1
 
@@ -18,9 +18,11 @@ token BPS terpasang, font Inter termuat, schema database valid.
 | 0.3 | Token BPS dari `design/tailwind.theme.json` → `theme.extend` (21 warna, 11 fontSize, 5 radius, 11 spacing) | idem |
 | 0.4 | Inter variable via `next/font` (self-host, bukan CDN) | 3 file `.woff2` di `.next/static/media/` |
 | 0.5 | `globals.css`: base body `#EEF0F2` 16/24, kelas `.btn-*`, `.card`, `.field`, `.skeleton-box` | computed body = `rgb(238 240 242)` |
-| 0.6 | Supabase client: `lib/supabase/{server,admin}.ts` + `lib/env.ts` | `npm run typecheck` bersih |
-| 0.7 | Migrasi `supabase/migrations/0001_init.sql`: enum, `profiles`, `visits`, `settings`, fungsi `create_visit`, RLS, trigger profil | diuji di Postgres 16 lokal |
+| 0.6 | Supabase client (Auth/Realtime) + `lib/env.ts` | `npm run typecheck` bersih |
+| 0.6b | **Prisma 6.19** + `prisma/schema.prisma` + baseline migrasi 0000 + fungsi/RLS 0001 | `prisma migrate status` = up to date, drift 0 |
+| 0.7 | Migrasi: enum, `profiles`, `visits`, `settings`, fungsi `create_visit`, RLS, trigger profil | diuji di Postgres 16 lokal **dan** Supabase cloud |
 | 0.8 | `web/.env.example` + `.gitignore` env | — |
+| 0.8b | **Prisma** (`schema.prisma` + `lib/prisma.ts` + `lib/visits/create.ts`) — menggantikan akses data `supabase-js` | `prisma/schema.prisma` |
 | 0.9 | Halaman `/` sementara = cek token (diganti Fase 1) | `app/page.tsx` |
 
 ## Hasil uji database (Postgres 16 lokal)

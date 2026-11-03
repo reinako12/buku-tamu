@@ -1,0 +1,94 @@
+// Skema Prisma — sumber kebenaran struktur tabel.
+//
+// Catatan penting:
+// - `profiles.id` adalah UUID yang sama dengan auth.users.id (Supabase Auth).
+//   Relasi FK-nya sengaja TIDAK dimodelkan di sini karena tabel auth.users
+//   milik Supabase. Kalau nanti pindah ke Postgres biasa, kolom ini tinggal
+//   dipakai sebagai id user dari tabel users aplikasi.
+// - Fungsi `create_visit` (alokasi nomor antrian) dan RLS TIDAK ada di schema
+//   Prisma. Keduanya hidup di migration SQL manual (0001_functions_rls).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum VisitStatus {
+  menunggu
+  dipanggil
+  dilayani
+  selesai
+  batal
+
+  @@map("visit_status")
+}
+
+enum StaffRole {
+  petugas
+  admin
+
+  @@map("staff_role")
+}
+
+enum VisitSource {
+  mandiri
+  manual
+
+  @@map("visit_source")
+}
+
+model Profile {
+  id        String    @id @db.Uuid
+  fullName  String    @map("full_name")
+  role      StaffRole @default(petugas)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  visits Visit[] @relation("handled_by")
+
+  @@map("profiles")
+}
+
+model Visit {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token          String      @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  queueDate      DateTime    @map("queue_date") @db.Date
+  queueSeq       Int         @map("queue_seq")
+  queueNo        String      @unique @map("queue_no")
+  name           String
+  institution    String
+  institutionCat String      @map("institution_cat")
+  phone          String
+  purpose        String
+  detail         String?
+  personCount    Int         @default(1) @map("person_count") @db.SmallInt
+  status         VisitStatus @default(menunggu)
+  source         VisitSource @default(mandiri)
+  handledBy      String?     @map("handled_by") @db.Uuid
+  internalNote   String?     @map("internal_note")
+  checkInAt      DateTime    @default(now()) @map("check_in_at") @db.Timestamptz(6)
+  checkOutAt     DateTime?   @map("check_out_at") @db.Timestamptz(6)
+
+  handler Profile? @relation("handled_by", fields: [handledBy], references: [id], onDelete: SetNull)
+
+  @@unique([queueDate, queueSeq])
+  @@index([queueDate(sort: Desc), queueSeq(sort: Desc)])
+  @@index([status])
+  @@index([phone])
+  @@map("visits")
+}
+
+model Setting {
+  id           Int       @id @default(1) @db.SmallInt
+  isOpen       Boolean   @default(true) @map("is_open")
+  closedReason String?   @map("closed_reason")
+  reopenAt     DateTime? @map("reopen_at") @db.Timestamptz(6)
+  autoReopen   Boolean   @default(true) @map("auto_reopen")
+  updatedAt    DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("settings")
+}

@@ -1,24 +1,22 @@
 /**
- * Env yang dipakai aplikasi. Semua divalidasi saat dipakai, bukan saat import,
+ * Env yang dipakai aplikasi. Divalidasi saat dipakai, bukan saat import,
  * supaya `next build` tetap jalan tanpa kredensial (penting untuk CI).
+ *
+ * DATABASE_URL / DIRECT_URL dibaca langsung oleh Prisma (lihat prisma/schema.prisma),
+ * tidak lewat file ini.
  */
 
 function required(name: string): string {
   const value = process.env[name];
   if (!value) {
-    throw new Error(`Env ${name} belum di-set. Lihat web/.env.example`);
+    throw new Error(`Env ${name} belum diisi. Lihat .env.example.`);
   }
   return value;
 }
 
+/** Supabase — sekarang hanya untuk Auth dan Realtime, bukan akses data. */
 export const supabaseUrl = () => required("NEXT_PUBLIC_SUPABASE_URL");
 export const supabaseAnonKey = () => required("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 
-/**
- * Service role: HANYA untuk server action yang memvalidasi token tamu.
- * Jangan pernah diimpor dari komponen client.
- */
-export const supabaseServiceKey = () => required("SUPABASE_SERVICE_ROLE_KEY");
-
-/** Salt untuk hash IP di rate limiter — biar IP mentah tidak tersimpan. */
-export const rateLimitSalt = () => process.env.RATE_LIMIT_SALT ?? "dev-only-salt";
+/** Salt untuk hash IP di rate limiter form publik. */
+export const rateLimitSalt = () => required("RATE_LIMIT_SALT");
