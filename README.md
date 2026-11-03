@@ -2,7 +2,7 @@
 
 Proyek magang #1. Aplikasi buku tamu digital BPS Kabupaten Tanah Datar.
 
-**Status:** Fase 0 (setup), Fase 1 (form + tiket), dan deploy demo selesai — menunggu pengecekan user.
+**Status:** Fase 0–4 selesai (setup, form + tiket, dashboard petugas, pengaturan + ID/EN, QA & responsif). Fase 5 diisi dokumentasi petugas. Deploy demo sudah jalan.
 **Repo:** https://github.com/reinako12/buku-tamu (private)
 **Live (demo):** https://bukutamu.grrifixn.my.id — sudah bisa dites dari HP.
 **Stack:** Next.js 15.5 · TypeScript · Tailwind **3.5** · **Prisma** · Supabase (Postgres + Auth + Realtime).
@@ -16,18 +16,18 @@ Proyek magang #1. Aplikasi buku tamu digital BPS Kabupaten Tanah Datar.
 | `web/prisma/migrations/` | 0000 = tabel (generated), 0001 = fungsi + RLS |
 | `plan/` | Rencana: `01-PLAN-buku-tamu.md` (master) + `fase-00` … `fase-06` |
 | `notes/` | Log keputusan & catatan uji |
-| `docs/` | `CARA-PAKAI.md`, `TEKNIS.md` — untuk diserahkan |
+| `docs/` | `CARA-PAKAI.md` (panduan petugas, sudah ada), `TEKNIS.md` (belum) |
 | `assets/` | Logo, screenshot |
 | `design/` | Salinan design system BPS (sumber asli di `project-magang/design/`) |
 
 ## Fase
 
 - ✅ **Fase 0** — setup, token, schema → `plan/fase-00-setup.md`
-- ⬜ **Fase 1** — form buku tamu + tiket
-- ⬜ **Fase 2** — login + dashboard
-- ⬜ **Fase 3** — switch tutup/buka + ID/EN
-- ⬜ **Fase 4** — QA & responsif
-- ⬜ **Fase 5** — deploy demo
+- ✅ **Fase 1** — form buku tamu + tiket
+- ✅ **Fase 2** — login + dashboard petugas
+- ✅ **Fase 3** — switch tutup/buka + ID/EN (3A + 3B)
+- ✅ **Fase 4** — QA & responsif → `notes/fase-4-qa.md`
+- ✅ **Fase 5** — dokumentasi petugas → `docs/CARA-PAKAI.md` (deploy demo sudah lebih dulu jalan)
 - ⬜ **Fase 6** — live chat (setelah buku tamu rampung)
 
 ## Jalan cepat
