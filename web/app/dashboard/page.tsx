@@ -57,26 +57,29 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto w-full max-w-container px-md py-lg">
-      <header className="mb-md flex flex-wrap items-end justify-between gap-sm">
+      <header className="masthead mb-lg flex flex-wrap items-end justify-between gap-sm">
         <div>
-          <p className="text-caption uppercase tracking-wide text-ink-muted">
-            BPS Kabupaten Tanah Datar
-          </p>
-          <h1 className="text-heading-page text-primary">Buku tamu hari ini</h1>
-          <p className="mt-2xs text-body-sm text-ink-muted">
-            {todayLabel} · {profile.fullName}
-          </p>
+          <p className="masthead-org">Badan Pusat Statistik</p>
+          <p className="masthead-unit">Kabupaten Tanah Datar</p>
         </div>
 
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-xs">
           <WalkInDialog />
           <form action={signOut}>
-            <button type="submit" className="btn-ghost">
+            <button type="submit" className="btn-quiet">
               Keluar
             </button>
           </form>
         </div>
       </header>
+
+      <div className="mb-xs flex flex-wrap items-baseline justify-between gap-x-md">
+        <h1 className="text-heading-page text-ink">Buku tamu hari ini</h1>
+        <p className="text-body-sm text-ink-muted">{todayLabel}</p>
+      </div>
+      <p className="mb-md text-caption text-ink-muted">
+        Petugas: {profile.fullName}
+      </p>
 
       <VisitBoard initialVisits={visits} />
     </main>

@@ -60,6 +60,6 @@ test("Perhitungan pakai WIB, bukan zona waktu server", () => {
 });
 
 test("label jam layanan", () => {
-  assert.match(serviceHoursLabel(), /Senin–Kamis/);
+  assert.match(serviceHoursLabel(), /Senin/);
   assert.match(serviceHoursLabel(), /Jumat/);
 });

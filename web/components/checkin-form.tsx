@@ -20,7 +20,7 @@ const initialState: FormState = { errors: {}, message: null, values: {} };
 function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} className="mt-xs text-caption text-danger">
+    <p id={id} className="field-error">
       {message}
     </p>
   );
@@ -30,7 +30,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Menyimpan…" : "Daftar kunjungan"}
+      {pending ? "Mengirim data" : "Kirim dan ambil nomor antrian"}
     </button>
   );
 }
@@ -69,14 +69,14 @@ export function CheckinForm() {
       {state.message ? (
         <div
           role="alert"
-          className="rounded-md border border-danger/40 bg-danger/5 px-sm py-sm text-body-sm text-danger"
+          className="border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
           {state.message}
         </div>
       ) : null}
 
       <div>
-        <label htmlFor="name" className="mb-2xs block text-label-sm text-ink">
+        <label htmlFor="name" className="field-label">
           Nama lengkap <span className="text-danger">*</span>
         </label>
         <input
@@ -94,8 +94,8 @@ export function CheckinForm() {
       </div>
 
       <div>
-        <label htmlFor="phone" className="mb-2xs block text-label-sm text-ink">
-          Nomor HP / WhatsApp <span className="text-danger">*</span>
+        <label htmlFor="phone" className="field-label">
+          Nomor HP atau WhatsApp <span className="text-danger">*</span>
         </label>
         <input
           id="phone"
@@ -111,13 +111,13 @@ export function CheckinForm() {
           placeholder="0812 3456 7890"
         />
         {filledFromPrevious ? (
-          <p id="hint-phone" className="mt-xs text-caption text-primary">
+          <p id="hint-phone" className="field-hint text-primary">
             {pendingLookup
-              ? "Mencari data kunjungan sebelumnya…"
-              : "Data diisi dari kunjungan sebelumnya. Silakan ubah kalau ada yang berbeda."}
+              ? "Mencari kunjungan sebelumnya."
+              : "Nama dan instansi diisi dari kunjungan sebelumnya. Ubah kalau sudah berbeda."}
           </p>
         ) : (
-          <p id="hint-phone" className="mt-xs text-caption text-ink-muted">
+          <p id="hint-phone" className="field-hint">
             Dipakai untuk menghubungi Anda dan mengisi data kunjungan berikutnya.
           </p>
         )}
@@ -125,10 +125,7 @@ export function CheckinForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="institutionCat"
-          className="mb-2xs block text-label-sm text-ink"
-        >
+        <label htmlFor="institutionCat" className="field-label">
           Kategori instansi <span className="text-danger">*</span>
         </label>
         <select
@@ -140,7 +137,7 @@ export function CheckinForm() {
           aria-invalid={Boolean(errors.institutionCat)}
           aria-describedby={errors.institutionCat ? "err-cat" : undefined}
         >
-          <option value="">Pilih kategori…</option>
+          <option value="">Pilih kategori</option>
           {INSTITUTION_CATEGORIES.map((value) => (
             <option key={value} value={value}>
               {INSTITUTION_LABEL[value]}
@@ -151,11 +148,8 @@ export function CheckinForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="institution"
-          className="mb-2xs block text-label-sm text-ink"
-        >
-          Nama instansi / asal <span className="text-danger">*</span>
+        <label htmlFor="institution" className="field-label">
+          Nama instansi atau asal <span className="text-danger">*</span>
         </label>
         <input
           id="institution"
@@ -165,16 +159,16 @@ export function CheckinForm() {
           onChange={(e) => setInstitution(e.target.value)}
           aria-invalid={Boolean(errors.institution)}
           aria-describedby={errors.institution ? "err-inst" : "hint-inst"}
-          placeholder="Contoh: Dinas Pendidikan / Pribadi"
+          placeholder="Dinas Pendidikan, atau Pribadi"
         />
-        <p id="hint-inst" className="mt-xs text-caption text-ink-muted">
+        <p id="hint-inst" className="field-hint">
           Kalau datang sendiri, tulis &quot;Pribadi&quot;.
         </p>
         <FieldError id="err-inst" message={errors.institution} />
       </div>
 
       <div>
-        <label htmlFor="purpose" className="mb-2xs block text-label-sm text-ink">
+        <label htmlFor="purpose" className="field-label">
           Tujuan kunjungan <span className="text-danger">*</span>
         </label>
         <select
@@ -185,7 +179,7 @@ export function CheckinForm() {
           aria-invalid={Boolean(errors.purpose)}
           aria-describedby={errors.purpose ? "err-purpose" : undefined}
         >
-          <option value="">Pilih tujuan…</option>
+          <option value="">Pilih tujuan</option>
           {PURPOSES.map((value) => (
             <option key={value} value={value}>
               {PURPOSE_LABEL[value]}
@@ -196,13 +190,13 @@ export function CheckinForm() {
       </div>
 
       <div>
-        <span className="mb-2xs block text-label-sm text-ink">
+        <span className="field-label">
           Jumlah orang <span className="text-danger">*</span>
         </span>
-        <div className="flex items-center gap-sm">
+        <div className="flex items-center gap-xs">
           <button
             type="button"
-            className="btn-ghost h-[44px] w-[44px] shrink-0 px-0 text-heading-card"
+            className="btn-ghost w-11 px-0 font-mono text-heading-card"
             onClick={() => setPersonCount((n) => Math.max(1, n - 1))}
             aria-label="Kurangi jumlah orang"
           >
@@ -211,7 +205,7 @@ export function CheckinForm() {
           <input
             id="personCount"
             name="personCount"
-            className="field w-20 text-center"
+            className="field w-16 text-center font-mono"
             inputMode="numeric"
             value={personCount}
             onChange={(e) => {
@@ -223,28 +217,29 @@ export function CheckinForm() {
           />
           <button
             type="button"
-            className="btn-ghost h-[44px] w-[44px] shrink-0 px-0 text-heading-card"
+            className="btn-ghost w-11 px-0 font-mono text-heading-card"
             onClick={() => setPersonCount((n) => Math.min(50, n + 1))}
             aria-label="Tambah jumlah orang"
           >
             +
           </button>
+          <span className="text-body-sm text-ink-muted">termasuk Anda</span>
         </div>
         <FieldError id="err-count" message={errors.personCount} />
       </div>
 
       <div>
-        <label htmlFor="detail" className="mb-2xs block text-label-sm text-ink">
-          Keterangan <span className="text-ink-muted">(opsional)</span>
+        <label htmlFor="detail" className="field-label">
+          Keterangan <span className="font-normal text-ink-muted">(opsional)</span>
         </label>
         <textarea
           id="detail"
           name="detail"
-          className="field min-h-[88px] py-sm"
+          className="field min-h-[88px] resize-y"
           rows={3}
           maxLength={500}
           defaultValue={state.values.detail ?? ""}
-          placeholder="Uraian singkat keperluan, misal: konsultasi data stunting 2025"
+          placeholder="Keperluan singkat, misal: konsultasi data stunting 2025"
           aria-invalid={Boolean(errors.detail)}
           aria-describedby={errors.detail ? "err-detail" : undefined}
         />
@@ -258,10 +253,6 @@ export function CheckinForm() {
       </div>
 
       <SubmitButton />
-
-      <p className="text-caption text-ink-muted">
-        Data dipakai untuk keperluan buku tamu BPS Kabupaten Tanah Datar.
-      </p>
     </form>
   );
 }

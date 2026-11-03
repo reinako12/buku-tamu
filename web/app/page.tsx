@@ -8,8 +8,6 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Buku Tamu — BPS Kabupaten Tanah Datar",
-  description: "Isi buku tamu digital BPS Kabupaten Tanah Datar.",
-  robots: { index: false, follow: false },
 };
 
 export default async function HomePage() {
@@ -18,58 +16,59 @@ export default async function HomePage() {
 
   if (setting && !setting.isOpen) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-form flex-col justify-center px-md py-xl">
-        <div className="card">
-          <h1 className="text-heading-page text-primary">Buku tamu ditutup</h1>
-          <p className="mt-sm text-body-md text-ink-muted">
-            {setting.closedReason ??
-              "Buku tamu ditutup sementara. Silakan datang pada hari kerja."}
-          </p>
-          {setting.reopenAt ? (
-            <p className="mt-sm text-body-sm text-ink">
-              Dibuka kembali:{" "}
-              {new Intl.DateTimeFormat("id-ID", {
-                dateStyle: "full",
-                timeStyle: "short",
-                timeZone: "Asia/Jakarta",
-              }).format(setting.reopenAt)}{" "}
-              WIB
-            </p>
-          ) : null}
-          <p className="mt-lg text-caption text-ink-muted">
-            BPS Kabupaten Tanah Datar · {serviceHoursLabel()}
-          </p>
+      <main className="mx-auto w-full max-w-form px-md py-xl">
+        <header className="masthead mb-lg">
+          <p className="masthead-org">Badan Pusat Statistik</p>
+          <p className="masthead-unit">Kabupaten Tanah Datar</p>
+        </header>
+
+        <h1 className="text-heading-page text-ink">Buku tamu ditutup</h1>
+        <p className="mt-xs text-body-md text-ink-muted">
+          {setting.closedReason ??
+            "Pencatatan tamu sedang tidak dibuka. Silakan kembali pada jam layanan."}
+        </p>
+
+        <div className="meta-strip mt-lg">
+          <span>Jam layanan</span>
+          <span className="font-medium text-ink">{serviceHoursLabel()}</span>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto w-full max-w-form px-md py-lg">
-      <header className="mb-md">
-        <p className="text-caption uppercase tracking-wide text-ink-muted">
-          Badan Pusat Statistik
-        </p>
-        <h1 className="text-heading-page text-primary">
-          Buku Tamu Digital
-        </h1>
-        <p className="mt-2xs text-body-sm text-ink-muted">
-          Kabupaten Tanah Datar
-        </p>
+    <main className="mx-auto w-full max-w-form px-md py-lg sm:py-xl">
+      <header className="masthead mb-lg">
+        <p className="masthead-org">Badan Pusat Statistik</p>
+        <p className="masthead-unit">Kabupaten Tanah Datar</p>
       </header>
+
+      <h1 className="text-display-hero text-ink">Buku tamu</h1>
+      <p className="mt-xs max-w-[46ch] text-body-md text-ink-muted">
+        Isi data kunjungan Anda di bawah ini. Setelah terkirim, Anda menerima nomor
+        antrian yang bisa ditunjukkan ke petugas.
+      </p>
+
+      <div className="meta-strip mt-md mb-md">
+        <span>Jam layanan</span>
+        <span className="font-medium text-ink">{serviceHoursLabel()}</span>
+      </div>
 
       <ServiceBanner state={state} />
 
-      <div className="card">
+      <div className="sheet">
+        <h2 className="sheet-title">Data kunjungan</h2>
+        <p className="sheet-note mt-2xs mb-md">
+          Kolom bertanda bintang wajib diisi. Nomor HP dipakai untuk menghubungi Anda
+          bila diperlukan.
+        </p>
         <CheckinForm />
       </div>
 
-      <footer className="mt-md space-y-2xs text-caption text-ink-muted">
-        <p>Jam layanan: {serviceHoursLabel()}</p>
-        <p>
-          Setelah mendaftar, tunjukkan nomor antrian kepada petugas resepsionis.
-        </p>
-      </footer>
+      <p className="mt-md text-caption text-ink-muted">
+        Data yang Anda isi hanya digunakan untuk keperluan pencatatan kunjungan di BPS
+        Kabupaten Tanah Datar.
+      </p>
     </main>
   );
 }

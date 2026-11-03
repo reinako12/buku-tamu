@@ -16,7 +16,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Menyimpan…" : "Simpan tamu"}
+      {pending ? "Menyimpan" : "Simpan tamu"}
     </button>
   );
 }
@@ -43,9 +43,9 @@ export function WalkInDialog() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 px-md py-lg">
-      <div className="w-full max-w-form rounded-lg bg-surface p-md">
+      <div className="w-full max-w-form rounded-xs border border-border bg-surface p-md">
         <div className="mb-sm flex items-center justify-between">
-          <h2 className="text-heading-card text-primary">Tambah tamu manual</h2>
+          <h2 className="text-heading-card text-ink">Tambah tamu manual</h2>
           <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
             Tutup
           </button>
@@ -59,17 +59,17 @@ export function WalkInDialog() {
           ) : null}
 
           <div>
-            <label htmlFor="wi-name" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-name" className="field-label">
               Nama lengkap
             </label>
             <input id="wi-name" name="name" className="field" required />
             {state.fieldErrors.name ? (
-              <p className="mt-xs text-caption text-danger">{state.fieldErrors.name}</p>
+              <p className="field-error">{state.fieldErrors.name}</p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-phone" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-phone" className="field-label">
               Nomor HP
             </label>
             <input
@@ -81,12 +81,12 @@ export function WalkInDialog() {
               required
             />
             {state.fieldErrors.phone ? (
-              <p className="mt-xs text-caption text-danger">{state.fieldErrors.phone}</p>
+              <p className="field-error">{state.fieldErrors.phone}</p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-cat" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-cat" className="field-label">
               Kategori instansi
             </label>
             <select id="wi-cat" name="institutionCat" className="field" required>
@@ -98,26 +98,26 @@ export function WalkInDialog() {
               ))}
             </select>
             {state.fieldErrors.institutionCat ? (
-              <p className="mt-xs text-caption text-danger">
+              <p className="field-error">
                 {state.fieldErrors.institutionCat}
               </p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-inst" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-inst" className="field-label">
               Nama instansi
             </label>
             <input id="wi-inst" name="institution" className="field" required />
             {state.fieldErrors.institution ? (
-              <p className="mt-xs text-caption text-danger">
+              <p className="field-error">
                 {state.fieldErrors.institution}
               </p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-purpose" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-purpose" className="field-label">
               Tujuan
             </label>
             <select id="wi-purpose" name="purpose" className="field" required>
@@ -129,12 +129,12 @@ export function WalkInDialog() {
               ))}
             </select>
             {state.fieldErrors.purpose ? (
-              <p className="mt-xs text-caption text-danger">{state.fieldErrors.purpose}</p>
+              <p className="field-error">{state.fieldErrors.purpose}</p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-count" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-count" className="field-label">
               Jumlah orang
             </label>
             <input
@@ -146,14 +146,14 @@ export function WalkInDialog() {
               required
             />
             {state.fieldErrors.personCount ? (
-              <p className="mt-xs text-caption text-danger">
+              <p className="field-error">
                 {state.fieldErrors.personCount}
               </p>
             ) : null}
           </div>
 
           <div>
-            <label htmlFor="wi-detail" className="mb-2xs block text-label-sm text-ink">
+            <label htmlFor="wi-detail" className="field-label">
               Keterangan (opsional)
             </label>
             <textarea

@@ -15,23 +15,24 @@ export default async function LoginPage({
   const target = next && next.startsWith("/") ? next : "/dashboard";
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-form flex-col justify-center px-md py-xl">
-      <header className="mb-md">
-        <p className="text-caption uppercase tracking-wide text-ink-muted">
-          Badan Pusat Statistik
-        </p>
-        <h1 className="text-heading-page text-primary">Masuk petugas</h1>
-        <p className="mt-2xs text-body-sm text-ink-muted">
-          Halaman ini hanya untuk petugas resepsionis BPS Kabupaten Tanah Datar.
-        </p>
+    <main className="mx-auto w-full max-w-form px-md py-xl">
+      <header className="masthead mb-lg">
+        <p className="masthead-org">Badan Pusat Statistik</p>
+        <p className="masthead-unit">Kabupaten Tanah Datar</p>
       </header>
 
-      <div className="card">
+      <h1 className="text-heading-page text-ink">Masuk untuk petugas</h1>
+      <p className="mt-xs max-w-[42ch] text-body-sm text-ink-muted">
+        Halaman ini hanya untuk petugas resepsionis. Tamu tidak perlu masuk untuk
+        mengisi buku tamu.
+      </p>
+
+      <div className="sheet mt-md">
         <LoginForm next={target} />
       </div>
 
       <p className="mt-md text-caption text-ink-muted">
-        Tamu tidak perlu masuk. Silakan buka halaman utama untuk mengisi buku tamu.
+        Lupa kata sandi? Hubungi pengelola sistem BPS Kabupaten Tanah Datar.
       </p>
     </main>
   );

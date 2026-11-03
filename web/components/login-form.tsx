@@ -10,7 +10,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Memeriksa…" : "Masuk"}
+      {pending ? "Memeriksa" : "Masuk"}
     </button>
   );
 }
@@ -25,14 +25,14 @@ export function LoginForm({ next }: { next: string }) {
       {state.error ? (
         <div
           role="alert"
-          className="rounded-md border border-danger/40 bg-danger/5 px-sm py-sm text-body-sm text-danger"
+          className="border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
           {state.error}
         </div>
       ) : null}
 
       <div>
-        <label htmlFor="email" className="mb-2xs block text-label-sm text-ink">
+        <label htmlFor="email" className="field-label">
           Email petugas
         </label>
         <input
@@ -47,7 +47,7 @@ export function LoginForm({ next }: { next: string }) {
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-2xs block text-label-sm text-ink">
+        <label htmlFor="password" className="field-label">
           Password
         </label>
         <input

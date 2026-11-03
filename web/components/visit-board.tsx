@@ -35,11 +35,11 @@ const STATUS_ORDER: Record<VisitStatus, number> = {
 };
 
 const STATUS_STYLE: Record<VisitStatus, string> = {
-  menunggu: "border-warning/40 bg-warning/10 text-warning-dark",
-  dipanggil: "border-primary/30 bg-primary-light/15 text-primary",
-  dilayani: "border-primary/30 bg-primary-light/15 text-primary",
-  selesai: "border-success/40 bg-success/10 text-success",
-  batal: "border-danger/40 bg-danger/5 text-danger",
+  menunggu: "border-warning text-warning-dark",
+  dipanggil: "border-primary text-primary",
+  dilayani: "border-primary text-primary",
+  selesai: "border-success text-success",
+  batal: "border-danger text-danger",
 };
 
 const ACTION_LABEL: Partial<Record<VisitStatus, string>> = {
@@ -55,7 +55,7 @@ const PURPOSE_LABEL: Record<string, string> = {
   data: "Permintaan data",
   kerjasama: "Kerja sama",
   audiensi: "Audiensi",
-  magang: "Magang/penelitian",
+  magang: "Magang atau penelitian",
   lainnya: "Lainnya",
 };
 
@@ -90,6 +90,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
   const [error, setError] = useState<string | null>(null);
   const [live, setLive] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
+  const [newId, setNewId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const seenIds = useRef(new Set(initialVisits.map((v) => v.id)));
   const audioCtx = useRef<AudioContext | null>(null);
@@ -141,6 +142,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
               beep();
               return [...prev, incoming];
             });
+            setNewId(incoming.id);
           }
 
           if (event.eventType === "UPDATE") {
@@ -157,6 +159,12 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
       supabase.removeChannel(channel);
     };
   }, [beep]);
+
+  useEffect(() => {
+    if (!newId) return;
+    const timer = setTimeout(() => setNewId(null), 4000);
+    return () => clearTimeout(timer);
+  }, [newId]);
 
   const sorted = useMemo(
     () =>
@@ -196,110 +204,141 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
   }
 
   return (
-    <div>
-      <div className="mb-md flex flex-wrap items-center gap-sm">
-        <span className="text-label-sm text-ink-muted">Status</span>
-        <span className="rounded-sm bg-warning/10 px-sm py-2xs text-label-sm text-warning-dark">
-          Menunggu {counts.menunggu}
-        </span>
-        <span className="rounded-sm bg-primary-light/15 px-sm py-2xs text-label-sm text-primary">
-          Dipanggil {counts.dipanggil}
-        </span>
-        <span className="rounded-sm bg-primary-light/15 px-sm py-2xs text-label-sm text-primary">
-          Dilayani {counts.dilayani}
-        </span>
-        <span className="rounded-sm bg-success/10 px-sm py-2xs text-label-sm text-success">
-          Selesai {counts.selesai}
-        </span>
-        {counts.batal > 0 ? (
-          <span className="rounded-sm bg-danger/5 px-sm py-2xs text-label-sm text-danger">
-            Batal {counts.batal}
-          </span>
-        ) : null}
+    <section aria-label="Daftar tamu hari ini">
+      <div className="mb-md flex flex-wrap items-center gap-x-md gap-y-sm">
+        <div className="flex items-center gap-x-lg">
+          {(["menunggu", "dipanggil", "dilayani", "selesai"] as VisitStatus[]).map(
+            (status) => (
+              <div key={status} className="min-w-[64px]">
+                <p className="font-mono text-heading-card tabular-nums text-ink">
+                  {counts[status]}
+                </p>
+                <p className="text-caption text-ink-muted">{STATUS_LABEL[status]}</p>
+              </div>
+            ),
+          )}
+        </div>
 
-        <span className="ml-auto flex items-center gap-sm">
+        <div className="ml-auto flex items-center gap-sm">
           <span
             className={`inline-flex items-center gap-2xs text-caption ${
               live ? "text-success" : "text-ink-muted"
             }`}
           >
             <span
-              className={`h-2 w-2 rounded-full ${live ? "bg-success" : "bg-ink-muted/40"}`}
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 rounded-full ${
+                live ? "bg-success" : "bg-ink-muted/40"
+              }`}
             />
-            {live ? "Realtime aktif" : "Menghubungkan…"}
+            {live ? "Tersambung" : "Menghubungkan"}
           </span>
 
           <button
             type="button"
             className="btn-ghost"
+            aria-pressed={soundOn}
             onClick={() => setSoundOn((value) => !value)}
           >
-            {soundOn ? "Suara: nyala" : "Aktifkan suara"}
+            {soundOn ? "Suara nyala" : "Nyalakan suara"}
           </button>
-        </span>
+        </div>
       </div>
 
       {error ? (
         <div
           role="alert"
-          className="mb-sm rounded-md border border-danger/40 bg-danger/5 px-sm py-sm text-body-sm text-danger"
+          className="mb-sm border-l-2 border-danger bg-danger/[0.04] px-sm py-sm text-body-sm text-danger"
         >
           {error}
         </div>
       ) : null}
 
       {sorted.length === 0 ? (
-        <div className="card text-center">
+        <div className="border-y border-border py-2xl text-center">
           <p className="text-body-md text-ink">Belum ada tamu hari ini.</p>
           <p className="mt-2xs text-body-sm text-ink-muted">
-            Tamu yang mengisi form akan muncul di sini otomatis.
+            Tamu yang mengisi form akan muncul di sini tanpa perlu dimuat ulang.
           </p>
         </div>
       ) : (
-        <ul className="space-y-sm">
+        <ul className="ledger">
           {sorted.map((visit) => {
-            const dimmed = visit.status === "selesai" || visit.status === "batal";
+            const closed = visit.status === "selesai" || visit.status === "batal";
+            const actions = ALLOWED_TRANSITIONS[visit.status];
+            const primary = actions.find((a) => a !== "batal" && a !== "menunggu");
+            const secondary = actions.filter((a) => a !== primary);
+
             return (
               <li
                 key={visit.id}
-                className={`card ${dimmed ? "opacity-60" : ""}`}
+                className={`ledger-row px-2xs py-sm sm:px-sm ${
+                  newId === visit.id ? "row-in bg-primary/[0.035]" : ""
+                } ${closed ? "text-ink-muted" : ""}`}
               >
-                <div className="flex items-start gap-sm">
-                  <div className="min-w-[64px] text-center">
-                    <p className="text-[32px] font-bold leading-none text-primary">
-                      {formatQueueNumber(visit.queueSeq)}
-                    </p>
-                    <p className="mt-2xs text-caption text-ink-muted">
-                      {timeLabel(visit.checkInAt)}
-                    </p>
-                  </div>
+                <div className="flex flex-wrap items-start gap-x-sm gap-y-2xs">
+                  <p
+                    className={`w-14 shrink-0 font-mono text-heading-page leading-none tabular-nums ${
+                      closed ? "text-ink-muted" : "text-primary"
+                    }`}
+                  >
+                    {formatQueueNumber(visit.queueSeq)}
+                  </p>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-body-md font-semibold text-ink">
-                      {visit.name}
-                    </p>
-                    <p className="truncate text-body-sm text-ink-muted">
-                      {visit.institution} · {visit.personCount} orang
-                    </p>
-                    <p className="mt-2xs text-caption text-ink-muted">
+                  <div className="min-w-0 flex-1 basis-[220px]">
+                    <div className="flex flex-wrap items-baseline gap-x-sm">
+                      <p className="text-body-md font-semibold text-ink">{visit.name}</p>
+                      <span
+                        className={`stamp ${STATUS_STYLE[visit.status]}`}
+                      >
+                        {STATUS_LABEL[visit.status]}
+                      </span>
+                    </div>
+
+                    <p className="mt-2xs text-body-sm text-ink-muted">
+                      {visit.institution}
+                      {", "}
                       {PURPOSE_LABEL[visit.purpose] ?? visit.purpose}
-                      {visit.source === "manual" ? " · input petugas" : ""}
+                      {", "}
+                      {visit.personCount} orang
+                      {visit.source === "manual" ? ", dicatat petugas" : ""}
                     </p>
+
+                    <p className="mt-2xs font-mono text-caption text-ink-muted">
+                      masuk {timeLabel(visit.checkInAt)} WIB
+                    </p>
+
                     {visit.detail ? (
-                      <p className="mt-2xs text-caption text-ink-muted">
-                        “{visit.detail}”
+                      <p className="mt-xs max-w-[60ch] text-caption text-ink">
+                        {visit.detail}
                       </p>
                     ) : null}
                   </div>
 
-                  <div className="flex flex-col items-end gap-2xs">
-                    <span
-                      className={`rounded-sm border px-sm py-2xs text-caption ${STATUS_STYLE[visit.status]}`}
-                    >
-                      {STATUS_LABEL[visit.status]}
-                    </span>
+                  <div className="flex w-full flex-wrap items-center gap-x-md gap-y-2xs sm:w-auto sm:flex-col sm:items-end sm:gap-y-2xs">
+                    {primary ? (
+                      <button
+                        type="button"
+                        className="btn-primary order-first px-sm sm:order-none"
+                        onClick={() => change(visit.id, primary)}
+                      >
+                        {ACTION_LABEL[primary] ?? STATUS_LABEL[primary]}
+                      </button>
+                    ) : null}
+
+                    {secondary.map((next) => (
+                      <button
+                        key={next}
+                        type="button"
+                        className="btn-quiet"
+                        onClick={() => change(visit.id, next)}
+                      >
+                        {ACTION_LABEL[next] ?? STATUS_LABEL[next]}
+                      </button>
+                    ))}
+
                     <a
-                      className="text-caption text-primary underline"
+                      className="btn-quiet"
                       href={`https://wa.me/${visit.phone.replace("+", "")}`}
                       target="_blank"
                       rel="noreferrer"
@@ -308,26 +347,11 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
                     </a>
                   </div>
                 </div>
-
-                {ALLOWED_TRANSITIONS[visit.status].length > 0 ? (
-                  <div className="mt-sm flex flex-wrap gap-2xs">
-                    {ALLOWED_TRANSITIONS[visit.status].map((next) => (
-                      <button
-                        key={next}
-                        type="button"
-                        className={next === "batal" ? "btn-ghost" : "btn-primary"}
-                        onClick={() => change(visit.id, next)}
-                      >
-                        {ACTION_LABEL[next] ?? STATUS_LABEL[next]}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
               </li>
             );
           })}
         </ul>
       )}
-    </div>
+    </section>
   );
 }

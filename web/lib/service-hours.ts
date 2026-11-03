@@ -127,5 +127,5 @@ export function serviceState(now: Date = new Date()): ServiceState {
 
 /** Label jam layanan untuk ditampilkan di footer form. */
 export function serviceHoursLabel(): string {
-  return "Senin–Kamis 08.00–16.00 · Jumat 08.00–16.30";
+  return "Senin sampai Kamis 08.00–16.00, Jumat 08.00–16.30";
 }

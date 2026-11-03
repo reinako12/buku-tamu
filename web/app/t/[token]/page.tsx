@@ -13,19 +13,19 @@ export const metadata: Metadata = {
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  menunggu: "Menunggu",
-  dipanggil: "Dipanggil",
+  menunggu: "Menunggu dipanggil",
+  dipanggil: "Sudah dipanggil",
   dilayani: "Sedang dilayani",
   selesai: "Selesai",
   batal: "Dibatalkan",
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  menunggu: "bg-warning/10 text-warning-dark border-warning/40",
-  dipanggil: "bg-primary-light/10 text-primary border-primary-light/40",
-  dilayani: "bg-primary-light/10 text-primary border-primary-light/40",
-  selesai: "bg-success/10 text-success border-success/40",
-  batal: "bg-danger/5 text-danger border-danger/40",
+  menunggu: "border-warning text-warning-dark",
+  dipanggil: "border-primary text-primary",
+  dilayani: "border-primary text-primary",
+  selesai: "border-success text-success",
+  batal: "border-danger text-danger",
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -65,59 +65,68 @@ export default async function TicketPage({
   );
 
   return (
-    <main className="mx-auto w-full max-w-form px-md py-lg">
-      <div className="card text-center">
-        <p className="text-caption uppercase tracking-wide text-ink-muted">
-          Nomor antrian
-        </p>
-        <p className="mt-xs text-[64px] font-bold leading-none text-primary">
-          {formatQueue(visit.queueSeq)}
-        </p>
+    <main className="mx-auto w-full max-w-ticket px-md py-lg">
+      <p className="mb-sm text-body-sm text-ink-muted">Tiket kunjungan Anda</p>
 
-        <div
-          className={`mx-auto mt-sm inline-flex items-center rounded-sm border px-sm py-2xs text-label-sm ${
-            STATUS_STYLE[visit.status] ?? STATUS_STYLE.menunggu
-          }`}
-        >
-          {STATUS_LABEL[visit.status] ?? visit.status}
+      <div className="ticket">
+        <div className="px-md pb-md pt-lg text-center">
+          <p className="text-caption font-semibold text-primary">
+            BPS Kabupaten Tanah Datar
+          </p>
+          <p className="mt-md text-caption text-ink-muted">Nomor antrian</p>
+          <p className="queue-number mt-2xs">{formatQueue(visit.queueSeq)}</p>
+          <span
+            className={`stamp mt-sm ${
+              STATUS_STYLE[visit.status] ?? STATUS_STYLE.menunggu
+            }`}
+          >
+            {STATUS_LABEL[visit.status] ?? visit.status}
+          </span>
         </div>
 
-        <dl className="mt-lg space-y-xs text-left">
-          <div>
+        <div className="ticket-perf" />
+
+        <dl className="space-y-sm px-md py-md">
+          <div className="flex items-baseline justify-between gap-sm">
             <dt className="text-caption text-ink-muted">Nama</dt>
-            <dd className="text-body-md text-ink">{visit.name}</dd>
+            <dd className="text-right text-body-sm font-medium text-ink">
+              {visit.name}
+            </dd>
           </div>
-          <div>
+          <div className="flex items-baseline justify-between gap-sm">
             <dt className="text-caption text-ink-muted">Instansi</dt>
-            <dd className="text-body-md text-ink">{visit.institution}</dd>
+            <dd className="text-right text-body-sm text-ink">{visit.institution}</dd>
           </div>
-          <div>
+          <div className="flex items-baseline justify-between gap-sm">
             <dt className="text-caption text-ink-muted">Jumlah orang</dt>
-            <dd className="text-body-md text-ink">{visit.personCount} orang</dd>
+            <dd className="text-right font-mono text-body-sm text-ink">
+              {visit.personCount}
+            </dd>
           </div>
-          <div>
+          <div className="flex items-baseline justify-between gap-sm">
             <dt className="text-caption text-ink-muted">Waktu daftar</dt>
-            <dd className="text-body-md text-ink">
+            <dd className="text-right text-body-sm text-ink">
               {dateLabel}, {timeLabel} WIB
             </dd>
           </div>
         </dl>
-
-        <div className="mt-lg space-y-sm no-print">
-          <a
-            className="btn-primary w-full"
-            href={`https://wa.me/?text=${waText}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Simpan link ke WhatsApp
-          </a>
-          <PrintButton />
-        </div>
       </div>
 
-      <p className="mt-md text-center text-caption text-ink-muted">
-        Simpan halaman ini. Tunjukkan nomor antrian kepada petugas resepsionis.
+      <div className="mt-md space-y-sm no-print">
+        <a
+          className="btn-ghost w-full"
+          href={`https://wa.me/?text=${waText}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Simpan tiket ke WhatsApp
+        </a>
+        <PrintButton label="Cetak tiket" />
+      </div>
+
+      <p className="mt-md text-caption text-ink-muted">
+        Tunjukkan nomor ini ke petugas resepsionis. Halaman ini bisa dibuka lagi lewat
+        tautan yang Anda simpan.
       </p>
     </main>
   );
