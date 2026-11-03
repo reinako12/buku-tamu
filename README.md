@@ -2,9 +2,9 @@
 
 Proyek magang #1. Aplikasi buku tamu digital BPS Kabupaten Tanah Datar.
 
-**Status:** Fase 0 (setup) dan Fase 1 (form + tiket) selesai — menunggu pengecekan user.
+**Status:** Fase 0 (setup), Fase 1 (form + tiket), dan deploy demo selesai — menunggu pengecekan user.
 **Repo:** https://github.com/reinako12/buku-tamu (private)
-**Domain demo:** `bukutamu.grrifixn.my.id` (belum di-deploy).
+**Live (demo):** https://bukutamu.grrifixn.my.id — sudah bisa dites dari HP.
 **Stack:** Next.js 15.5 · TypeScript · Tailwind **3.5** · **Prisma** · Supabase (Postgres + Auth + Realtime).
 
 ## Struktur
