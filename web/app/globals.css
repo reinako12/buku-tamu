@@ -59,7 +59,7 @@
 
   /* Lembar formulir: putih, garis tipis, sudut hampir siku. */
   .sheet {
-    @apply rounded-xs border border-border bg-surface px-md py-lg sm:px-lg;
+    @apply rounded-xs border border-border bg-surface px-md py-lg sm:px-xl sm:py-xl;
   }
 
   .sheet-title {
@@ -82,10 +82,33 @@
     @apply mt-2xs text-caption text-danger;
   }
 
+  /* Kolom formulir: 48px, bukan 40px — tamu mengisi sambil berdiri. */
   .field {
-    @apply block min-h-tap w-full rounded-xs border border-border-strong bg-surface
-           px-sm py-xs text-body-md text-ink placeholder:text-ink-muted/60
+    @apply block min-h-[48px] w-full rounded-xs border border-border-strong bg-surface
+           px-md py-sm text-body-md text-ink placeholder:text-ink-muted/60
            focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+
+  /* Baris formulir: label di kiri saat layar lebar, label di atas saat HP. */
+  .form-row {
+    @apply grid gap-x-lg gap-y-2xs md:grid-cols-12 md:items-start;
+  }
+
+  .form-label {
+    @apply text-body-sm font-medium text-ink md:col-span-3 md:pt-[15px];
+  }
+
+  .form-control {
+    @apply md:col-span-9;
+  }
+
+  .section-head {
+    @apply flex items-center gap-sm border-b border-border pb-xs;
+  }
+
+  .section-num {
+    @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-full border
+           border-primary/30 font-mono text-caption text-primary;
   }
 
   .field[aria-invalid="true"] {

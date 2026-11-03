@@ -16,7 +16,7 @@ export default async function HomePage() {
 
   if (setting && !setting.isOpen) {
     return (
-      <main className="mx-auto w-full max-w-form px-md py-xl">
+      <main className="mx-auto w-full max-w-page px-md py-xl">
         <header className="masthead mb-lg">
           <p className="masthead-org">Badan Pusat Statistik</p>
           <p className="masthead-unit">Kabupaten Tanah Datar</p>
@@ -37,7 +37,7 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-form px-md py-lg sm:py-xl">
+    <main className="mx-auto w-full max-w-page px-md py-lg sm:py-xl">
       <header className="masthead mb-lg">
         <p className="masthead-org">Badan Pusat Statistik</p>
         <p className="masthead-unit">Kabupaten Tanah Datar</p>
@@ -57,18 +57,16 @@ export default async function HomePage() {
       <ServiceBanner state={state} />
 
       <div className="sheet">
-        <h2 className="sheet-title">Data kunjungan</h2>
-        <p className="sheet-note mt-2xs mb-md">
-          Kolom bertanda bintang wajib diisi. Nomor HP dipakai untuk menghubungi Anda
-          bila diperlukan.
-        </p>
+        <div className="mb-lg">
+          <h2 className="sheet-title">Data kunjungan</h2>
+          <p className="sheet-note mt-2xs">
+            Kolom bertanda bintang wajib diisi. Nomor HP dipakai untuk menghubungi Anda
+            bila diperlukan.
+          </p>
+        </div>
         <CheckinForm />
       </div>
 
-      <p className="mt-md text-caption text-ink-muted">
-        Data yang Anda isi hanya digunakan untuk keperluan pencatatan kunjungan di BPS
-        Kabupaten Tanah Datar.
-      </p>
     </main>
   );
 }

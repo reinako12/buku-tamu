@@ -83,6 +83,7 @@ const config: Config = {
       },
       maxWidth: {
         container: "1120px",
+        page: "880px",
         form: "600px",
         ticket: "380px",
       },
