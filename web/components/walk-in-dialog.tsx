@@ -43,7 +43,7 @@ export function WalkInDialog() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 px-md py-lg">
-      <div className="w-full max-w-form rounded-xs border border-border bg-surface p-md">
+      <div className="w-full max-w-form rounded-lg border border-border bg-surface p-md">
         <div className="mb-sm flex items-center justify-between">
           <h2 className="text-heading-card text-ink">Tambah tamu manual</h2>
           <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>
