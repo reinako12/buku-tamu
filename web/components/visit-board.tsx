@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { setVisitStatus } from "@/lib/actions/staff";
 import { ALLOWED_TRANSITIONS, formatQueueNumber, type VisitStatus } from "@/lib/visit-status";
@@ -70,30 +70,9 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
   const [visits, setVisits] = useState<BoardVisit[]>(initialVisits);
   const [error, setError] = useState<string | null>(null);
   const [live, setLive] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
   const [newId, setNewId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const seenIds = useRef(new Set(initialVisits.map((v) => v.id)));
-  const audioCtx = useRef<AudioContext | null>(null);
-
-  const beep = useCallback(() => {
-    if (!soundOn) return;
-    try {
-      audioCtx.current ??= new AudioContext();
-      const ctx = audioCtx.current;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.4);
-    } catch {
-      // Browser memblokir audio sebelum interaksi user — abaikan.
-    }
-  }, [soundOn]);
 
   useEffect(() => {
     if (initialVisits.length > 0) {
@@ -120,7 +99,6 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
             setVisits((prev) => {
               if (prev.some((v) => v.id === incoming.id)) return prev;
               seenIds.current.add(incoming.id);
-              beep();
               return [...prev, incoming];
             });
             setNewId(incoming.id);
@@ -139,7 +117,7 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [beep]);
+  }, []);
 
   useEffect(() => {
     if (!newId) return;
@@ -217,14 +195,6 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
             {live ? t("dash.live") : t("dash.offline")}
           </span>
 
-          <button
-            type="button"
-            className="btn-ghost"
-            aria-pressed={soundOn}
-            onClick={() => setSoundOn((value) => !value)}
-          >
-            {soundOn ? t("dash.soundOn") : t("dash.soundOff")}
-          </button>
         </div>
       </div>
 
