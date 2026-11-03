@@ -62,7 +62,7 @@ export default async function HomePage() {
 
       <ServiceBanner state={state} />
 
-      <div className="sheet">
+      <div className="sheet sheet-accent">
         <div className="mb-lg">
           <h2 className="sheet-title">{t("home.sectionVisit")}</h2>
           <p className="sheet-note mt-2xs">{t("home.privacy")}</p>
