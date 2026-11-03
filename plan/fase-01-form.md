@@ -1,6 +1,22 @@
 # Fase 1 — Form Buku Tamu (fitur inti)
 
 **Estimasi:** 2–3 hari · **Gate:** user coba form sebelum lanjut Fase 2
+**Status:** ✅ dikerjakan 3 Nov 2026 — menunggu pengecekan user
+
+## Hasil verifikasi (3 Nov 2026)
+
+| Cek | Hasil |
+|---|---|
+| Unit test (jam layanan, validasi, rate limit) | 22 lulus, 0 gagal |
+| Submit form dari browser (viewport 390px) | redirect ke `/t/<uuid>`, nomor `001` |
+| Data masuk DB | ya, dibaca ulang via Prisma |
+| Jam layanan WIB | Senin 09.00 buka, 12.30 istirahat, 16.00 tutup, Jumat 16.15 buka |
+| Nomor HP `0812 3456 7890` | tersimpan `+6281234567890` |
+| Mode tutup (`is_open=false`) | halaman "Buku tamu ditutup" + alasan + jadwal buka |
+| Token tidak valid | 404 |
+| Overflow horizontal 390px | 0 px di form maupun tiket |
+| Tinggi input & tombol | 44 px semua |
+| Nomor antrian | 64 px, `#003C80` |
 
 ## Tujuan
 
