@@ -4,7 +4,7 @@ import { serviceState } from "@/lib/service-hours";
 import { getT } from "@/lib/i18n/server";
 import { CheckinForm } from "@/components/checkin-form";
 import { ServiceBanner } from "@/components/service-banner";
-import { LocaleToggle } from "@/components/locale-toggle";
+import { HeaderControls } from "@/components/header-controls";
 
 export const dynamic = "force-dynamic";
 
@@ -21,12 +21,12 @@ export default async function HomePage() {
   if (setting && !setting.isOpen) {
     return (
       <main className="mx-auto w-full max-w-page px-md py-xl">
-        <header className="masthead mb-lg flex items-start justify-between gap-sm">
+        <header className="masthead mb-lg flex flex-wrap items-start justify-between gap-sm">
           <div>
             <p className="masthead-org">{t("org.name")}</p>
             <p className="masthead-unit">{t("org.unit")}</p>
           </div>
-          <LocaleToggle />
+          <HeaderControls />
         </header>
 
         <h1 className="text-heading-page text-ink">{t("closed.title")}</h1>
@@ -44,12 +44,12 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto w-full max-w-page px-md py-lg sm:py-xl">
-      <header className="masthead mb-lg flex items-start justify-between gap-sm">
+      <header className="masthead mb-lg flex flex-wrap items-start justify-between gap-sm">
         <div>
           <p className="masthead-org">{t("org.name")}</p>
           <p className="masthead-unit">{t("org.unit")}</p>
         </div>
-        <LocaleToggle />
+        <HeaderControls />
       </header>
 
       <h1 className="text-display-hero text-ink">{t("home.title")}</h1>

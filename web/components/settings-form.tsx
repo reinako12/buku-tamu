@@ -65,13 +65,13 @@ export function SettingsForm({
           />
           <span
             className="h-7 w-12 rounded-full border border-border-strong bg-surface-muted
-                       transition-colors peer-checked:border-primary peer-checked:bg-primary
+                       transition-colors peer-checked:border-primary-solid peer-checked:bg-primary-solid
                        peer-focus-visible:ring-2 peer-focus-visible:ring-primary/20
                        peer-focus-visible:ring-offset-2"
           />
           <span
             className="pointer-events-none absolute left-[3px] h-[22px] w-[22px] rounded-full
-                       bg-white border border-border-strong transition-transform peer-checked:translate-x-5"
+                       bg-surface border border-border-strong transition-transform peer-checked:translate-x-5"
           />
         </label>
       </div>

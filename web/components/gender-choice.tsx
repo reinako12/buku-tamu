@@ -16,12 +16,12 @@ const STYLE: Record<
   lk: {
     icon: Mars,
     checked:
-      "peer-checked:border-[#1d4ed8] peer-checked:bg-[#eff6ff] peer-checked:text-[#1d4ed8]",
+      "peer-checked:border-gender-male peer-checked:bg-gender-male/10 peer-checked:text-gender-male",
   },
   pr: {
     icon: Venus,
     checked:
-      "peer-checked:border-[#db2777] peer-checked:bg-[#fdf2f8] peer-checked:text-[#db2777]",
+      "peer-checked:border-gender-female peer-checked:bg-gender-female/10 peer-checked:text-gender-female",
   },
 };
 

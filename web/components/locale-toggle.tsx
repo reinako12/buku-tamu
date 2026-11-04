@@ -32,7 +32,7 @@ export function LocaleToggle() {
             }
             className={`min-h-[44px] px-md text-caption font-medium transition-colors ${
               active
-                ? "bg-primary text-white"
+                ? "bg-primary-solid text-ink-inverse"
                 : "text-ink-muted hover:bg-surface-muted"
             }`}
           >

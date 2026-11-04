@@ -26,6 +26,7 @@ const id = {
   "common.languageId": "Indonesia",
   "common.languageEn": "English",
   "common.loading": "Memuat",
+  "common.themeToggle": "Ganti tema terang atau gelap",
 
   "home.title": "Buku tamu",
   "home.lead":
@@ -247,6 +248,7 @@ const en: Dict = {
   "common.languageId": "Indonesia",
   "common.languageEn": "English",
   "common.loading": "Loading",
+  "common.themeToggle": "Switch light or dark theme",
 
   "home.title": "Guest book",
   "home.lead":

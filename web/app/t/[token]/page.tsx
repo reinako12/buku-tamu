@@ -7,7 +7,7 @@ import { getLocale, getT } from "@/lib/i18n/server";
 import { formatDate, formatTime } from "@/lib/format";
 import type { DictKey } from "@/lib/i18n/dict";
 import { PrintButton } from "@/components/print-button";
-import { LocaleToggle } from "@/components/locale-toggle";
+import { HeaderControls } from "@/components/header-controls";
 
 export const dynamic = "force-dynamic";
 
@@ -53,9 +53,9 @@ export default async function TicketPage({
 
   return (
     <main className="mx-auto w-full max-w-ticket px-md py-lg">
-      <div className="mb-sm flex items-center justify-between gap-sm">
+      <div className="mb-sm flex flex-wrap items-center justify-between gap-sm">
         <p className="text-body-sm text-ink-muted">{t("ticket.title")}</p>
-        <LocaleToggle />
+        <HeaderControls />
       </div>
 
       <div className="ticket">

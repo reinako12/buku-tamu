@@ -1,6 +1,13 @@
 import type { Config } from "tailwindcss";
 
 /**
+ * Warna disimpan sebagai triplet RGB di app/globals.css (versi terang dan gelap
+ * ada di sana). Bentuk ini dipakai supaya opasitas Tailwind seperti bg-danger/10
+ * dan text-ink-muted/60 tetap berfungsi.
+ */
+const withAlpha = (variable: string) => `rgb(var(${variable}) / <alpha-value>)`;
+
+/**
  * Token visual proyek buku tamu.
  *
  * Arah desain (lihat design/DESIGN-v2.md): formulir kantor & tiket antrian
@@ -16,28 +23,34 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      /* Warna diambil dari variabel CSS (lihat app/globals.css) supaya tema
+         terang/gelap cuma perlu ganti variabel. Nilai hex di komentar adalah
+         warna tema terang, untuk memudahkan pencarian. */
       colors: {
-        primary: "#003c80",
-        "primary-dark": "#00274f",
-        "primary-light": "#0093dd",
-        "primary-light-hover": "#0086ca",
-        "accent-orange": "#e27303",
-        "accent-green": "#5dab2c",
-        success: "#1f630e",
-        "success-dark": "#135208",
-        danger: "#b7163e",
-        "danger-dark": "#7a0839",
-        warning: "#9a5b12",
-        "warning-dark": "#6f3f08",
-        "neutral-body": "#eef1f4",
-        surface: "#ffffff",
-        "surface-muted": "#f4f6f9",
-        "surface-sunken": "#e7ebf0",
-        ink: "#121a26",
-        "ink-muted": "#5a6572",
-        "ink-inverse": "#ffffff",
-        border: "#d7dde5",
-        "border-strong": "#b9c3d0",
+        primary: withAlpha("--primary"), // #003c80
+        "primary-solid": withAlpha("--primary-solid"), // #003c80
+        "primary-dark": withAlpha("--primary-dark"), // #00274f
+        "primary-light": withAlpha("--primary-light"), // #0093dd
+        "primary-light-hover": withAlpha("--primary-light-hover"), // #0086ca
+        "accent-orange": withAlpha("--accent-orange"), // #e27303
+        "accent-green": withAlpha("--accent-green"), // #5dab2c
+        success: withAlpha("--success"), // #1f630e
+        "success-dark": withAlpha("--success-dark"), // #135208
+        danger: withAlpha("--danger"), // #b7163e
+        "danger-dark": withAlpha("--danger-dark"), // #7a0839
+        warning: withAlpha("--warning"), // #9a5b12
+        "warning-dark": withAlpha("--warning-dark"), // #6f3f08
+        "neutral-body": withAlpha("--neutral-body"), // #eef1f4
+        surface: withAlpha("--surface"), // #ffffff
+        "surface-muted": withAlpha("--surface-muted"), // #f4f6f9
+        "surface-sunken": withAlpha("--surface-sunken"), // #e7ebf0
+        ink: withAlpha("--ink"), // #121a26
+        "ink-muted": withAlpha("--ink-muted"), // #5a6572
+        "ink-inverse": withAlpha("--ink-inverse"), // #ffffff
+        border: withAlpha("--border"), // #d7dde5
+        "border-strong": withAlpha("--border-strong"), // #b9c3d0
+        "gender-male": withAlpha("--gender-male"), // #1d4ed8
+        "gender-female": withAlpha("--gender-female"), // #db2777
       },
       fontFamily: {
         sans: ["var(--font-ui)", "system-ui", "Segoe UI", "Arial", "sans-serif"],

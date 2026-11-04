@@ -3,13 +3,134 @@
 @tailwind utilities;
 
 /* ============================================================
-   Dasar
+   Warna
+   ------------------------------------------------------------
+   Semua warna disimpan sebagai triplet RGB di variabel CSS supaya
+   bisa dipakai dua tema dan tetap mendukung opasitas Tailwind
+   (mis. bg-danger/10). Nilai hex-nya ada di tailwind.config.ts
+   sebagai dokumentasi tema terang.
    ============================================================ */
-@layer base {
-  :root {
-    --canvas: #eef1f4;
-  }
+:root {
+  color-scheme: light;
 
+  --canvas: 238 241 244;
+  --neutral-body: 238 241 244;
+
+  --surface: 255 255 255;
+  --surface-muted: 244 246 249;
+  --surface-sunken: 231 235 240;
+
+  --ink: 18 26 38;
+  --ink-muted: 90 101 114;
+  --ink-inverse: 255 255 255;
+
+  --border: 215 221 229;
+  --border-strong: 185 195 208;
+
+  /* primary dipakai untuk teks/garis, primary-solid untuk bidang yang
+     diisi penuh dengan tulisan putih di atasnya. Di tema gelap keduanya
+     harus berbeda arah supaya kontras tetap lolos. */
+  --primary: 0 60 128;
+  --primary-solid: 0 60 128;
+  --primary-dark: 0 39 79;
+  --primary-light: 0 147 221;
+  --primary-light-hover: 0 134 202;
+
+  --accent-orange: 226 115 3;
+  --accent-green: 93 171 44;
+
+  --success: 31 99 14;
+  --success-dark: 19 82 8;
+  --danger: 183 22 62;
+  --danger-dark: 122 8 57;
+  --warning: 154 91 18;
+  --warning-dark: 111 63 8;
+
+  --gender-male: 29 78 216;
+  --gender-female: 219 39 119;
+}
+
+/* Tema gelap: dipakai kalau tamu/petugas memilih lewat tombol. */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --canvas: 14 19 26;
+  --neutral-body: 14 19 26;
+
+  --surface: 22 28 37;
+  --surface-muted: 30 37 47;
+  --surface-sunken: 11 15 21;
+
+  --ink: 229 234 240;
+  --ink-muted: 152 163 178;
+  --ink-inverse: 255 255 255;
+
+  --border: 42 51 63;
+  --border-strong: 58 69 83;
+
+  --primary: 143 185 233;
+  --primary-solid: 31 92 160;
+  --primary-dark: 47 116 190;
+  --primary-light: 92 174 226;
+  --primary-light-hover: 118 190 236;
+
+  --accent-orange: 235 150 60;
+  --accent-green: 130 200 92;
+
+  --success: 118 205 138;
+  --success-dark: 150 224 168;
+  --danger: 246 122 146;
+  --danger-dark: 255 158 177;
+  --warning: 226 170 96;
+  --warning-dark: 244 202 144;
+
+  --gender-male: 122 167 240;
+  --gender-female: 240 140 180;
+}
+
+/* Belum pernah memilih: ikut setelan perangkat. Blok ini sengaja
+   menduplikasi nilai tema gelap karena media query tidak bisa
+   digabung dengan selektor atribut. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --canvas: 14 19 26;
+    --neutral-body: 14 19 26;
+
+    --surface: 22 28 37;
+    --surface-muted: 30 37 47;
+    --surface-sunken: 11 15 21;
+
+    --ink: 229 234 240;
+    --ink-muted: 152 163 178;
+    --ink-inverse: 255 255 255;
+
+    --border: 42 51 63;
+    --border-strong: 58 69 83;
+
+    --primary: 143 185 233;
+    --primary-solid: 31 92 160;
+    --primary-dark: 47 116 190;
+    --primary-light: 92 174 226;
+    --primary-light-hover: 118 190 236;
+
+    --accent-orange: 235 150 60;
+    --accent-green: 130 200 92;
+
+    --success: 118 205 138;
+    --success-dark: 150 224 168;
+    --danger: 246 122 146;
+    --danger-dark: 255 158 177;
+    --warning: 226 170 96;
+    --warning-dark: 244 202 144;
+
+    --gender-male: 122 167 240;
+    --gender-female: 240 140 180;
+  }
+}
+
+@layer base {
   html {
     -webkit-text-size-adjust: 100%;
   }
@@ -22,7 +143,12 @@
   /* Kerangka muat untuk loading.tsx di tiap rute */
   .skeleton {
     border-radius: 8px;
-    background: linear-gradient(90deg, #eef1f5 25%, #e2e7ee 37%, #eef1f5 63%);
+    background: linear-gradient(
+      90deg,
+      rgb(var(--surface-sunken)) 25%,
+      rgb(var(--border)) 37%,
+      rgb(var(--surface-sunken)) 63%
+    );
     background-size: 400% 100%;
     animation: skeleton-sweep 1.2s ease-in-out infinite;
   }
@@ -38,12 +164,12 @@
 
   /* Fokus harus kelihatan — bukan dihapus demi estetika. */
   :focus-visible {
-    outline: 2px solid theme("colors.primary");
+    outline: 2px solid rgb(var(--primary));
     outline-offset: 2px;
   }
 
   ::selection {
-    background: theme("colors.primary");
+    background: rgb(var(--primary-solid));
     color: #fff;
   }
 
@@ -81,7 +207,7 @@
 
   /* Garis atas tebal: penanda lembar, sama dengan papan meja petugas. */
   .sheet-accent {
-    border-top: 3px solid theme("colors.primary");
+    border-top: 3px solid rgb(var(--primary));
   }
 
   .sheet-title {
@@ -96,7 +222,7 @@
      dibaca seperti papan pengumuman, bukan kartu statistik. */
   .callboard {
     @apply rounded-lg border border-border bg-surface px-sm py-sm sm:px-md sm:py-md;
-    border-top: 3px solid theme("colors.primary");
+    border-top: 3px solid rgb(var(--primary));
   }
 
   .field-label {
@@ -153,7 +279,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary text-ink-inverse hover:bg-primary-dark;
+    @apply btn bg-primary-solid text-ink-inverse hover:bg-primary-dark;
   }
 
   .btn-ghost {
@@ -192,6 +318,12 @@
     @apply relative rounded-lg border border-border bg-surface shadow-paper;
   }
 
+  /* Bayangan kertas di atas latar gelap harus lebih pekat, kalau tidak
+     tiketnya terlihat menempel rata dengan halaman. */
+  [data-theme="dark"] .ticket {
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.5), 0 14px 28px -18px rgb(0 0 0 / 0.9);
+  }
+
   /* Garis sobek: bukan hiasan — di sinilah tiket "dipisah" dari formulir. */
   .ticket-perf {
     @apply relative border-t border-dashed border-border-strong;
@@ -205,8 +337,8 @@
     width: 18px;
     height: 18px;
     border-radius: 9999px;
-    background: var(--canvas);
-    border: 1px solid theme("colors.border");
+    background: rgb(var(--canvas));
+    border: 1px solid rgb(var(--border));
   }
 
   .ticket-perf::before {
@@ -238,9 +370,9 @@
   }
 
   label:not(:has(input:checked)):hover .gender-pill {
-    border-color: #93a1b3;
-    background-color: #f2f4f7;
-    color: var(--ink, #121a26);
+    border-color: rgb(var(--border-strong));
+    background-color: rgb(var(--surface-muted));
+    color: rgb(var(--ink));
   }
 
   /* Satu-satunya animasi masuk: baris tamu baru. */
@@ -263,10 +395,55 @@
 /* ============================================================
    Cetak tiket
    ============================================================ */
+/* Tombol tema: dua ikon ditumpuk, yang tampil dipilih CSS. Tidak pakai state
+   React supaya tidak ada kedipan sebelum hidrasi selesai. */
+.theme-icon {
+  display: none;
+}
+
+html:not([data-theme="dark"]) .theme-icon-light,
+html[data-theme="light"] .theme-icon-light {
+  display: block;
+}
+
+html[data-theme="dark"] .theme-icon-dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) .theme-icon-light {
+    display: none;
+  }
+
+  html:not([data-theme]) .theme-icon-dark {
+    display: block;
+  }
+}
+
 @media print {
   @page {
     size: A6 portrait;
     margin: 8mm;
+  }
+
+  /* Tiket selalu dicetak di atas kertas putih, apa pun tema layarnya. */
+  :root,
+  [data-theme],
+  :root:not([data-theme]) {
+    color-scheme: light;
+
+    --canvas: 238 241 244;
+    --neutral-body: 238 241 244;
+    --surface: 255 255 255;
+    --surface-muted: 244 246 249;
+    --surface-sunken: 231 235 240;
+    --ink: 18 26 38;
+    --ink-muted: 90 101 114;
+    --ink-inverse: 255 255 255;
+    --border: 215 221 229;
+    --border-strong: 185 195 208;
+    --primary: 0 60 128;
+    --primary-solid: 0 60 128;
   }
 
   body {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
-import { LocaleToggle } from "@/components/locale-toggle";
+import { HeaderControls } from "@/components/header-controls";
 import { getT } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
@@ -20,12 +20,12 @@ export default async function LoginPage({
 
   return (
     <main className="mx-auto w-full max-w-form px-md py-xl">
-      <header className="masthead mb-lg flex items-start justify-between gap-sm">
+      <header className="masthead mb-lg flex flex-wrap items-start justify-between gap-sm">
         <div>
           <p className="masthead-org">{t("org.name")}</p>
           <p className="masthead-unit">{t("org.unit")}</p>
         </div>
-        <LocaleToggle />
+        <HeaderControls />
       </header>
 
       <h1 className="text-heading-page text-ink">{t("login.title")}</h1>

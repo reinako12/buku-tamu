@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireStaff } from "@/lib/auth";
 import { readSetting } from "@/lib/settings";
 import { SettingsForm } from "@/components/settings-form";
-import { LocaleToggle } from "@/components/locale-toggle";
+import { HeaderControls } from "@/components/header-controls";
 import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function SettingsPage() {
           <p className="masthead-unit">{t("org.unit")}</p>
         </div>
         <div className="flex items-center gap-xs">
-          <LocaleToggle />
+          <HeaderControls />
           <Link href="/dashboard" className="btn-quiet">
             {t("settings.backDashboard")}
           </Link>
