@@ -25,20 +25,19 @@ export function LoginForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState(signIn, initialState);
   const wasPending = useRef(false);
 
-  /**
-   * Action yang menulis cookie sesi tidak selalu mengembalikan nilai ke klien,
-   * jadi keberhasilan dideteksi dari selesainya proses: middleware akan
-   * melempar pengunjung yang sudah punya sesi dari /masuk ke dashboard.
-   */
+  // Login jalan lewat server action, dan action-nya tidak memberi tanda "berhasil"
+  // ke klien. Jadi patokannya cuma: pending berubah true -> false tanpa error.
+  // Kalau ternyata gagal, middleware bakal balikin orangnya ke /masuk lagi.
   useEffect(() => {
     if (!(wasPending.current && !pending && !state.error)) {
       wasPending.current = pending;
       return;
     }
 
-    // Coba lewat router dulu (cepat). Kalau ternyata middleware belum melihat
-    // cookie sesi dan melempar balik ke /masuk, ulangi dengan navigasi penuh:
-    // cookie sudah pasti tersimpan saat itu.
+    // router.refresh() dulu karena paling cepat. Kadang middleware belum sempat
+    // baca cookie sesinya dan muter balik ke /masuk, makanya dicek lagi setelah
+    // 700ms: kalau masih di /masuk padahal cookie-nya sudah ada, paksa navigasi
+    // penuh supaya cookie ikut terkirim.
     router.refresh();
     const timer = window.setTimeout(() => {
       if (window.location.pathname === "/masuk" && document.cookie.includes("-auth-token")) {
