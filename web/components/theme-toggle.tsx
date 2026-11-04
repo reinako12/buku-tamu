@@ -3,13 +3,10 @@
 import { THEME_COOKIE, THEMES, type Theme } from "@/lib/theme";
 import { useT } from "@/lib/i18n/client";
 
-/** Tema yang sedang tampil: pilihan pengunjung, atau setelan perangkat. */
+/** Tema yang sedang tampil. Tanpa pilihan tersimpan, berarti terang. */
 function currentTheme(): Theme {
   const attr = document.documentElement.dataset.theme;
-  if (THEMES.includes(attr as Theme)) return attr as Theme;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return THEMES.includes(attr as Theme) ? (attr as Theme) : "light";
 }
 
 export function ThemeToggle() {

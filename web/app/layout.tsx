@@ -29,11 +29,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  /* Warna bilah browser di ponsel, mengikuti tema perangkat. */
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#003c80" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e131a" },
-  ],
+  themeColor: "#003c80",
 };
 
 export default async function RootLayout({

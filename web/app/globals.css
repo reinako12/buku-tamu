@@ -50,7 +50,8 @@
   --gender-female: 219 39 119;
 }
 
-/* Tema gelap: dipakai kalau tamu/petugas memilih lewat tombol. */
+/* Tema gelap: hanya aktif kalau dipilih lewat tombol. Tanpa pilihan,
+   tampilan selalu terang. */
 [data-theme="dark"] {
   color-scheme: dark;
 
@@ -86,48 +87,6 @@
 
   --gender-male: 122 167 240;
   --gender-female: 240 140 180;
-}
-
-/* Belum pernah memilih: ikut setelan perangkat. Blok ini sengaja
-   menduplikasi nilai tema gelap karena media query tidak bisa
-   digabung dengan selektor atribut. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-
-    --canvas: 14 19 26;
-    --neutral-body: 14 19 26;
-
-    --surface: 22 28 37;
-    --surface-muted: 30 37 47;
-    --surface-sunken: 11 15 21;
-
-    --ink: 229 234 240;
-    --ink-muted: 152 163 178;
-    --ink-inverse: 255 255 255;
-
-    --border: 42 51 63;
-    --border-strong: 58 69 83;
-
-    --primary: 143 185 233;
-    --primary-solid: 31 92 160;
-    --primary-dark: 47 116 190;
-    --primary-light: 92 174 226;
-    --primary-light-hover: 118 190 236;
-
-    --accent-orange: 235 150 60;
-    --accent-green: 130 200 92;
-
-    --success: 118 205 138;
-    --success-dark: 150 224 168;
-    --danger: 246 122 146;
-    --danger-dark: 255 158 177;
-    --warning: 226 170 96;
-    --warning-dark: 244 202 144;
-
-    --gender-male: 122 167 240;
-    --gender-female: 240 140 180;
-  }
 }
 
 @layer base {
@@ -408,16 +367,6 @@ html[data-theme="light"] .theme-icon-light {
 
 html[data-theme="dark"] .theme-icon-dark {
   display: block;
-}
-
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme]) .theme-icon-light {
-    display: none;
-  }
-
-  html:not([data-theme]) .theme-icon-dark {
-    display: block;
-  }
 }
 
 @media print {

@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import { THEME_COOKIE, THEMES, type Theme } from "@/lib/theme";
 
 /**
- * null berarti pengunjung belum pernah memilih. Dalam kondisi itu tampilan
- * ikut setelan perangkat, dan itu diurus CSS (prefers-color-scheme), bukan
- * di sini — supaya tidak ada kedipan tema saat halaman pertama dimuat.
+ * null berarti pengunjung belum pernah memilih, dan tampilannya terang.
+ * Dibiarkan null (bukan diisi "light") supaya CSS yang menentukan, sehingga
+ * tidak ada kedipan tema saat halaman pertama dimuat.
  */
 export async function getTheme(): Promise<Theme | null> {
   const store = await cookies();
