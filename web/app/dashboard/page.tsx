@@ -12,6 +12,7 @@ import { getLocale, getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import { HeaderControls } from "@/components/header-controls";
 import { InboxLink } from "@/components/dashboard/inbox-link";
+import { belumDibacaPerKunjungan } from "@/lib/chat";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function DashboardPage() {
     where: { queueDate: today },
     orderBy: { queueSeq: "asc" },
   });
+  const belumDibaca = await belumDibacaPerKunjungan(rows.map((row) => row.id));
 
   const visits: BoardVisit[] = rows.map((row) => ({
     id: row.id,
@@ -54,6 +56,7 @@ export default async function DashboardPage() {
     phone: row.phone,
     checkInAt: row.checkInAt.toISOString(),
     source: row.source,
+    chatConversationId: belumDibaca.get(row.id) ?? null,
   }));
 
   const todayLabel = formatDate(new Date(), locale);
@@ -66,7 +69,7 @@ export default async function DashboardPage() {
           <p className="masthead-unit hidden sm:block">{t("org.unit")}</p>
         </div>
 
-        <div className="flex items-center gap-xs">
+        <div className="flex flex-wrap items-center justify-end gap-xs">
           <HeaderControls />
           <InboxLink />
           <Link href="/pengaturan" className="btn-quiet">

@@ -256,6 +256,15 @@ const id = {
   "inbox.closedNote": "Percakapan ditutup. Tamu bisa memulai chat baru kapan saja.",
   "inbox.guestPhone": "WhatsApp tamu",
   "inbox.openedAt": "Dibuka {time}",
+  "inbox.makeVisit": "Jadikan kunjungan",
+  "inbox.visitTitle": "Jadikan kunjungan",
+  "inbox.visitLead":
+    "Nama dan WhatsApp tamu dipakai apa adanya. Lengkapi kolom yang tidak ditanyakan di halaman chat.",
+  "inbox.visitSubmit": "Terbitkan nomor antrian",
+  "inbox.visitSubmitting": "Menerbitkan",
+  "inbox.visitResult": "Nomor antrian {no} terbit dan percakapan sudah tersambung.",
+  "err.visitAlready": "Percakapan ini sudah tersambung ke kunjungan.",
+  "dash.chatUnread": "Pesan baru",
 
   "err.nameRequired": "Nama wajib diisi.",
   "err.nameShort": "Nama minimal 3 karakter.",
@@ -534,6 +543,15 @@ const en: Dict = {
   "inbox.closedNote": "Conversation closed. The guest can start a new chat anytime.",
   "inbox.guestPhone": "Guest WhatsApp",
   "inbox.openedAt": "Opened {time}",
+  "inbox.makeVisit": "Make a visit",
+  "inbox.visitTitle": "Make a visit",
+  "inbox.visitLead":
+    "The guest's name and WhatsApp number are used as they are. Fill in the columns the chat page never asked for.",
+  "inbox.visitSubmit": "Issue queue number",
+  "inbox.visitSubmitting": "Issuing",
+  "inbox.visitResult": "Queue number {no} issued and the conversation is linked.",
+  "err.visitAlready": "This conversation is already linked to a visit.",
+  "dash.chatUnread": "New message",
 
   "err.nameRequired": "Name is required.",
   "err.nameShort": "Name must be at least 3 characters.",

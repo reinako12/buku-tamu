@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { setVisitStatus } from "@/lib/actions/staff";
@@ -21,6 +22,8 @@ export type BoardVisit = {
   phone: string;
   checkInAt: string;
   source: string;
+  /** Diisi kalau kunjungan ini punya percakapan dengan pesan tamu belum dibaca. */
+  chatConversationId?: string | null;
 };
 
 const FINAL: VisitStatus[] = ["selesai", "batal"];
@@ -409,6 +412,15 @@ export function VisitBoard({ initialVisits }: { initialVisits: BoardVisit[] }) {
 
                       <p className="mt-2xs text-body-sm text-ink-muted">{meta(visit)}</p>
 
+
+                      {visit.chatConversationId ? (
+                        <Link
+                          href={`/dashboard/pesan/${visit.chatConversationId}`}
+                          className="mt-xs inline-flex min-h-[32px] items-center gap-2xs text-caption text-primary underline decoration-border underline-offset-4 hover:decoration-primary"
+                        >
+                          {t("dash.chatUnread")}
+                        </Link>
+                      ) : null}
 
                       {visit.detail ? (
                         <p className="mt-xs line-clamp-2 max-w-[60ch] text-caption text-ink">

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { fieldErrors, normalizePhone, visitFormSchema } from "@/lib/schemas/visit";
 import { serviceState } from "@/lib/service-hours";
+import { sambungKunjunganInti } from "@/lib/chat";
 
 export type FormState = {
   errors: Record<string, string>;
@@ -74,8 +75,12 @@ export async function createVisit(
   const data = parsed.data;
 
   let token: string;
+  let visitId: string;
+  let queueNo: string;
   try {
-    const rows = await prisma.$queryRaw<Array<{ token: string }>>`
+    const rows = await prisma.$queryRaw<
+      Array<{ token: string; id: string; queue_no: string }>
+    >`
       SELECT * FROM create_visit(
         ${data.name}::text,
         ${data.institution}::text,
@@ -88,6 +93,8 @@ export async function createVisit(
         ${data.gender}::visit_gender
       )`;
     token = rows[0].token;
+    visitId = rows[0].id;
+    queueNo = rows[0].queue_no;
   } catch (error) {
     console.error("create_visit gagal", error);
     return {
@@ -96,6 +103,15 @@ export async function createVisit(
       values: keepValues,
     };
   }
+
+  // Percakapan terbuka dengan nomor yang sama ikut tersambung ke kunjungan
+  // ini supaya petugas melihat satu orang, bukan dua baris terpisah. Tamu
+  // juga menerima nomor antriannya di ruang chat.
+  await sambungKunjunganInti({
+    visitId,
+    phone: normalizePhone(data.phone),
+    queueNo,
+  }).catch((error: unknown) => console.error("sambung kunjungan gagal", error));
 
   // Navigasi dilakukan di klien: redirect() setelah cookies().set() tidak
   // selalu terbaca browser pada Next 15, tamu jadi tertahan di form.

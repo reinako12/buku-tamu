@@ -1,8 +1,10 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 import {
   bukaPercakapanInti,
+  jadikanKunjunganInti,
   kirimPesanPetugasInti,
   kirimPesanTamuInti,
   tandaiDibacaInti,
@@ -13,6 +15,11 @@ import { requireStaff } from "@/lib/auth";
 import type { ChatMessage } from "@/lib/chat-types";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { chatStartErrors, chatStartSchema } from "@/lib/schemas/chat";
+import {
+  GENDERS,
+  INSTITUTION_CATEGORIES,
+  PURPOSES,
+} from "@/lib/schemas/visit";
 
 export type ChatStartState = {
   errors: Record<string, string>;
@@ -138,5 +145,60 @@ export async function tutupPercakapan(conversationId: string): Promise<TutupStat
   await requireStaff("/dashboard/pesan");
   const ok = await tutupPercakapanInti(conversationId);
   return ok ? { ok: true } : { ok: false, code: "err.chatNotFound" };
+}
+
+export type JadikanState = {
+  ok: boolean;
+  code?: string;
+  queueNo?: string;
+  fieldErrors: Record<string, string>;
+};
+
+/**
+ * "Jadikan kunjungan" dari inbox. Nama dan nomor sudah dipegang percakapan,
+ * jadi petugas hanya melengkapi empat kolom yang tidak pernah ditanyakan
+ * halaman chat.
+ */
+export async function jadikanKunjungan(
+  conversationId: string,
+  formData: FormData,
+): Promise<JadikanState> {
+  await requireStaff("/dashboard/pesan");
+
+  const raw = Object.fromEntries(formData) as Record<string, string>;
+  const institution = (raw.institution ?? "").trim();
+  const fieldErrors: Record<string, string> = {};
+
+  if (institution.length < 2) fieldErrors.institution = "err.institutionShort";
+  if (institution.length > 80) fieldErrors.institution = "err.institutionLong";
+  if (!(INSTITUTION_CATEGORIES as readonly string[]).includes(raw.institutionCat ?? "")) {
+    fieldErrors.institutionCat = "err.catRequired";
+  }
+  if (!(PURPOSES as readonly string[]).includes(raw.purpose ?? "")) {
+    fieldErrors.purpose = "err.purposeRequired";
+  }
+  if (!(GENDERS as readonly string[]).includes(raw.gender ?? "")) {
+    fieldErrors.gender = "err.genderRequired";
+  }
+  if (Object.keys(fieldErrors).length > 0) {
+    return { ok: false, code: "err.formInvalid", fieldErrors };
+  }
+
+  const hasil = await jadikanKunjunganInti(conversationId, {
+    institution,
+    institutionCat: raw.institutionCat,
+    purpose: raw.purpose,
+    gender: raw.gender,
+  });
+
+  if (!hasil.ok) {
+    const code =
+      hasil.error === "sudahTerkait" ? "err.visitAlready" : "err.saveFailed";
+    return { ok: false, code, fieldErrors: {} };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/dashboard/pesan/${conversationId}`);
+  return { ok: true, queueNo: hasil.queueNo, fieldErrors: {} };
 }
 
