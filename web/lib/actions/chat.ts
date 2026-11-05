@@ -93,7 +93,6 @@ const KODE_GAGAL: Record<KirimReason, string> = {
   closed: "err.chatClosed",
   empty: "err.messageEmpty",
   long: "err.messageLong",
-  fast: "err.chatTooFast",
   hourly: "err.chatHourly",
   failed: "err.saveFailed",
 };

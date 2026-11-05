@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { canTransition, isVisitStatus, type VisitStatus } from "@/lib/visit-status";
-import { fieldErrors, visitFormSchema } from "@/lib/schemas/visit";
+import { fieldErrors, normalizePhone, visitFormSchema } from "@/lib/schemas/visit";
 
 export type ActionResult = { ok: boolean; error?: string };
 
@@ -98,6 +98,20 @@ export async function addWalkIn(
   }
 
   const data = parsed.data;
+
+  // Kiriman ganda dari dialog (klik dua kali sebelum tombol nonaktif):
+  // nomor yang sama dalam 90 detik tidak dicatat dua kali.
+  const kembar = await prisma.visit.findFirst({
+    where: {
+      phone: normalizePhone(data.phone),
+      checkInAt: { gte: new Date(Date.now() - 90_000) },
+    },
+    select: { id: true },
+  });
+  if (kembar) {
+    revalidatePath("/dashboard");
+    return { ok: true, error: null, fieldErrors: {} };
+  }
 
   try {
     await prisma.$queryRaw`

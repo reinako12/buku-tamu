@@ -47,7 +47,13 @@ export async function middleware(request: NextRequest) {
           );
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options),
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure:
+                request.headers.get("x-forwarded-proto")?.split(",")[0].trim() ===
+                "https",
+            }),
           );
         },
       },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 import { HeaderControls } from "@/components/header-controls";
 import { getT } from "@/lib/i18n/server";
+import { safeNextPath } from "@/lib/safe-next";
 
 export const metadata: Metadata = {
   title: "Masuk petugas",
@@ -16,7 +17,7 @@ export default async function LoginPage({
 }) {
   const t = await getT();
   const { next } = await searchParams;
-  const target = next && next.startsWith("/") ? next : "/dashboard";
+  const target = safeNextPath(next);
 
   return (
     <main className="mx-auto w-full max-w-form px-md py-xl">

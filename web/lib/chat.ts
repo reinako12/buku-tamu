@@ -91,8 +91,11 @@ export async function bukaPercakapanInti(
    ============================================================ */
 
 export const PESAN_MAKS = 1000;
-/** Satu pesan per dua detik — menahan kirim ganda karena tombol tertekan dua kali. */
-const CEPAT_MS = 2_000;
+/**
+ * Rentang waktu untuk mengenali kiriman ganda: pesan tamu dengan teks sama
+ * persis dalam 10 detik terakhir dianggap kiriman yang sama, bukan pesan baru.
+ */
+const JENDELA_KEMBAR = 10_000;
 const JAM_MS = 60 * 60 * 1000;
 const JAM_LIMIT = 20;
 
@@ -104,7 +107,6 @@ export type KirimReason =
   | "closed"
   | "empty"
   | "long"
-  | "fast"
   | "hourly"
   | "failed";
 
@@ -164,19 +166,27 @@ export async function kirimPesanTamuInti(
     };
   }
 
-  const perDetik = checkRateLimit(`chat-cepat:${conv.id}`, 1, CEPAT_MS, now);
-  if (!perDetik.allowed) {
-    return {
-      ok: false,
-      reason: "fast",
-      retryAfterSeconds: perDetik.retryAfterSeconds,
-    };
-  }
+  // Kiriman ganda dari ketukan yang sama (tombol dua kali atau Enter beruntun)
+  // berisi teks identik dan tiba berdekatan. Dibandingkan berdasarkan isi
+  // pesan, bukan jeda waktu: dua permintaan yang sama bisa sampai ke server
+  // lebih dari satu detik terpisah, sedangkan dua pesan pendek yang berbeda
+  // ("assalamualaikum" lalu "mau tanya") tetap sah walaupun cepat.
+  const teks = body.trim();
+  const kembar = await prisma.message.findFirst({
+    where: {
+      conversationId: conv.id,
+      sender: "tamu",
+      body: teks,
+      createdAt: { gte: new Date(now - JENDELA_KEMBAR) },
+    },
+    select: PILIH_PESAN,
+  });
+  if (kembar) return { ok: true, message: kePesan(kembar) };
 
   try {
     const row = await prisma.$transaction(async (tx) => {
       const created = await tx.message.create({
-        data: { conversationId: conv.id, sender: "tamu", body: body.trim() },
+        data: { conversationId: conv.id, sender: "tamu", body: teks },
         select: PILIH_PESAN,
       });
       // Daftar percakapan petugas diurutkan dari aktivitas terakhir.

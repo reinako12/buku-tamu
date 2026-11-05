@@ -74,6 +74,21 @@ export async function createVisit(
 
   const data = parsed.data;
 
+  // Tombol yang tertekan dua kali (atau Enter + klik) mengirim dua permintaan
+  // yang sama. Menonaktifkan tombol saja tidak cukup: jeda sebelum React
+  // menandai tombol "sedang dikirim" masih bisa dilewati. Nomor yang sama
+  // dalam 90 detik dianggap kiriman ganda, dan tamu diberi tiket yang sudah
+  // terbit supaya ia tidak melihat dua nomor antrian.
+  const nomorSama = normalizePhone(data.phone);
+  const baruSaja = await prisma.visit.findFirst({
+    where: { phone: nomorSama, checkInAt: { gte: new Date(Date.now() - 90_000) } },
+    orderBy: { checkInAt: "desc" },
+    select: { token: true },
+  });
+  if (baruSaja) {
+    return { errors: {}, message: null, values: {}, ok: true, token: baruSaja.token };
+  }
+
   let token: string;
   let visitId: string;
   let queueNo: string;
@@ -109,7 +124,7 @@ export async function createVisit(
   // juga menerima nomor antriannya di ruang chat.
   await sambungKunjunganInti({
     visitId,
-    phone: normalizePhone(data.phone),
+    phone: nomorSama,
     queueNo,
   }).catch((error: unknown) => console.error("sambung kunjungan gagal", error));
 

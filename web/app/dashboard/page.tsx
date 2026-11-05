@@ -29,6 +29,12 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/masuk");
 
+  // Token yang sama dipakai socket Realtime di peramban: cookienya httpOnly,
+  // jadi komponen klien tidak bisa mengambilnya sendiri.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const profile = await prisma.profile.findUnique({ where: { id: user.id } });
   if (!profile) redirect("/masuk");
 
@@ -97,7 +103,7 @@ export default async function DashboardPage() {
         <ClosedBanner reopenAt={setting.reopenAt} />
       ) : null}
 
-      <VisitBoard initialVisits={visits} />
+      <VisitBoard initialVisits={visits} accessToken={session?.access_token} />
     </main>
   );
 }
