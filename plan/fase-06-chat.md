@@ -38,7 +38,9 @@ Yang dibuat:
 5. RLS aktif tanpa policy untuk dua tabel ini — akses hanya lewat Prisma dari
    server, sama seperti tabel lain di proyek ini.
 6. `lib/phone.ts`: normalisasi `08xx`, `+62`, `62`, spasi, dan tanda hubung jadi
-   `62xxxxxxxxxx`, plus validasi panjang 10–15 digit.
+   `+62xxxxxxxxxx`, plus validasi panjang 10–15 digit. Bentuknya sengaja ikut
+   `visits.phone` yang sudah `+62`, bukan `62`, supaya pencocokan nomor di 6d
+   tinggal `where guest_phone = visits.phone`.
 7. `lib/actions/chat.ts` — `bukaPercakapan(nama, nomor)`: normalisasi, cari
    percakapan terbuka nomor itu, kalau tidak ada bikin baru, kembalikan token.
    Rate limit 3 percakapan baru per IP per 30 menit.
