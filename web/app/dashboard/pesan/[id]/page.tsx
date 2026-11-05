@@ -40,7 +40,7 @@ export default async function PercakapanPage({
           <p className="masthead-unit hidden sm:block">{t("org.unit")}</p>
         </div>
 
-        <div className="flex items-center gap-xs">
+        <div className="flex flex-wrap items-center justify-end gap-xs">
           <HeaderControls />
           <Link href="/dashboard" className="btn-quiet">
             {t("inbox.back")}

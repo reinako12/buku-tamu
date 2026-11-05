@@ -249,7 +249,7 @@ export function StaffRoom({
   return (
     <section className="flex h-full min-h-0 flex-col border border-border bg-surface">
       <header className="border-b border-border px-sm py-sm">
-        <Link href="/dashboard/pesan" className="row-link text-caption text-ink-muted md:hidden">
+        <Link href="/dashboard/pesan" className="row-link min-h-tap text-caption text-ink-muted md:hidden">
           {t("inbox.back")}
         </Link>
 
