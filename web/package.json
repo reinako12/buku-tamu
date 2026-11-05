@@ -13,7 +13,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "test": "node --import tsx --test lib/service-hours.test.ts lib/schemas/visit.test.ts lib/rate-limit.test.ts lib/visit-status.test.ts lib/settings-rules.test.ts lib/i18n.test.ts"
+    "test": "node --import tsx --test lib/service-hours.test.ts lib/schemas/visit.test.ts lib/schemas/chat.test.ts lib/rate-limit.test.ts lib/visit-status.test.ts lib/settings-rules.test.ts lib/i18n.test.ts lib/phone.test.ts"
   },
   "dependencies": {
     "@prisma/client": "6.19.3",

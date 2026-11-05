@@ -28,17 +28,12 @@ export const PURPOSES = [
 /**
  * Normalisasi nomor HP ke format +62.
  * Menerima 0812..., 62812..., +62812..., dengan spasi/strip/titik.
+ * Logikanya ada di lib/phone.ts supaya dipakai bareng oleh chat.
  */
-export function normalizePhone(input: string): string {
-  const digits = input.replace(/[^\d+]/g, "").replace(/^\+/, "");
-  if (digits.startsWith("62")) return `+${digits}`;
-  if (digits.startsWith("0")) return `+62${digits.slice(1)}`;
-  if (digits.startsWith("8")) return `+62${digits}`;
-  return `+${digits}`;
-}
+export { isValidPhone, normalizePhone } from "@/lib/phone";
+import { normalizePhone } from "@/lib/phone";
 
 const phoneRegex = /^\+628[1-9][0-9]{6,11}$/;
-
 export const visitFormSchema = z.object({
   name: z
     .string()

@@ -50,13 +50,37 @@ enum Gender {
   @@map("visit_gender")
 }
 
+/// Status percakapan chat. 'terbuka' = tamu masih bisa menulis.
+enum ConversationStatus {
+  terbuka
+  ditutup
+
+  @@map("conversation_status")
+}
+
+enum MessageSender {
+  tamu
+  petugas
+  sistem
+
+  @@map("message_sender")
+}
+
+enum ConversationSource {
+  web
+  manual
+
+  @@map("conversation_source")
+}
+
 model Profile {
   id        String    @id @db.Uuid
   fullName  String    @map("full_name")
   role      StaffRole @default(petugas)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  visits Visit[] @relation("handled_by")
+  visits   Visit[]   @relation("handled_by")
+  messages Message[]
 
   @@map("profiles")
 }
@@ -84,6 +108,8 @@ model Visit {
 
   handler Profile? @relation("handled_by", fields: [handledBy], references: [id], onDelete: SetNull)
 
+  conversation Conversation?
+
   @@unique([queueDate, queueSeq])
   @@index([queueDate(sort: Desc), queueSeq(sort: Desc)])
   @@index([status])
@@ -100,4 +126,49 @@ model Setting {
   updatedAt    DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("settings")
+}
+
+/// Percakapan chat. Tidak menempel ke kunjungan sejak awal; `visitId` diisi
+/// belakangan kalau tamu check-in dengan nomor yang sama.
+///
+/// Aturan "satu nomor hanya boleh punya satu percakapan terbuka" dijaga
+/// partial unique index di migrasi 0004 — Prisma tidak bisa memodelkannya,
+/// jadi jangan hapus index itu saat menyusun diff.
+model Conversation {
+  id             String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token          String             @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visitId        String?            @unique @map("visit_id") @db.Uuid
+  guestName      String             @map("guest_name")
+  guestPhone     String             @map("guest_phone")
+  status         ConversationStatus @default(terbuka)
+  source         ConversationSource @default(web)
+  lastMessageAt  DateTime?          @map("last_message_at") @db.Timestamptz(6)
+  staffLastReadAt DateTime?         @map("staff_last_read_at") @db.Timestamptz(6)
+  guestLastReadAt DateTime?         @map("guest_last_read_at") @db.Timestamptz(6)
+  autoRepliedAt  DateTime?          @map("auto_replied_at") @db.Timestamptz(6)
+  createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  closedAt       DateTime?          @map("closed_at") @db.Timestamptz(6)
+
+  visit    Visit?    @relation(fields: [visitId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@index([status, lastMessageAt(sort: Desc)])
+  @@index([guestPhone])
+  @@map("conversations")
+}
+
+model Message {
+  seq            BigInt        @id @default(autoincrement())
+  id             String        @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String        @map("conversation_id") @db.Uuid
+  sender         MessageSender
+  staffId        String?       @map("staff_id") @db.Uuid
+  body           String
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  staff        Profile?     @relation(fields: [staffId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, seq])
+  @@map("messages")
 }
