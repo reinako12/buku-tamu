@@ -204,6 +204,34 @@ const id = {
 
   "hours.label": "Senin sampai Kamis 08.00–16.00, Jumat 08.00–16.30",
 
+  "chat.entryLead": "Perlu bertanya dulu sebelum datang?",
+  "chat.entryLink": "Chat dengan resepsionis",
+  "chat.title": "Chat dengan resepsionis",
+  "chat.lead":
+    "Isi nama dan nomor WhatsApp. Nomor itu jadi kunci percakapan Anda — simpan tautan halamannya.",
+  "chat.start": "Mulai chat",
+  "chat.starting": "Membuka",
+  "chat.privacy":
+    "Jangan kirim data pribadi yang tidak perlu. Percakapan disimpan untuk tindak lanjut kunjungan.",
+  "chat.roomTitle": "Chat dengan petugas",
+  "chat.open": "Terbuka",
+  "chat.closed": "Ditutup",
+  "chat.closedNote":
+    "Percakapan ini sudah ditutup. Mulai percakapan baru kalau masih perlu bertanya.",
+  "chat.newChat": "Mulai percakapan baru",
+  "chat.copyLink": "Salin tautan",
+  "chat.copied": "Tautan tersalin",
+  "chat.copyFailed": "Gagal menyalin. Salin dari bilah alamat.",
+  "chat.loadOlder": "Muat pesan sebelumnya",
+  "chat.empty": "Belum ada pesan. Tulis pertanyaan Anda di bawah.",
+  "chat.placeholder": "Tulis pesan",
+  "chat.send": "Kirim",
+  "chat.sending": "Mengirim",
+  "chat.failed": "Gagal terkirim.",
+  "chat.retry": "Kirim ulang",
+  "chat.staff": "Petugas",
+  "chat.backHome": "Buku tamu",
+
   "err.nameRequired": "Nama wajib diisi.",
   "err.nameShort": "Nama minimal 3 karakter.",
   "err.nameLong": "Nama maksimal 80 karakter.",
@@ -227,6 +255,12 @@ const id = {
   "err.loginFailed": "Email atau kata sandi salah.",
   "err.sessionExpired": "Sesi berakhir. Silakan masuk lagi.",
   "err.statusUnknown": "Status tidak dikenal.",
+  "err.chatNotFound": "Percakapan tidak ditemukan. Tautan mungkin salah.",
+  "err.chatClosed": "Percakapan sudah ditutup.",
+  "err.messageEmpty": "Pesan masih kosong.",
+  "err.messageLong": "Pesan maksimal 1000 karakter.",
+  "err.chatTooFast": "Terlalu cepat. Tunggu sebentar sebelum mengirim lagi.",
+  "err.chatHourly": "Batas 20 pesan per jam sudah tercapai.",
 } as const;
 
 export type DictKey = keyof typeof id;
@@ -423,6 +457,34 @@ const en: Dict = {
 
   "hours.label": "Monday to Thursday 08.00–16.00, Friday 08.00–16.30",
 
+  "chat.entryLead": "Need to ask something before coming in?",
+  "chat.entryLink": "Chat with the reception desk",
+  "chat.title": "Chat with the reception desk",
+  "chat.lead":
+    "Enter your name and WhatsApp number. That number is the key to your conversation — keep the link to this page.",
+  "chat.start": "Start chatting",
+  "chat.starting": "Opening",
+  "chat.privacy":
+    "Do not send personal data you do not need to. Conversations are kept to follow up on visits.",
+  "chat.roomTitle": "Chat with staff",
+  "chat.open": "Open",
+  "chat.closed": "Closed",
+  "chat.closedNote":
+    "This conversation is closed. Start a new one if you still need to ask something.",
+  "chat.newChat": "Start a new conversation",
+  "chat.copyLink": "Copy link",
+  "chat.copied": "Link copied",
+  "chat.copyFailed": "Could not copy. Copy it from the address bar.",
+  "chat.loadOlder": "Load earlier messages",
+  "chat.empty": "No messages yet. Write your question below.",
+  "chat.placeholder": "Write a message",
+  "chat.send": "Send",
+  "chat.sending": "Sending",
+  "chat.failed": "Could not send.",
+  "chat.retry": "Send again",
+  "chat.staff": "Staff",
+  "chat.backHome": "Guest book",
+
   "err.nameRequired": "Name is required.",
   "err.nameShort": "Name must be at least 3 characters.",
   "err.nameLong": "Name must be 80 characters or fewer.",
@@ -446,6 +508,12 @@ const en: Dict = {
   "err.loginFailed": "Wrong email or password.",
   "err.sessionExpired": "Session expired. Please sign in again.",
   "err.statusUnknown": "Unknown status.",
+  "err.chatNotFound": "Conversation not found. The link may be wrong.",
+  "err.chatClosed": "This conversation is closed.",
+  "err.messageEmpty": "The message is empty.",
+  "err.messageLong": "Messages are 1000 characters at most.",
+  "err.chatTooFast": "Too fast. Wait a moment before sending again.",
+  "err.chatHourly": "The limit of 20 messages per hour has been reached.",
 };
 
 export const dictionaries: Record<Locale, Dict> = { id, en };

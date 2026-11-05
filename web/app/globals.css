@@ -338,6 +338,17 @@
   .row-in {
     animation: row-in 320ms ease-out;
   }
+
+  /* Ruang chat: setinggi layar, kepala dan kolom tulis tetap, hanya isi
+     percakapan yang bergulir. `100dvh` mengikuti keyboard ponsel; browser
+     lama mengabaikannya dan memakai `100vh` sebagai cadangan. */
+  .chat-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
 }
 
 @keyframes row-in {

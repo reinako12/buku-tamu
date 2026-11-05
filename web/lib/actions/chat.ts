@@ -1,7 +1,12 @@
 "use server";
 
 import { headers } from "next/headers";
-import { bukaPercakapanInti } from "@/lib/chat";
+import {
+  bukaPercakapanInti,
+  kirimPesanTamuInti,
+  type KirimReason,
+} from "@/lib/chat";
+import type { ChatMessage } from "@/lib/chat-types";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { chatStartErrors, chatStartSchema } from "@/lib/schemas/chat";
 
@@ -65,4 +70,36 @@ export async function bukaPercakapan(
   }
 
   return { errors: {}, message: null, values: {}, ok: true, token: hasil.token };
+}
+
+export type KirimPesanState =
+  | { ok: true; message: ChatMessage }
+  | { ok: false; code: string; retryAfterSeconds?: number };
+
+/** Alasan dari inti dipetakan ke kunci kamus; klien tidak perlu tahu istilah internal. */
+const KODE_GAGAL: Record<KirimReason, string> = {
+  notFound: "err.chatNotFound",
+  closed: "err.chatClosed",
+  empty: "err.messageEmpty",
+  long: "err.messageLong",
+  fast: "err.chatTooFast",
+  hourly: "err.chatHourly",
+  failed: "err.saveFailed",
+};
+
+/**
+ * Kirim pesan tamu. Sengaja mengembalikan objek, bukan melempar error:
+ * komponen perlu menandai pesan yang gagal dan menawarkan kirim ulang.
+ */
+export async function kirimPesanTamu(
+  token: string,
+  body: string,
+): Promise<KirimPesanState> {
+  const hasil = await kirimPesanTamuInti(token, body);
+  if (hasil.ok) return { ok: true, message: hasil.message };
+  return {
+    ok: false,
+    code: KODE_GAGAL[hasil.reason],
+    retryAfterSeconds: hasil.retryAfterSeconds,
+  };
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ensureAutoReopen } from "@/lib/settings";
 import { serviceState } from "@/lib/service-hours";
 import { getT } from "@/lib/i18n/server";
@@ -69,6 +70,13 @@ export default async function HomePage() {
         </div>
         <CheckinForm />
       </div>
+
+      <p className="mt-md text-body-sm text-ink-muted">
+        {t("chat.entryLead")}{" "}
+        <Link href="/chat" className="btn-quiet px-0">
+          {t("chat.entryLink")}
+        </Link>
+      </p>
     </main>
   );
 }

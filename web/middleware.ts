@@ -1,7 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PREFIXES = ["/t/", "/tutup", "/_next", "/favicon"];
+// /chat dan API-nya publik: tamu tidak punya sesi petugas. Token UUID di
+// alamat yang jadi kuncinya, sama seperti halaman tiket.
+const PUBLIC_PREFIXES = [
+  "/t/",
+  "/tutup",
+  "/chat",
+  "/api/chat",
+  "/_next",
+  "/favicon",
+];
 
 function isPublic(pathname: string) {
   return (
