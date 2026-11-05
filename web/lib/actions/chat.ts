@@ -12,6 +12,7 @@ import {
   type KirimReason,
 } from "@/lib/chat";
 import { requireStaff } from "@/lib/auth";
+import { alamatDasar } from "@/lib/base-url";
 import { getLocale } from "@/lib/i18n/server";
 import type { ChatMessage } from "@/lib/chat-types";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
@@ -185,12 +186,17 @@ export async function jadikanKunjungan(
     return { ok: false, code: "err.formInvalid", fieldErrors };
   }
 
-  const hasil = await jadikanKunjunganInti(conversationId, {
-    institution,
-    institutionCat: raw.institutionCat,
-    purpose: raw.purpose,
-    gender: raw.gender,
-  });
+  const dasarUrl = await alamatDasar().catch(() => "");
+  const hasil = await jadikanKunjunganInti(
+    conversationId,
+    {
+      institution,
+      institutionCat: raw.institutionCat,
+      purpose: raw.purpose,
+      gender: raw.gender,
+    },
+    dasarUrl,
+  );
 
   if (!hasil.ok) {
     const code =

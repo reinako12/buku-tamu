@@ -6,6 +6,7 @@ import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { fieldErrors, normalizePhone, visitFormSchema } from "@/lib/schemas/visit";
 import { serviceState } from "@/lib/service-hours";
 import { sambungKunjunganInti } from "@/lib/chat";
+import { alamatDasar } from "@/lib/base-url";
 
 export type FormState = {
   errors: Record<string, string>;
@@ -121,11 +122,15 @@ export async function createVisit(
 
   // Percakapan terbuka dengan nomor yang sama ikut tersambung ke kunjungan
   // ini supaya petugas melihat satu orang, bukan dua baris terpisah. Tamu
-  // juga menerima nomor antriannya di ruang chat.
+  // juga menerima nomor antriannya di ruang chat, lengkap dengan tautan tiket
+  // supaya bisa memantau status seperti tamu yang mendaftar lewat form.
+  const dasarUrl = await alamatDasar().catch(() => "");
   await sambungKunjunganInti({
     visitId,
     phone: nomorSama,
     queueNo,
+    token,
+    dasarUrl,
   }).catch((error: unknown) => console.error("sambung kunjungan gagal", error));
 
   // Navigasi dilakukan di klien: redirect() setelah cookies().set() tidak

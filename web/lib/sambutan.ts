@@ -37,12 +37,21 @@ export function pilihSambutan(
   return inggris ? AUTO_REPLY_BAWAAN_EN : AUTO_REPLY_BAWAAN;
 }
 
-/** Pemberitahuan nomor antrian setelah percakapan tersambung ke kunjungan. */
+/**
+ * Pemberitahuan nomor antrian setelah percakapan tersambung ke kunjungan.
+ * Kalau tautan tiket diketahui, tamu bisa membuka halamannya sendiri untuk
+ * memantau status — sama seperti tamu yang mendaftar lewat form.
+ */
 export function teksKunjungan(
   queueNo: string,
   locale: Locale | string | null | undefined,
+  ticketUrl?: string | null,
 ): string {
-  return keLocale(locale) === "en"
-    ? `Visit recorded. Your queue number is ${queueNo}.`
-    : `Kunjungan tercatat. Nomor antrian ${queueNo}.`;
+  const alamat = (ticketUrl ?? "").trim();
+  if (keLocale(locale) === "en") {
+    const dasar = `Visit recorded. Your queue number is ${queueNo}.`;
+    return alamat ? `${dasar}\nCheck your ticket: ${alamat}` : dasar;
+  }
+  const dasar = `Kunjungan tercatat. Nomor antrian ${queueNo}.`;
+  return alamat ? `${dasar}\nLihat tiket: ${alamat}` : dasar;
 }

@@ -47,6 +47,29 @@ test("nomor antrian disebut dalam bahasa tamu", () => {
   assert.ok(teksKunjungan("BT-20261105-002", null).includes("Kunjungan tercatat"));
 });
 
+test("tautan tiket ikut dikirim kalau diketahui", () => {
+  const url = "https://bukutamu.grrifixn.my.id/t/8f14e45f-ceea-467f-a1a5-1b2c3d4e5f60";
+  assert.equal(
+    teksKunjungan("BT-20261105-007", "id", url),
+    `Kunjungan tercatat. Nomor antrian BT-20261105-007.\nLihat tiket: ${url}`,
+  );
+  assert.equal(
+    teksKunjungan("BT-20261105-007", "en", url),
+    `Visit recorded. Your queue number is BT-20261105-007.\nCheck your ticket: ${url}`,
+  );
+});
+
+test("tautan kosong tidak menyisakan baris menggantung", () => {
+  assert.equal(
+    teksKunjungan("BT-20261105-008", "id", ""),
+    "Kunjungan tercatat. Nomor antrian BT-20261105-008.",
+  );
+  assert.equal(
+    teksKunjungan("BT-20261105-008", "id", "   "),
+    "Kunjungan tercatat. Nomor antrian BT-20261105-008.",
+  );
+});
+
 test("teks bawaan Inggris tidak tertukar dengan versi Indonesia", () => {
   assert.ok(AUTO_REPLY_BAWAAN.startsWith("Terima kasih"));
   assert.ok(AUTO_REPLY_BAWAAN_EN.startsWith("Thank you"));

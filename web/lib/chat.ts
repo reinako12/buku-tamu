@@ -467,6 +467,8 @@ export async function sambungKunjunganInti(input: {
   visitId: string;
   phone: string;
   queueNo: string;
+  token?: string;
+  dasarUrl?: string;
 }): Promise<void> {
   const conv = await prisma.conversation.findFirst({
     where: { guestPhone: input.phone, status: "terbuka", visitId: null },
@@ -478,7 +480,9 @@ export async function sambungKunjunganInti(input: {
     where: { id: conv.id },
     data: { visitId: input.visitId },
   });
-  await kirimSistem(conv.id, teksKunjungan(input.queueNo, conv.locale));
+  const url =
+    input.dasarUrl && input.token ? `${input.dasarUrl}/t/${input.token}` : "";
+  await kirimSistem(conv.id, teksKunjungan(input.queueNo, conv.locale, url));
 }
 
 /**
@@ -525,6 +529,7 @@ export async function jadikanKunjunganInti(
     purpose: string;
     gender: string;
   },
+  dasarUrl?: string,
 ): Promise<JadikanHasil> {
   if (!UUID_RE.test(conversationId)) return { ok: false, error: "notFound" };
 
@@ -536,7 +541,7 @@ export async function jadikanKunjunganInti(
   if (conv.visitId) return { ok: false, error: "sudahTerkait" };
 
   try {
-    const rows = await prisma.$queryRaw<Array<{ id: string; queue_no: string }>>`
+    const rows = await prisma.$queryRaw<Array<{ id: string; queue_no: string; token: string }>>`
       SELECT * FROM create_visit(
         ${conv.guestName}::text,
         ${data.institution}::text,
@@ -553,7 +558,8 @@ export async function jadikanKunjunganInti(
       where: { id: conv.id },
       data: { visitId: visit.id },
     });
-    await kirimSistem(conv.id, teksKunjungan(visit.queue_no, conv.locale));
+    const url = dasarUrl ? `${dasarUrl}/t/${visit.token}` : "";
+    await kirimSistem(conv.id, teksKunjungan(visit.queue_no, conv.locale, url));
     return { ok: true, queueNo: visit.queue_no };
   } catch (error) {
     console.error("jadikan kunjungan gagal", error);
