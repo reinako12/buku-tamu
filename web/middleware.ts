@@ -3,11 +3,16 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // /chat dan API-nya publik: tamu tidak punya sesi petugas. Token UUID di
 // alamat yang jadi kuncinya, sama seperti halaman tiket.
+//
+// /api/pesan ikut dilewati di sini bukan karena publik: rutenya sendiri yang
+// memeriksa sesi dan menjawab 401. Middleware tidak boleh me-redirect panggilan
+// fetch ke halaman login — klien akan menerima HTML, bukan JSON.
 const PUBLIC_PREFIXES = [
   "/t/",
   "/tutup",
   "/chat",
   "/api/chat",
+  "/api/pesan",
   "/_next",
   "/favicon",
 ];

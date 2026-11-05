@@ -26,3 +26,32 @@ export type ChatAmbil = {
   /** Masih ada pesan lebih lama di luar jendela yang diambil. */
   hasMore: boolean;
 };
+
+/**
+ * Jendela pesan lengkap dengan identitas percakapan. Dipakai ruang tamu
+ * (kunci token) dan ruang petugas (kunci id).
+ */
+export type ChatRuang = ChatAmbil & {
+  id: string;
+  guestPhone: string;
+  /** Nomor antrian kalau percakapan sudah tersambung ke kunjungan. */
+  queueNo: string | null;
+};
+
+/** Satu baris di inbox petugas. */
+export type RingkasPercakapan = {
+  id: string;
+  token: string;
+  guestName: string;
+  guestPhone: string;
+  status: ChatStatus;
+  lastMessageAt: string | null;
+  lastBody: string | null;
+  lastSender: ChatSender | null;
+  /** Pesan tamu yang masuk setelah terakhir dibuka petugas. */
+  unread: number;
+  queueNo: string | null;
+  visitStatus: string | null;
+};
+
+

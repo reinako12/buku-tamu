@@ -3,9 +3,13 @@
 import { headers } from "next/headers";
 import {
   bukaPercakapanInti,
+  kirimPesanPetugasInti,
   kirimPesanTamuInti,
+  tandaiDibacaInti,
+  tutupPercakapanInti,
   type KirimReason,
 } from "@/lib/chat";
+import { requireStaff } from "@/lib/auth";
 import type { ChatMessage } from "@/lib/chat-types";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { chatStartErrors, chatStartSchema } from "@/lib/schemas/chat";
@@ -103,3 +107,36 @@ export async function kirimPesanTamu(
     retryAfterSeconds: hasil.retryAfterSeconds,
   };
 }
+
+/* ============================================================
+   Sisi petugas — semua lewat requireStaff
+   ============================================================ */
+
+/**
+ * Balasan petugas tidak memakai kuota tamu: yang menjawab sudah login dan
+ * tombol kirim ganda cukup ditahan oleh state `sending` di komponen.
+ */
+export async function kirimPesanPetugas(
+  conversationId: string,
+  body: string,
+): Promise<KirimPesanState> {
+  const { user } = await requireStaff("/dashboard/pesan");
+  const hasil = await kirimPesanPetugasInti(conversationId, user.id, body);
+  if (hasil.ok) return { ok: true, message: hasil.message };
+  return { ok: false, code: KODE_GAGAL[hasil.reason] };
+}
+
+/** Dipanggil ruang petugas setiap kali pesan tamu baru masuk ke layar. */
+export async function tandaiPesanDibaca(conversationId: string): Promise<void> {
+  await requireStaff("/dashboard/pesan");
+  await tandaiDibacaInti(conversationId);
+}
+
+export type TutupState = { ok: boolean; code?: string };
+
+export async function tutupPercakapan(conversationId: string): Promise<TutupState> {
+  await requireStaff("/dashboard/pesan");
+  const ok = await tutupPercakapanInti(conversationId);
+  return ok ? { ok: true } : { ok: false, code: "err.chatNotFound" };
+}
+

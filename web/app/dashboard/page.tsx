@@ -11,6 +11,7 @@ import { ensureAutoReopen } from "@/lib/settings";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import { HeaderControls } from "@/components/header-controls";
+import { InboxLink } from "@/components/dashboard/inbox-link";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,7 @@ export default async function DashboardPage() {
 
         <div className="flex items-center gap-xs">
           <HeaderControls />
+          <InboxLink />
           <Link href="/pengaturan" className="btn-quiet">
             {t("common.settings")}
           </Link>

@@ -35,7 +35,15 @@ export async function GET(
     return NextResponse.json({ error: "notFound" }, { status: 404 });
   }
 
-  return NextResponse.json(hasil, {
-    headers: { "cache-control": "no-store" },
-  });
+  // Nomor tamu tidak perlu ikut ke peramban tamu; yang membuka tautan sudah
+  // tahu nomornya sendiri.
+  return NextResponse.json(
+    {
+      status: hasil.status,
+      guestName: hasil.guestName,
+      messages: hasil.messages,
+      hasMore: hasil.hasMore,
+    },
+    { headers: { "cache-control": "no-store" } },
+  );
 }
