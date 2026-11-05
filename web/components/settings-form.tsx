@@ -24,11 +24,13 @@ export function SettingsForm({
   closedReason,
   reopenAt,
   autoReopen,
+  autoReply,
 }: {
   isOpen: boolean;
   closedReason: string | null;
   reopenAt: string | null;
   autoReopen: boolean;
+  autoReply: string | null;
 }) {
   const t = useT();
   const [state, formAction] = useActionState(saveSettings, initialState);
@@ -125,6 +127,22 @@ export function SettingsForm({
             </span>
           </label>
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="autoReply" className="field-label">
+          {t("settings.autoReply")}
+        </label>
+        <textarea
+          id="autoReply"
+          name="autoReply"
+          className="field min-h-[96px] resize-y"
+          rows={3}
+          maxLength={400}
+          defaultValue={autoReply ?? ""}
+          placeholder={t("settings.autoReplyPlaceholder")}
+        />
+        <p className="field-hint">{t("settings.autoReplyHint")}</p>
       </div>
 
       {state.error ? (

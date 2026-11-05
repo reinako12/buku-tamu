@@ -123,6 +123,7 @@ model Setting {
   closedReason String?   @map("closed_reason")
   reopenAt     DateTime? @map("reopen_at") @db.Timestamptz(6)
   autoReopen   Boolean   @default(true) @map("auto_reopen")
+  autoReply    String?   @map("auto_reply")
   updatedAt    DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("settings")

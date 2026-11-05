@@ -27,7 +27,7 @@ export default async function SettingsPage() {
           <p className="masthead-org">{t("org.name")}</p>
           <p className="masthead-unit">{t("org.unit")}</p>
         </div>
-        <div className="flex items-center gap-xs">
+        <div className="flex flex-wrap items-center justify-end gap-xs">
           <HeaderControls />
           <Link href="/dashboard" className="btn-quiet">
             {t("settings.backDashboard")}
@@ -50,6 +50,7 @@ export default async function SettingsPage() {
           closedReason={setting?.closedReason ?? null}
           reopenAt={setting?.reopenAt ? setting.reopenAt.toISOString() : null}
           autoReopen={setting?.autoReopen ?? true}
+          autoReply={setting?.autoReply ?? null}
         />
       </div>
     </main>

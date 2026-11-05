@@ -32,7 +32,7 @@ npm run dev               # http://localhost:3000
 
 ```bash
 npm run typecheck
-npm test                  # 39 unit test
+npm test                  # 57 unit test
 npm run build
 ```
 
@@ -56,6 +56,34 @@ ditukar, migrasi bisa gagal di pooler.
 
 Kolom `person_count` masih ada dengan default 1 untuk menjaga data lama, tapi sudah
 tidak dipakai. Satu entri = satu orang.
+
+## Chat tamu
+
+Tamu bisa mengobrol dengan resepsionis lewat `/chat`. Tautan ruang chat memuat token
+UUID; **tidak ada OTP**. Nama dan nomor WhatsApp yang diketik saat membuka percakapan
+adalah kunci aksesnya — siapa pun yang memegang tautan bisa membaca dan membalas
+percakapan itu. Untuk demo internal ini cukup, tapi jangan dipakai untuk data sensitif
+tanpa menambah verifikasi nomor.
+
+Percakapan tidak menempel ke kunjungan sejak awal. Kalau tamu check-in dengan nomor
+WhatsApp yang sama, percakapan tersambung otomatis; petugas juga bisa menerbitkan
+kunjungan langsung dari ruang chat.
+
+Di luar jam layanan, tamu menerima satu sambutan otomatis per percakapan. Teksnya
+diambil dari kolom `settings.auto_reply` (bisa diubah di `/pengaturan`); kalau kosong,
+aplikasi memakai teks bawaan di `web/lib/chat-janitor.ts`.
+
+Perawatan berkala dijalankan cron tiap 30 menit:
+
+```bash
+cd /root/project-magang/projects/buku-tamu/web
+npm run chat:janitor            # tutup yang diam 24 jam, hapus yang tertutup >90 hari
+npm run chat:janitor -- --dry   # hanya melapor
+```
+
+Aturannya: percakapan tanpa pesan 24 jam ditutup; percakapan yang kunjungannya sudah
+selesai atau batal ditutup 24 jam setelah kunjungan rampung; percakapan tertutup
+disimpan 90 hari lalu dihapus beserta pesannya.
 
 ## Dokumen
 

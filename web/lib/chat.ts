@@ -1,7 +1,9 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { AUTO_REPLY_BAWAAN, perluSapa } from "@/lib/chat-janitor";
 import { isValidPhone, normalizePhone } from "@/lib/phone";
+import { serviceState } from "@/lib/service-hours";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { periksaPesan } from "@/lib/chat-pesan";
 import type {
@@ -66,6 +68,10 @@ export async function bukaPercakapanInti(
     // Tamu yang sudah check-in lebih dulu: tempelkan langsung ke kunjungannya.
     await tautkanKunjunganTerakhir(created.id, phone).catch((error) =>
       console.error("tautkan kunjungan gagal", error),
+    );
+    // Di luar jam layanan, tamu langsung tahu kapan pesannya akan dibaca.
+    await sapaLuarJam(created.id).catch((error) =>
+      console.error("sapa luar jam gagal", error),
     );
     return { ok: true, token: created.token, created: true };
   } catch (error) {
@@ -180,6 +186,9 @@ export async function kirimPesanTamuInti(
       });
       return created;
     });
+    // Percakapan yang dibuat pada jam kerja lalu ditulis malam tetap disapa,
+    // sekali saja.
+    await sapaLuarJam(conv.id).catch((error) => console.error("sapa luar jam gagal", error));
     return { ok: true, message: kePesan(row) };
   } catch (error) {
     console.error("kirim pesan gagal", error);
@@ -347,6 +356,60 @@ export async function hitungBelumDibaca(): Promise<number> {
       and (c.staff_last_read_at is null or m.created_at > c.staff_last_read_at)
   `;
   return Number(rows[0]?.n ?? 0);
+}
+
+/* ============================================================
+   Jam layanan
+   ============================================================ */
+
+/** Teks sambutan: isian petugas di pengaturan, atau teks bawaan. */
+export async function teksSambutan(): Promise<string> {
+  const setting = await prisma.setting.findUnique({
+    where: { id: 1 },
+    select: { autoReply: true },
+  });
+  const teks = setting?.autoReply?.trim();
+  return teks && teks.length > 0 ? teks : AUTO_REPLY_BAWAAN;
+}
+
+/**
+ * Sapa sekali saat tamu menulis di luar jam layanan.
+ *
+ * Klaim "sudah disapa" dilakukan lewat update bersyarat, bukan baca-lalu-tulis:
+ * dua pesan yang masuk berbarengan tetap hanya menghasilkan satu sambutan.
+ */
+export async function sapaLuarJam(
+  conversationId: string,
+  now = new Date(),
+): Promise<boolean> {
+  if (serviceState(now).status === "open") {
+    // Jam kerja menurut jadwal; tetap disapa kalau petugas menutup kantor.
+    const setting = await prisma.setting.findUnique({
+      where: { id: 1 },
+      select: { isOpen: true },
+    });
+    if (setting?.isOpen ?? true) return false;
+  }
+
+  const conv = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    select: { status: true, autoRepliedAt: true },
+  });
+  if (!conv) return false;
+  if (!perluSapa({ status: conv.status, autoRepliedAt: conv.autoRepliedAt }, false)) {
+    return false;
+  }
+
+  const klaim = await prisma.conversation.updateMany({
+    where: { id: conversationId, status: "terbuka", autoRepliedAt: null },
+    data: { autoRepliedAt: now },
+  });
+  if (klaim.count === 0) return false;
+
+  await prisma.message.create({
+    data: { conversationId, sender: "sistem", body: await teksSambutan() },
+  });
+  return true;
 }
 
 /* ============================================================

@@ -12,6 +12,7 @@ export type SettingsState = {
 };
 
 const MAX_REASON = 200;
+const MAX_AUTO_REPLY = 400;
 
 function parseJakartaLocal(value: string): Date | null {
   return parseJakartaInput(value);
@@ -27,11 +28,20 @@ export async function saveSettings(
   const autoReopen = formData.get("autoReopen") === "on";
   const reason = String(formData.get("closedReason") ?? "").trim();
   const reopenRaw = String(formData.get("reopenAt") ?? "").trim();
+  const autoReply = String(formData.get("autoReply") ?? "").trim();
 
   if (reason.length > MAX_REASON) {
     return {
       ok: false,
       error: `Alasan maksimal ${MAX_REASON} karakter.`,
+      savedAt: null,
+    };
+  }
+
+  if (autoReply.length > MAX_AUTO_REPLY) {
+    return {
+      ok: false,
+      error: `Teks sambutan maksimal ${MAX_AUTO_REPLY} karakter.`,
       savedAt: null,
     };
   }
@@ -44,6 +54,7 @@ export async function saveSettings(
   const data = {
     isOpen,
     autoReopen,
+    autoReply: autoReply || null,
     closedReason: isOpen ? null : reason || null,
     reopenAt: isOpen ? null : reopenAt,
   };

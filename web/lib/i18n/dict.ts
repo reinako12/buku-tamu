@@ -157,6 +157,10 @@ const id = {
   "settings.autoLabel": "Buka otomatis saat waktunya tiba",
   "settings.autoHint":
     "Kalau dimatikan, buku tamu tetap tertutup sampai dibuka manual.",
+  "settings.autoReply": "Sambutan di luar jam layanan",
+  "settings.autoReplyPlaceholder": "Kosongkan untuk memakai teks bawaan.",
+  "settings.autoReplyHint":
+    "Dikirim sekali per percakapan, hanya kalau tamu menulis di luar jam layanan atau saat kantor ditutup.",
   "settings.save": "Simpan pengaturan",
   "settings.saving": "Menyimpan",
   "settings.savedAt": "Pengaturan tersimpan pukul {time} WIB.",
@@ -444,6 +448,10 @@ const en: Dict = {
   "settings.autoLabel": "Reopen automatically when the time comes",
   "settings.autoHint":
     "If turned off, the guest book stays closed until reopened manually.",
+  "settings.autoReply": "After-hours greeting",
+  "settings.autoReplyPlaceholder": "Leave empty to use the built-in text.",
+  "settings.autoReplyHint":
+    "Sent once per conversation, only when a guest writes outside service hours or while the office is closed.",
   "settings.save": "Save settings",
   "settings.saving": "Saving",
   "settings.savedAt": "Settings saved at {time} (GMT+7).",
