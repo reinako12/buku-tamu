@@ -160,7 +160,13 @@ const id = {
   "settings.autoReply": "Sambutan di luar jam layanan",
   "settings.autoReplyPlaceholder": "Kosongkan untuk memakai teks bawaan.",
   "settings.autoReplyHint":
-    "Dikirim sekali per percakapan, hanya kalau tamu menulis di luar jam layanan atau saat kantor ditutup.",
+    "Dipakai untuk tamu yang memilih bahasa Indonesia. Dikirim sekali per percakapan, hanya kalau tamu menulis di luar jam layanan atau saat kantor ditutup.",
+  "settings.autoReplyEn": "Sambutan bahasa Inggris",
+  "settings.autoReplyEnPlaceholder":
+    "Kosongkan untuk memakai teks bawaan berbahasa Inggris.",
+  "settings.autoReplyEnHint":
+    "Dipakai untuk tamu yang memilih English. Terjemahan bebas, tidak harus sama dengan versi Indonesia.",
+  "settings.errAutoReply": "Teks sambutan maksimal 400 karakter.",
   "settings.save": "Simpan pengaturan",
   "settings.saving": "Menyimpan",
   "settings.savedAt": "Pengaturan tersimpan pukul {time} WIB.",
@@ -451,7 +457,12 @@ const en: Dict = {
   "settings.autoReply": "After-hours greeting",
   "settings.autoReplyPlaceholder": "Leave empty to use the built-in text.",
   "settings.autoReplyHint":
-    "Sent once per conversation, only when a guest writes outside service hours or while the office is closed.",
+    "Used for guests who pick Indonesian. Sent once per conversation, only when a guest writes outside service hours or while the office is closed.",
+  "settings.autoReplyEn": "English greeting",
+  "settings.autoReplyEnPlaceholder": "Leave empty to use the built-in English text.",
+  "settings.autoReplyEnHint":
+    "Used for guests who pick English. Write it naturally; it does not have to match the Indonesian version word for word.",
+  "settings.errAutoReply": "The greeting must be 400 characters or fewer.",
   "settings.save": "Save settings",
   "settings.saving": "Saving",
   "settings.savedAt": "Settings saved at {time} (GMT+7).",

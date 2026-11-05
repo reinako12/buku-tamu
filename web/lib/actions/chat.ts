@@ -12,6 +12,7 @@ import {
   type KirimReason,
 } from "@/lib/chat";
 import { requireStaff } from "@/lib/auth";
+import { getLocale } from "@/lib/i18n/server";
 import type { ChatMessage } from "@/lib/chat-types";
 import { checkRateLimit, hashIp } from "@/lib/rate-limit";
 import { chatStartErrors, chatStartSchema } from "@/lib/schemas/chat";
@@ -61,7 +62,8 @@ export async function bukaPercakapan(
   }
 
   const ip = await clientIp();
-  const hasil = await bukaPercakapanInti(parsed.data, () =>
+  const locale = await getLocale();
+  const hasil = await bukaPercakapanInti({ ...parsed.data, locale }, () =>
     checkRateLimit(`chat-buka:${hashIp(ip)}`, BUKA_LIMIT, BUKA_WINDOW_MS),
   );
 
@@ -105,7 +107,7 @@ export async function kirimPesanTamu(
   token: string,
   body: string,
 ): Promise<KirimPesanState> {
-  const hasil = await kirimPesanTamuInti(token, body);
+  const hasil = await kirimPesanTamuInti(token, body, Date.now(), await getLocale());
   if (hasil.ok) return { ok: true, message: hasil.message };
   return {
     ok: false,

@@ -1,7 +1,8 @@
 import "server-only";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { AUTO_REPLY_BAWAAN, perluSapa } from "@/lib/chat-janitor";
+import { perluSapa } from "@/lib/chat-janitor";
+import { keLocale, pilihSambutan, teksKunjungan } from "@/lib/sambutan";
 import { isValidPhone, normalizePhone } from "@/lib/phone";
 import { serviceState } from "@/lib/service-hours";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -43,7 +44,7 @@ async function cariTerbuka(phone: string): Promise<{ token: string } | null> {
 }
 
 export async function bukaPercakapanInti(
-  input: { name: string; phone: string },
+  input: { name: string; phone: string; locale?: string },
   kuota?: KuotaCek,
 ): Promise<BukaHasil> {
   const phone = normalizePhone(input.phone);
@@ -62,7 +63,12 @@ export async function bukaPercakapanInti(
 
   try {
     const created = await prisma.conversation.create({
-      data: { guestName: name, guestPhone: phone },
+      data: {
+        guestName: name,
+        guestPhone: phone,
+        // Bahasa tamu saat mulai chat menentukan bahasa pesan sistem nanti.
+        locale: keLocale(input.locale),
+      },
       select: { id: true, token: true },
     });
     // Tamu yang sudah check-in lebih dulu: tempelkan langsung ke kunjungannya.
@@ -145,6 +151,7 @@ export async function kirimPesanTamuInti(
   token: string,
   body: string,
   now = Date.now(),
+  locale?: string,
 ): Promise<KirimHasil> {
   const salah = periksaPesan(body);
   if (salah) return { ok: false, reason: salah };
@@ -152,7 +159,7 @@ export async function kirimPesanTamuInti(
 
   const conv = await prisma.conversation.findUnique({
     where: { token },
-    select: { id: true, status: true, guestPhone: true },
+    select: { id: true, status: true, guestPhone: true, locale: true },
   });
   if (!conv) return { ok: false, reason: "notFound" };
   if (conv.status !== "terbuka") return { ok: false, reason: "closed" };
@@ -192,7 +199,14 @@ export async function kirimPesanTamuInti(
       // Daftar percakapan petugas diurutkan dari aktivitas terakhir.
       await tx.conversation.update({
         where: { id: conv.id },
-        data: { lastMessageAt: created.createdAt },
+        data: {
+          lastMessageAt: created.createdAt,
+          // Tamu bisa berganti bahasa di tengah jalan; pesan sistem berikutnya
+          // mengikuti pilihan terbaru, bukan pilihan saat percakapan dibuat.
+          ...(locale && keLocale(locale) !== conv.locale
+            ? { locale: keLocale(locale) }
+            : {}),
+        },
       });
       return created;
     });
@@ -372,14 +386,16 @@ export async function hitungBelumDibaca(): Promise<number> {
    Jam layanan
    ============================================================ */
 
-/** Teks sambutan: isian petugas di pengaturan, atau teks bawaan. */
-export async function teksSambutan(): Promise<string> {
+/** Teks sambutan: isian petugas untuk bahasa tamu, atau teks bawaan. */
+export async function teksSambutan(locale: string): Promise<string> {
   const setting = await prisma.setting.findUnique({
     where: { id: 1 },
-    select: { autoReply: true },
+    select: { autoReply: true, autoReplyEn: true },
   });
-  const teks = setting?.autoReply?.trim();
-  return teks && teks.length > 0 ? teks : AUTO_REPLY_BAWAAN;
+  return pilihSambutan(keLocale(locale), {
+    id: setting?.autoReply,
+    en: setting?.autoReplyEn,
+  });
 }
 
 /**
@@ -403,7 +419,7 @@ export async function sapaLuarJam(
 
   const conv = await prisma.conversation.findUnique({
     where: { id: conversationId },
-    select: { status: true, autoRepliedAt: true },
+    select: { status: true, autoRepliedAt: true, locale: true },
   });
   if (!conv) return false;
   if (!perluSapa({ status: conv.status, autoRepliedAt: conv.autoRepliedAt }, false)) {
@@ -417,7 +433,7 @@ export async function sapaLuarJam(
   if (klaim.count === 0) return false;
 
   await prisma.message.create({
-    data: { conversationId, sender: "sistem", body: await teksSambutan() },
+    data: { conversationId, sender: "sistem", body: await teksSambutan(conv.locale) },
   });
   return true;
 }
@@ -426,10 +442,7 @@ export async function sapaLuarJam(
    Sambungan ke kunjungan
    ============================================================ */
 
-/** Teks pesan sistem saat kunjungan tersambung. Satu sumber, dipakai dua sisi. */
-export function teksKunjungan(queueNo: string): string {
-  return `Kunjungan tercatat. Nomor antrian ${queueNo}.`;
-}
+export { teksKunjungan };
 
 async function kirimSistem(conversationId: string, body: string): Promise<void> {
   const now = new Date();
@@ -457,7 +470,7 @@ export async function sambungKunjunganInti(input: {
 }): Promise<void> {
   const conv = await prisma.conversation.findFirst({
     where: { guestPhone: input.phone, status: "terbuka", visitId: null },
-    select: { id: true },
+    select: { id: true, locale: true },
   });
   if (!conv) return;
 
@@ -465,7 +478,7 @@ export async function sambungKunjunganInti(input: {
     where: { id: conv.id },
     data: { visitId: input.visitId },
   });
-  await kirimSistem(conv.id, teksKunjungan(input.queueNo));
+  await kirimSistem(conv.id, teksKunjungan(input.queueNo, conv.locale));
 }
 
 /**
@@ -517,7 +530,7 @@ export async function jadikanKunjunganInti(
 
   const conv = await prisma.conversation.findUnique({
     where: { id: conversationId },
-    select: { id: true, guestName: true, guestPhone: true, visitId: true },
+    select: { id: true, guestName: true, guestPhone: true, visitId: true, locale: true },
   });
   if (!conv) return { ok: false, error: "notFound" };
   if (conv.visitId) return { ok: false, error: "sudahTerkait" };
@@ -540,7 +553,7 @@ export async function jadikanKunjunganInti(
       where: { id: conv.id },
       data: { visitId: visit.id },
     });
-    await kirimSistem(conv.id, teksKunjungan(visit.queue_no));
+    await kirimSistem(conv.id, teksKunjungan(visit.queue_no, conv.locale));
     return { ok: true, queueNo: visit.queue_no };
   } catch (error) {
     console.error("jadikan kunjungan gagal", error);

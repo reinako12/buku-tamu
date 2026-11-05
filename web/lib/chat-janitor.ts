@@ -14,8 +14,7 @@ export const JAM_DIAM = 24;
 export const HARI_SIMPAN = 90;
 
 /** Teks sambutan kalau petugas belum mengisi apa pun di pengaturan. */
-export const AUTO_REPLY_BAWAAN =
-  "Terima kasih sudah menghubungi BPS Kabupaten Tanah Datar. Saat ini di luar jam layanan, jadi balasan petugas menyusul pada jam kerja berikutnya: Senin–Kamis 08.00–16.00, Jumat 08.00–16.30 WIB.";
+export { AUTO_REPLY_BAWAAN } from "@/lib/sambutan";
 
 export type SidangPercakapan = {
   status: "terbuka" | "ditutup";

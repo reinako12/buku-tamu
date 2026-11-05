@@ -29,6 +29,7 @@ export async function saveSettings(
   const reason = String(formData.get("closedReason") ?? "").trim();
   const reopenRaw = String(formData.get("reopenAt") ?? "").trim();
   const autoReply = String(formData.get("autoReply") ?? "").trim();
+  const autoReplyEn = String(formData.get("autoReplyEn") ?? "").trim();
 
   if (reason.length > MAX_REASON) {
     return {
@@ -38,12 +39,8 @@ export async function saveSettings(
     };
   }
 
-  if (autoReply.length > MAX_AUTO_REPLY) {
-    return {
-      ok: false,
-      error: `Teks sambutan maksimal ${MAX_AUTO_REPLY} karakter.`,
-      savedAt: null,
-    };
+  if (autoReply.length > MAX_AUTO_REPLY || autoReplyEn.length > MAX_AUTO_REPLY) {
+    return { ok: false, error: "settings.errAutoReply", savedAt: null };
   }
 
   const reopenAt = reopenRaw ? parseJakartaLocal(reopenRaw) : null;
@@ -55,6 +52,7 @@ export async function saveSettings(
     isOpen,
     autoReopen,
     autoReply: autoReply || null,
+    autoReplyEn: autoReplyEn || null,
     closedReason: isOpen ? null : reason || null,
     reopenAt: isOpen ? null : reopenAt,
   };

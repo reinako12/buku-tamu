@@ -124,6 +124,7 @@ model Setting {
   reopenAt     DateTime? @map("reopen_at") @db.Timestamptz(6)
   autoReopen   Boolean   @default(true) @map("auto_reopen")
   autoReply    String?   @map("auto_reply")
+  autoReplyEn  String?   @map("auto_reply_en")
   updatedAt    DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   @@map("settings")
@@ -147,6 +148,8 @@ model Conversation {
   staffLastReadAt DateTime?         @map("staff_last_read_at") @db.Timestamptz(6)
   guestLastReadAt DateTime?         @map("guest_last_read_at") @db.Timestamptz(6)
   autoRepliedAt  DateTime?          @map("auto_replied_at") @db.Timestamptz(6)
+  /// Bahasa tamu ("id" / "en"): penentu bahasa pesan sistem yang tersimpan.
+  locale         String             @default("id")
   createdAt      DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   closedAt       DateTime?          @map("closed_at") @db.Timestamptz(6)
 
