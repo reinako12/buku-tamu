@@ -7,6 +7,7 @@ import { isValidPhone, normalizePhone } from "@/lib/phone";
 import { serviceState } from "@/lib/service-hours";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { periksaPesan } from "@/lib/chat-pesan";
+import { teksPolos } from "@/lib/tautan";
 import type {
   ChatMessage,
   ChatRuang,
@@ -361,7 +362,9 @@ export async function daftarPercakapan(limit = 50): Promise<RingkasPercakapan[]>
     guestPhone: row.guest_phone,
     status: row.status as ChatStatus,
     lastMessageAt: row.last_message_at ? row.last_message_at.toISOString() : null,
-    lastBody: row.last_body,
+    // Ringkasan di daftar inbox berupa teks biasa, jadi penanda tautan
+    // berlabel dibuang — yang tampil hanya kata "link".
+    lastBody: row.last_body ? teksPolos(row.last_body) : null,
     lastSender: (row.last_sender as RingkasPercakapan["lastSender"]) ?? null,
     unread: Number(row.unread),
     queueNo: row.queue_no,

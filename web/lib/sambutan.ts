@@ -40,7 +40,8 @@ export function pilihSambutan(
 /**
  * Pemberitahuan nomor antrian setelah percakapan tersambung ke kunjungan.
  * Kalau tautan tiket diketahui, tamu bisa membuka halamannya sendiri untuk
- * memantau status — sama seperti tamu yang mendaftar lewat form.
+ * memantau status — sama seperti tamu yang mendaftar lewat form. Alamatnya
+ * ditulis sebagai tautan berlabel supaya pesan tidak penuh URL panjang.
  */
 export function teksKunjungan(
   queueNo: string,
@@ -50,8 +51,8 @@ export function teksKunjungan(
   const alamat = (ticketUrl ?? "").trim();
   if (keLocale(locale) === "en") {
     const dasar = `Visit recorded. Your queue number is ${queueNo}.`;
-    return alamat ? `${dasar}\nCheck your ticket: ${alamat}` : dasar;
+    return alamat ? `${dasar}\nCheck ticket: [link](${alamat})` : dasar;
   }
   const dasar = `Kunjungan tercatat. Nomor antrian ${queueNo}.`;
-  return alamat ? `${dasar}\nLihat tiket: ${alamat}` : dasar;
+  return alamat ? `${dasar}\nLihat tiket: [link](${alamat})` : dasar;
 }

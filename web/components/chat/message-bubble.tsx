@@ -25,7 +25,7 @@ function Isi({ teks, terang }: { teks: string; terang?: boolean }) {
         bagian.tautan ? (
           <a
             key={i}
-            href={bagian.teks}
+            href={bagian.href ?? bagian.teks}
             target="_blank"
             rel="noreferrer"
             className={`break-all ${tautanKelas}`}

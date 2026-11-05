@@ -51,11 +51,11 @@ test("tautan tiket ikut dikirim kalau diketahui", () => {
   const url = "https://bukutamu.grrifixn.my.id/t/8f14e45f-ceea-467f-a1a5-1b2c3d4e5f60";
   assert.equal(
     teksKunjungan("BT-20261105-007", "id", url),
-    `Kunjungan tercatat. Nomor antrian BT-20261105-007.\nLihat tiket: ${url}`,
+    `Kunjungan tercatat. Nomor antrian BT-20261105-007.\nLihat tiket: [link](${url})`,
   );
   assert.equal(
     teksKunjungan("BT-20261105-007", "en", url),
-    `Visit recorded. Your queue number is BT-20261105-007.\nCheck your ticket: ${url}`,
+    `Visit recorded. Your queue number is BT-20261105-007.\nCheck ticket: [link](${url})`,
   );
 });
 
